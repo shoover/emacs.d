@@ -18,7 +18,7 @@
 ;;;;;;  color-theme-compare color-theme-make-snapshot color-theme-analyze-defun
 ;;;;;;  color-theme-print color-theme-install-at-point-for-current-frame
 ;;;;;;  color-theme-install-at-mouse color-theme-describe color-theme-select)
-;;;;;;  "color-theme" "color-theme.el" (17529 41105))
+;;;;;;  "color-theme" "color-theme.el" (18468 32787))
 ;;; Generated autoloads from color-theme.el
 
 (autoload (quote color-theme-select) "color-theme" "\
