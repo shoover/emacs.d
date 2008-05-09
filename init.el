@@ -16,11 +16,18 @@
                                 (concat emacs-root p))))
   (add-path "emacs/lisp") ;; all my personal elisp code
   (add-path "emacs/site-lisp") ;; elisp stuff I find on the 'net
-  (add-path "emacs/site-lisp/remember-1.9")
+  (add-path "emacs/site-lisp/remember-2.0")
   (add-path "emacs/color/color-theme-6.6.0") ;; my color preferences
   )
 
-
+;; Code to integrate cygwin emacs and screen. Might not actually care about
+;; this since I never got around to running a persistent cygwin emacs server.
+;; (add-hook 'after-init-hook 'server-start)
+;; (add-hook 'server-done-hook
+;;   (lambda ()
+;;     (shell-command
+;;       "screen -r -X select `cat ~/tmp/.emacsclient-caller`")))
+ 
 ;; Printing
 ;; TODO: figure out the printer based on where we are
 (setq printer-name "//FPGACRUNCHER/Printer4")
@@ -36,6 +43,9 @@
 
 (global-set-key [f1] 'toggle-selective-display)
 (global-set-key [C-f4] 'kill-buffer)
+
+; Shift+(left|right|up|down) instead of C-x o
+(windmove-default-keybindings)
 
 ;; Allow "y or n" instead of "yes or no"
 (fset 'yes-or-no-p 'y-or-n-p)
@@ -75,7 +85,11 @@
 (add-to-list 'load-path "C:/Program Files/erl5.5.5/lib/tools-2.5.5/emacs")
 (setq erlang-root-dir "C:/Program Files/erl5.5.5")
 (add-to-list 'exec-path "C:/Program Files/erl5.5.5/bin")
-(ignore-errors (require 'erlang-start))
+(ignore-errors
+  (require 'erlang-start)
+  (add-to-list 'load-path "c:/users/shawn/emacs/site-lisp/distel/elisp")
+  (require 'distel)
+  (distel-setup))
 
 ;; org-mode
 (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))

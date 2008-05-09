@@ -2,57 +2,49 @@
 ;;
 ;;; Code:
 
-;;;### (autoloads (remember-destroy remember-buffer remember-clipboard
-;;;;;;  remember-region remember) "remember" "remember.el" (17618
-;;;;;;  15288))
+;;;### (autoloads (remember-diary-extract-entries remember-clipboard
+;;;;;;  remember-other-frame remember) "remember" "remember.el" (18438
+;;;;;;  51735))
 ;;; Generated autoloads from remember.el
 
-(autoload (quote remember) "remember" "\
+(autoload 'remember "remember" "\
 Remember an arbitrary piece of data.
-With a prefix, uses the region as INITIAL.
+INITIAL is the text to initially place in the *Remember* buffer,
+or nil to bring up a blank *Remember* buffer.
+
+With a prefix or a visible region, use the region as INITIAL.
 
 \(fn &optional INITIAL)" t nil)
 
-(autoload (quote remember-region) "remember" "\
-Remember the data from BEG to END.
-If called from within the remember buffer, BEG and END are ignored,
-and the entire buffer will be remembered.
+(autoload 'remember-other-frame "remember" "\
+Call `remember' in another frame.
 
-This function is meant to be called from the *Remember* buffer.
-If you want to remember a region, supply a universal prefix to
-`remember' instead. For example: C-u M-x remember.
+\(fn &optional INITIAL)" t nil)
 
-\(fn &optional BEG END)" t nil)
-
-(autoload (quote remember-clipboard) "remember" "\
+(autoload 'remember-clipboard "remember" "\
 Remember the contents of the current clipboard.
 Most useful for remembering things from Netscape or other X Windows
 application.
 
 \(fn)" t nil)
 
-(autoload (quote remember-buffer) "remember" "\
-Remember the contents of the current buffer.
+(autoload 'remember-diary-extract-entries "remember" "\
+Extract diary entries from the region.
 
-\(fn)" t nil)
-
-(autoload (quote remember-destroy) "remember" "\
-Destroy the current *Remember* buffer.
-
-\(fn)" t nil)
+\(fn)" nil nil)
 
 ;;;***
 
 ;;;### (autoloads (remember-location remember-url) "remember-bibl"
-;;;;;;  "remember-bibl.el" (17618 15313))
+;;;;;;  "remember-bibl.el" (18255 14680))
 ;;; Generated autoloads from remember-bibl.el
 
-(autoload (quote remember-url) "remember-bibl" "\
+(autoload 'remember-url "remember-bibl" "\
 Remember a URL in `bibl-mode' that is being visited with w3.
 
 \(fn)" t nil)
 
-(autoload (quote remember-location) "remember-bibl" "\
+(autoload 'remember-location "remember-bibl" "\
 Remember a bookmark location in `bibl-mode'.
 
 \(fn)" t nil)
@@ -60,10 +52,10 @@ Remember a bookmark location in `bibl-mode'.
 ;;;***
 
 ;;;### (autoloads (remember-blosxom) "remember-blosxom" "remember-blosxom.el"
-;;;;;;  (17617 34591))
+;;;;;;  (18255 14680))
 ;;; Generated autoloads from remember-blosxom.el
 
-(autoload (quote remember-blosxom) "remember-blosxom" "\
+(autoload 'remember-blosxom "remember-blosxom" "\
 Remember this text to a blosxom story.
 This function can be added to `remember-handler-functions'.
 
@@ -73,21 +65,21 @@ This function can be added to `remember-handler-functions'.
 
 ;;;### (autoloads (remember-emacs-wiki-journal-add-entry-maybe remember-emacs-wiki-journal-add-entry-auto
 ;;;;;;  remember-emacs-wiki-journal-add-entry) "remember-emacs-wiki-journal"
-;;;;;;  "remember-emacs-wiki-journal.el" (17617 34591))
+;;;;;;  "remember-emacs-wiki-journal.el" (18255 14680))
 ;;; Generated autoloads from remember-emacs-wiki-journal.el
 
-(autoload (quote remember-emacs-wiki-journal-add-entry) "remember-emacs-wiki-journal" "\
+(autoload 'remember-emacs-wiki-journal-add-entry "remember-emacs-wiki-journal" "\
 Prompt for category and heading and add entry.
 
 \(fn)" nil nil)
 
-(autoload (quote remember-emacs-wiki-journal-add-entry-auto) "remember-emacs-wiki-journal" "\
+(autoload 'remember-emacs-wiki-journal-add-entry-auto "remember-emacs-wiki-journal" "\
 Add entry where the category is the first word and the heading the
 rest of the words on the first line.
 
 \(fn)" nil nil)
 
-(autoload (quote remember-emacs-wiki-journal-add-entry-maybe) "remember-emacs-wiki-journal" "\
+(autoload 'remember-emacs-wiki-journal-add-entry-maybe "remember-emacs-wiki-journal" "\
 Like `remember-emacs-wiki-journal-add-entry-auto' but only adds
 entry if the first line matches `emacs-wiki-journal-category-regexp'.
 
@@ -95,17 +87,28 @@ entry if the first line matches `emacs-wiki-journal-category-regexp'.
 
 ;;;***
 
-;;;### (autoloads nil nil ("read-file-name.el" "remember-diary.el"
-;;;;;;  "remember-experimental.el" "remember-planner.el") (17621
-;;;;;;  18483 971380))
+;;;### (autoloads (remember-planner-append) "remember-planner" "remember-planner.el"
+;;;;;;  (18255 14680))
+;;; Generated autoloads from remember-planner.el
+
+(autoload 'remember-planner-append "remember-planner" "\
+Remember this text to PAGE or today's page.
+This function can be added to `remember-handler-functions'.
+
+\(fn &optional PAGE)" nil nil)
+
+;;;***
+
+;;;### (autoloads nil nil ("read-file-name.el" "remember-experimental.el")
+;;;;;;  (18438 53206 980730))
 
 ;;;***
 
 ;;;### (autoloads (remember-bbdb-store-in-mailbox) "remember-bbdb"
-;;;;;;  "remember-bbdb.el" (17618 15318))
+;;;;;;  "remember-bbdb.el" (18255 14680))
 ;;; Generated autoloads from remember-bbdb.el
 
-(autoload (quote remember-bbdb-store-in-mailbox) "remember-bbdb" "\
+(autoload 'remember-bbdb-store-in-mailbox "remember-bbdb" "\
 Store remember data as if it were incoming mail.
 In which case `remember-mailbox' should be the name of the mailbox.
 Each piece of psuedo-mail created will have an `X-Todo-Priority'
