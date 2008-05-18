@@ -43,7 +43,9 @@
 (global-set-key "\M-r"     'isearch-backward-regexp)
 
 (global-set-key [f1] 'toggle-selective-display)
-(global-set-key [C-f4] 'kill-buffer)
+
+(global-set-key [C-tab] 'next-buffer)
+(global-set-key [f6] 'kill-this-buffer)
 
 ; Shift+(left|right|up|down) instead of C-x o
 (windmove-default-keybindings)
@@ -56,7 +58,7 @@
   (interactive)
   (find-file "~/emacs/init.el"))
 
-;; GTD lists
+;; Find GTD list
 (defun gtd ()
   (interactive)
   (find-file "~/action/action.org"))
