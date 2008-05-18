@@ -17,6 +17,7 @@
   (add-path "emacs/lisp") ;; all my personal elisp code
   (add-path "emacs/site-lisp") ;; elisp stuff I find on the 'net
   (add-path "emacs/site-lisp/remember-2.0")
+  (add-path "emacs/site-lisp/clojure")
   (add-path "emacs/color/color-theme-6.6.0") ;; my color preferences
   )
 
