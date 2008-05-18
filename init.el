@@ -74,6 +74,29 @@
              (setq tab-width 2)
              (setq c-basic-offset 2)))
 
+;; Clojure
+; Perhaps someday I'll want this to be buffer local, but let's try it
+; globally for now.
+(setq inferior-lisp-program
+      (let* ((java-path "java")
+             (java-options "")
+             (clojure-path "c:/users/shawn/clojure_20080329/")
+             (class-path-delimiter ";")
+             (class-path (mapconcat (lambda (s) s)
+                                        ; Add other paths to this list
+                                        ; if you want to have other
+                                        ; things in your classpath.
+                                    (list (concat clojure-path "clojure.jar"))
+                                    class-path-delimiter)))
+        (concat java-path
+                " " java-options
+                " -cp " class-path " clojure.lang.Repl")))
+(autoload 'clojure-mode "clojure-mode" "Edit clojure code" t)
+(add-to-list 'auto-mode-alist '("\\.clj$" . clojure-mode))
+(add-hook 'clojure-mode-hook
+          '(lambda ()
+             (define-key clojure-mode-map "\C-x\C-e" 'lisp-eval-last-sexp)))
+
 ;; CMake
 (autoload 'cmake-mode "cmake-mode" "Edit CMake definitions" t)
 (add-to-list 'auto-mode-alist '("CMakeLists\\.txt$" . cmake-mode))
@@ -84,10 +107,11 @@
           (lambda () (require 'dired-sort-map)))
 
 ;; Erlang
-;; TODO: get erlang dir from env?
+; TODO: get erlang dir from env
 (add-to-list 'load-path "C:/Program Files/erl5.5.5/lib/tools-2.5.5/emacs")
 (setq erlang-root-dir "C:/Program Files/erl5.5.5")
 (add-to-list 'exec-path "C:/Program Files/erl5.5.5/bin")
+; Not all my machines have erlang set up
 (ignore-errors
   (require 'erlang-start)
   (add-to-list 'load-path "c:/users/shawn/emacs/site-lisp/distel/elisp")
