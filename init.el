@@ -7,9 +7,9 @@
                            (eq system-type 'linux))
                        "/home/shawn/"
                      "c:/users/shawn/")
-  "My home directory — the root of my personal emacs load-path.")
+  "My home directory — the root of my emacs load-path.")
 
-;; Add all the elisp directories under ~/emacs to my load path.
+;; Add elisp directories under ~/emacs to my load path.
 (require 'cl)
 (labels ((add-path (p)
                    (add-to-list 'load-path
@@ -64,6 +64,13 @@
     (if mark-active
         (indent-region (region-beginning) (region-end))
       (indent-buffer))))
+
+(defun toggle-selective-display ()
+  "A poor-man's version of code folding. From jao."
+  (interactive)
+  (set-selective-display (if selective-display nil 1)))
+
+(load-library "xia-compilation")
 
 ;;; Custom keybindings
 (global-set-key "\C-x\C-m" 'execute-extended-command)
@@ -134,7 +141,7 @@
                                         ; Make remember insert new notes at top
             (setq org-reverse-note-order t)))
 
-;; remember-mode: store to org file
+;; Store to org file from remember-mode
 (require 'remember)
 (setq remember-annotation-functions '(org-remember-annotation))
 (setq remember-handler-functions '(org-remember-handler))
@@ -184,54 +191,6 @@
 ;; YAML
 (autoload 'yaml-mode "yaml-mode" "Edit YAML files" t)
 (add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
-
-
-(defun xia-compile-microdxp ()
-  "Compile the Handel/Xerxes libraries with support only for the microDXP"
-  (interactive)
-  (setq compile-command "make SERIAL=true CAMAC=false EPP=false ARCNET=false PLX=false USB=false BUILD_VBA=true all")
-  (compile compile-command))
-
-(defun xia-compile-dxp2x ()
-  "Compile the Handel/Xerxes libraries with support only for the 2X"
-  (interactive)
-  (setq compile-command "make SERIAL=false CAMAC=true EPP=false ARCNET=false PLX=false USB=false BUILD_VBA=true DXP4C=false all")
-  (compile compile-command))
-
-(defun xia-compile-xmap ()
-  "Compile the Handel/Xerxes libraries with support only for the xMAP"
-  (interactive)
-  (setq compile-command "make SERIAL=false CAMAC=false EPP=false ARCNET=false PLX=true USB=false all")
-  (compile compile-command))
-
-(defun xia-compile-xmap-profile ()
-  "Compile the Handel/Xerxes libraries with support only for the xMAP (Profiling enabled)"
-  (interactive)
-  (setq compile-command "make SERIAL=false CAMAC=false EPP=false ARCNET=false PLX=true USB=false PROFILE=true all")
-  (compile compile-command))
-
-(defun xia-compile-all-mem ()
-  "Compile the Handel/Xerxes libraries with the custom memory manager"
-  (interactive)
-  (setq compile-command "make CUSTOM_MEM_MANAGER=true all")
-  (compile compile-command))
-
-(defun xia-compile-all-param-debug ()
-  "Compile Handel with XIA_PARAM_DEBUG turned on."
-  (interactive)
-  (setq compile-command "make PARAM_DEBUG=true all")
-  (compile compile-command))
-
-(defun xia-compile-all-plx-write-debug ()
-  "Compile Handel with XIA_PLX_WRITE_DEBUG turned on."
-  (interactive)
-  (setq compile-command "make PLX_WRITE_DEBUG=true all")
-  (compile compile-command))
-
-(defun toggle-selective-display ()
-  "From jao. A poor-man's version of code folding."
-  (interactive)
-  (set-selective-display (if selective-display nil 1)))
 
 
 ;; Assumed registry settings (HKLM/Software/GNU/Emacs):
