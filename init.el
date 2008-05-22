@@ -65,6 +65,17 @@
         (indent-region (region-beginning) (region-end))
       (indent-buffer))))
 
+(defun count-chars-region (beginning end)
+  "Displays a message with the number of characters in the region."
+  (interactive "r")
+  (save-excursion
+    (goto-char beginning)
+    (let ((count 0))
+      (while (< (point) end)
+        (forward-char)
+        (incf count))
+      (message "%d characters" count))))
+
 (defun toggle-selective-display ()
   "A poor-man's version of code folding. From jao."
   (interactive)
@@ -197,10 +208,10 @@
 ;;   Emacs.toolBar: 0
 ;;   Emacs.full
 (custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
+  ;; custom-set-variables was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
  '(ansi-color-for-comint-mode t)
  '(c-doc-comment-style (quote set-from-style))
  '(column-number-mode t)
@@ -213,10 +224,10 @@
  '(transient-mark-mode t)
  '(w32shell-cygwin-bin "C:\\cygwin\\bin"))
 (custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
+  ;; custom-set-faces was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
  '(default ((t (:stipple nil :background "grey95" :foreground "SystemWindowText" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 111))))
  '(font-lock-comment-face ((((class color) (min-colors 88) (background light)) (:foreground "Firebrick" :slant italic))))
  '(font-lock-doc-face ((t (:background "grey90" :foreground "goldenrod"))))
