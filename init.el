@@ -7,14 +7,14 @@
                            (eq system-type 'linux))
                        "/home/shawn/"
                      "c:/users/shawn/")
-  "My home directory — the root of my personal emacs load-path.")
+  "My home directory — the root of my emacs load-path.")
 
-;; Add all the elisp directories under ~/emacs to my load path.
+;; Add elisp directories under ~/emacs to my load path.
 (require 'cl)
 (labels ((add-path (p)
                    (add-to-list 'load-path
                                 (concat emacs-root p))))
-  (add-path "emacs/lisp") ;; all my personal elisp code
+  (add-path "emacs/lisp")      ;; all my personal elisp code
   (add-path "emacs/site-lisp") ;; elisp stuff I find on the 'net
   (add-path "emacs/site-lisp/remember-2.0")
   (add-path "emacs/site-lisp/clojure")
@@ -37,7 +37,53 @@
 (setq-default indent-tabs-mode nil)
 (setq default-tab-width 2)
 
-;; Custom keybindings
+;; Allow "y or n" instead of "yes or no"
+(fset 'yes-or-no-p 'y-or-n-p)
+
+;;; Functions
+
+(defun emacs ()
+  "Find my elisp code"
+  (interactive)
+  (find-file "~/emacs/init.el"))
+
+(defun gtd ()
+  "Find my org-mode list"
+  (interactive)
+  (find-file "~/action/action.org"))
+
+(defun indent-buffer ()
+  "Indent the entire buffer. Seems like emacs should have this."
+  (interactive)
+  (indent-region (point-min) (point-max)))
+
+(defun my-indent-region ()
+  "Indent the region if there is one active. Otherwise indent the buffer."
+  (interactive)
+  (save-excursion
+    (if mark-active
+        (indent-region (region-beginning) (region-end))
+      (indent-buffer))))
+
+(defun count-chars-region (beginning end)
+  "Displays a message with the number of characters in the region."
+  (interactive "r")
+  (save-excursion
+    (goto-char beginning)
+    (let ((count 0))
+      (while (< (point) end)
+        (forward-char)
+        (incf count))
+      (message "%d characters" count))))
+
+(defun toggle-selective-display ()
+  "A poor-man's version of code folding. From jao."
+  (interactive)
+  (set-selective-display (if selective-display nil 1)))
+
+(load-library "xia-compilation")
+
+;;; Custom keybindings
 (global-set-key "\C-x\C-m" 'execute-extended-command)
 (global-set-key "\M-s"     'isearch-forward-regexp)
 (global-set-key "\M-r"     'isearch-backward-regexp)
@@ -47,21 +93,11 @@
 (global-set-key [C-tab] 'next-buffer)
 (global-set-key [f6] 'kill-this-buffer)
 
-; Shift+(left|right|up|down) instead of C-x o
+;; Rebind C-M-\. The default indent-region just isn't very useful for me.
+(global-set-key "\C-\M-\\" 'my-indent-region)
+
+;; Shift+(left|right|up|down) to get to a window quicker than with C-x o
 (windmove-default-keybindings)
-
-;; Allow "y or n" instead of "yes or no"
-(fset 'yes-or-no-p 'y-or-n-p)
-
-;; Find .emacs -- save a few keystrokes
-(defun emacs ()
-  (interactive)
-  (find-file "~/emacs/init.el"))
-
-;; Find GTD list
-(defun gtd ()
-  (interactive)
-  (find-file "~/action/action.org"))
 
 ;; Buffer switching
 (require 'iswitchb)
@@ -75,17 +111,17 @@
              (setq c-basic-offset 2)))
 
 ;; Clojure
-; Perhaps someday I'll want this to be buffer local, but let's try it
-; globally for now.
+;; Perhaps someday I'll want this to be buffer local, but let's try it
+;; globally for now.
 (setq inferior-lisp-program
       (let* ((java-path "java")
              (java-options "")
              (clojure-path "c:/users/shawn/clojure_20080329/")
              (class-path-delimiter ";")
              (class-path (mapconcat (lambda (s) s)
-                                        ; Add other paths to this list
-                                        ; if you want to have other
-                                        ; things in your classpath.
+                                    ;; Add other paths to this list
+                                    ;; if you want to have other
+                                    ;; things in your classpath.
                                     (list (concat clojure-path "clojure.jar"))
                                     class-path-delimiter)))
         (concat java-path
@@ -107,11 +143,11 @@
           (lambda () (require 'dired-sort-map)))
 
 ;; Erlang
-; TODO: get erlang dir from env
+;; TODO: get erlang dir from env
 (add-to-list 'load-path "C:/Program Files/erl5.5.5/lib/tools-2.5.5/emacs")
 (setq erlang-root-dir "C:/Program Files/erl5.5.5")
 (add-to-list 'exec-path "C:/Program Files/erl5.5.5/bin")
-; Not all my machines have erlang set up
+;; Not all my machines have erlang set up
 (ignore-errors
   (require 'erlang-start)
   (add-to-list 'load-path "c:/users/shawn/emacs/site-lisp/distel/elisp")
@@ -126,21 +162,21 @@
             (turn-on-auto-fill)
             (define-key org-mode-map "\C-ca" 'org-agenda)
             (define-key org-mode-map "\C-cl" 'org-store-link)
-
-            ; Variables used to save remember notes
+            
+            ;; Variables used to save remember notes
             (setq org-directory "~/action")
             (setq org-default-notes-file "~/action/action.org")
 
-            ; One template--insert note at top of org file
+            ;; One template--insert note at top of org file
             (setq org-remember-templates
                   '((?t "%?\n  %i\n  %a" "~/action/action.org")))
-                   ;(?j "* %U %?\n\n  %i\n  %a" "~/.notes")
-                   ;(?i "* %^{Title}\n  %i\n  %a" "~/.notes" "New Ideas")))
+            ;;(?j "* %U %?\n\n  %i\n  %a" "~/.notes")
+            ;;(?i "* %^{Title}\n  %i\n  %a" "~/.notes" "New Ideas")))
 
-            ; Make remember insert new notes at top
+            ;; Make remember insert new notes at top
             (setq org-reverse-note-order t)))
 
-;; remember-mode: store to org file
+;; Store to org file from remember-mode
 (require 'remember)
 (setq remember-annotation-functions '(org-remember-annotation))
 (setq remember-handler-functions '(org-remember-handler))
@@ -192,62 +228,14 @@
 (add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
 
 
-(defun xia-compile-microdxp ()
-  "Compile the Handel/Xerxes libraries with support only for the microDXP"
-  (interactive)
-  (setq compile-command "make SERIAL=true CAMAC=false EPP=false ARCNET=false PLX=false USB=false BUILD_VBA=true all")
-  (compile compile-command))
-
-(defun xia-compile-dxp2x ()
-  "Compile the Handel/Xerxes libraries with support only for the 2X"
-  (interactive)
-  (setq compile-command "make SERIAL=false CAMAC=true EPP=false ARCNET=false PLX=false USB=false BUILD_VBA=true DXP4C=false all")
-  (compile compile-command))
-
-(defun xia-compile-xmap ()
-  "Compile the Handel/Xerxes libraries with support only for the xMAP"
-  (interactive)
-  (setq compile-command "make SERIAL=false CAMAC=false EPP=false ARCNET=false PLX=true USB=false all")
-  (compile compile-command))
-
-(defun xia-compile-xmap-profile ()
-  "Compile the Handel/Xerxes libraries with support only for the xMAP (Profiling enabled)"
-  (interactive)
-  (setq compile-command "make SERIAL=false CAMAC=false EPP=false ARCNET=false PLX=true USB=false PROFILE=true all")
-  (compile compile-command))
-
-(defun xia-compile-all-mem ()
-  "Compile the Handel/Xerxes libraries with the custom memory manager"
-  (interactive)
-  (setq compile-command "make CUSTOM_MEM_MANAGER=true all")
-  (compile compile-command))
-
-(defun xia-compile-all-param-debug ()
-  "Compile Handel with XIA_PARAM_DEBUG turned on."
-  (interactive)
-  (setq compile-command "make PARAM_DEBUG=true all")
-  (compile compile-command))
-
-(defun xia-compile-all-plx-write-debug ()
-  "Compile Handel with XIA_PLX_WRITE_DEBUG turned on."
-  (interactive)
-  (setq compile-command "make PLX_WRITE_DEBUG=true all")
-  (compile compile-command))
-
-(defun toggle-selective-display ()
-  "From jao. A poor-man's version of code folding."
-  (interactive)
-  (set-selective-display (if selective-display nil 1)))
-
-
 ;; Assumed registry settings (HKLM/Software/GNU/Emacs):
 ;;   Emacs.toolBar: 0
 ;;   Emacs.full
 (custom-set-variables
-  ;; custom-set-variables was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  '(ansi-color-for-comint-mode t)
  '(c-doc-comment-style (quote set-from-style))
  '(column-number-mode t)
@@ -259,16 +247,16 @@
  '(show-paren-mode t)
  '(transient-mark-mode t)
  '(w32shell-cygwin-bin "C:\\cygwin\\bin"))
- (custom-set-faces
-  ;; custom-set-faces was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
-  '(default ((t (:stipple nil :background "grey95" :foreground "SystemWindowText" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 111))))
-  '(font-lock-comment-face ((((class color) (min-colors 88) (background light)) (:foreground "Firebrick" :slant italic))))
-  '(font-lock-doc-face ((t (:background "grey90" :foreground "goldenrod"))))
-  '(font-lock-function-name-face ((((class color) (min-colors 88) (background light)) (:foreground "Blue1" :weight bold))))
-  '(font-lock-string-face ((((class color) (min-colors 88) (background light)) (:background "ivory" :foreground "darkolivegreen4")))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(default ((t (:stipple nil :background "grey95" :foreground "SystemWindowText" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 111))))
+ '(font-lock-comment-face ((((class color) (min-colors 88) (background light)) (:foreground "Firebrick" :slant italic))))
+ '(font-lock-doc-face ((t (:background "grey90" :foreground "goldenrod"))))
+ '(font-lock-function-name-face ((((class color) (min-colors 88) (background light)) (:foreground "Blue1" :weight bold))))
+ '(font-lock-string-face ((((class color) (min-colors 88) (background light)) (:background "ivory" :foreground "darkolivegreen4")))))
 
 
 ;; Pretty black background color theme.
