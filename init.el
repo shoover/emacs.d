@@ -117,6 +117,29 @@
              (setq tab-width 2)
              (setq c-basic-offset 2)))
 
+;; Clojure
+;; Perhaps someday I'll want this to be buffer local, but let's try it
+;; globally for now.
+(setq inferior-lisp-program
+      (let* ((java-path "java")
+             (java-options "")
+             (clojure-path "c:/users/shawn/clojure_20080329/")
+             (class-path-delimiter ";")
+             (class-path (mapconcat (lambda (s) s)
+                                    ;; Add other paths to this list
+                                    ;; if you want to have other
+                                    ;; things in your classpath.
+                                    (list (concat clojure-path "clojure.jar"))
+                                    class-path-delimiter)))
+        (concat java-path
+                " " java-options
+                " -cp " class-path " clojure.lang.Repl")))
+(autoload 'clojure-mode "clojure-mode" "Edit clojure code" t)
+(add-to-list 'auto-mode-alist '("\\.clj$" . clojure-mode))
+(add-hook 'clojure-mode-hook
+          '(lambda ()
+             (define-key clojure-mode-map "\C-x\C-e" 'lisp-eval-last-sexp)))
+
 ;; CMake
 (autoload 'cmake-mode "cmake-mode" "Edit CMake definitions" t)
 (add-to-list 'auto-mode-alist '("CMakeLists\\.txt$" . cmake-mode))
@@ -127,10 +150,11 @@
           (lambda () (require 'dired-sort-map)))
 
 ;; Erlang
-;; TODO: get erlang dir from env?
+;; TODO: get erlang dir from env
 (add-to-list 'load-path "C:/Program Files/erl5.5.5/lib/tools-2.5.5/emacs")
 (setq erlang-root-dir "C:/Program Files/erl5.5.5")
 (add-to-list 'exec-path "C:/Program Files/erl5.5.5/bin")
+;; Not all my machines have erlang set up
 (ignore-errors
   (require 'erlang-start)
   (add-to-list 'load-path "c:/users/shawn/emacs/site-lisp/distel/elisp")
@@ -145,18 +169,18 @@
             (turn-on-auto-fill)
             (define-key org-mode-map "\C-ca" 'org-agenda)
             (define-key org-mode-map "\C-cl" 'org-store-link)
-
-                                        ; Variables used to save remember notes
+            
+            ;; Variables used to save remember notes
             (setq org-directory "~/action")
             (setq org-default-notes-file "~/action/action.org")
 
-                                        ; One template--insert note at top of org file
+            ;; One template--insert note at top of org file
             (setq org-remember-templates
                   '((?t "%?\n  %i\n  %a" "~/action/action.org")))
-                                        ;(?j "* %U %?\n\n  %i\n  %a" "~/.notes")
-                                        ;(?i "* %^{Title}\n  %i\n  %a" "~/.notes" "New Ideas")))
+            ;;(?j "* %U %?\n\n  %i\n  %a" "~/.notes")
+            ;;(?i "* %^{Title}\n  %i\n  %a" "~/.notes" "New Ideas")))
 
-                                        ; Make remember insert new notes at top
+            ;; Make remember insert new notes at top
             (setq org-reverse-note-order t)))
 
 ;; Store to org file from remember-mode
@@ -215,10 +239,10 @@
 ;;   Emacs.toolBar: 0
 ;;   Emacs.full
 (custom-set-variables
-  ;; custom-set-variables was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  '(ansi-color-for-comint-mode t)
  '(c-doc-comment-style (quote set-from-style))
  '(column-number-mode t)
@@ -231,10 +255,10 @@
  '(transient-mark-mode t)
  '(w32shell-cygwin-bin "C:\\cygwin\\bin"))
 (custom-set-faces
-  ;; custom-set-faces was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  '(default ((t (:stipple nil :background "grey95" :foreground "SystemWindowText" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 111))))
  '(font-lock-comment-face ((((class color) (min-colors 88) (background light)) (:foreground "Firebrick" :slant italic))))
  '(font-lock-doc-face ((t (:background "grey90" :foreground "goldenrod"))))
