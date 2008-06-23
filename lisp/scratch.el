@@ -32,7 +32,9 @@
         t))))
 
 (defun clean-comments ()
-  "Replaces /******** with /** and ******/ with */."
+  "Reformats
+         /********    to    /**
+   and    ********/   to    */"
   (interactive)
   (save-excursion
     ;; /******* -> /**
