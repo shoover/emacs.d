@@ -13,9 +13,12 @@
 Includes info, diary, font-lock, eshell, sgml, message, gnus,
 widget, custom, latex, ediff."
   (interactive)
-  (setq global-hl-line-mode t)
-  (set-face-background 'hl-line "gray20")
-  (set-face-foreground 'hl-line nil)
+  (global-hl-line-mode t)
+  (ignore-errors
+    (set-face-background 'highlight "gray20")
+    (set-face-foreground 'highlight nil)
+    (set-face-background 'hl-line "gray20")
+    (set-face-foreground 'hl-line nil))
   (color-theme-install
    '(color-theme-billw
      ((foreground-color . "cornsilk")
@@ -195,7 +198,7 @@ widget, custom, latex, ediff."
      (gnus-cite-face-11 ((t (:foreground "turquoise")))))))
 
 (defun color-theme-shawn ()
-  "Based on billw. Adds current line highlighting."
+  "Based on billw. Adds a different face to comments."
   (interactive)
   (color-theme-billw)
   (let ((color-theme-is-cumulative t))
@@ -203,6 +206,4 @@ widget, custom, latex, ediff."
      '(color-theme-shawn
        nil
        nil
-       (font-lock-doc-face ((t (:background "black" :foreground "gold"))))
-       (hl-line ((t (:background "gray20" :foreground nil)))))))
-  (setq global-hl-line-mode t))
+       (font-lock-doc-face ((t (:background "black" :foreground "gold"))))))))
