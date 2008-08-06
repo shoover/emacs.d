@@ -13,7 +13,7 @@
 Includes info, diary, font-lock, eshell, sgml, message, gnus,
 widget, custom, latex, ediff."
   (interactive)
-  (global-hl-line-mode t)
+  (global-hl-line-mode 1)
   (ignore-errors
     (set-face-background 'highlight "gray20")
     (set-face-foreground 'highlight nil)
