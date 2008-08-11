@@ -19,6 +19,7 @@
   (add-path "emacs/site-lisp/remember-2.0")
   (add-path "emacs/site-lisp/clojure")
   (add-path "emacs/color/color-theme-6.6.0") ;; my color preferences
+  (add-path "emacs/site-lisp/org-6.06b/lisp")
   )
 
 ;; Code to integrate cygwin emacs and screen. Might not actually care about
@@ -31,7 +32,7 @@
  
 ;; Printing
 ;; TODO: figure out the printer based on where we are
-(setq printer-name "//FPGACRUNCHER/Printer4")
+(defvar printer-name "//FPGACRUNCHER/Printer4")
 
 ;; Tab defaults
 (setq-default indent-tabs-mode nil)
@@ -39,6 +40,13 @@
 
 ;; Allow "y or n" instead of "yes or no"
 (fset 'yes-or-no-p 'y-or-n-p)
+
+;; Allow bullet lists starting with - to delimit paragraphs for use with
+;; fill-paragraph. fill-individual-paragraphs accomplishes what I want, but it
+;; requires that you have an active region.
+;;
+;; A more generic solution will be needed to work with @param lists in C-code.
+(setq paragraph-start "\f\\|[ 	]*$\\|\\([ ]+- \\)")
 
 ;;; Functions
 
@@ -244,19 +252,11 @@
  '(org-agenda-files (quote ("~/action/action.org")))
  '(org-cycle-include-plain-lists t)
  '(org-tags-column 67)
+ '(pr-gs-command "c:\\Program Files\\gs\\gs8.62\\bin\\gswin32c.exe")
+ '(pr-gv-command "C:\\Program Files\\Ghostgum\\gsview\\gsview32.exe")
  '(show-paren-mode t)
  '(transient-mark-mode t)
  '(w32shell-cygwin-bin "C:\\cygwin\\bin"))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(default ((t (:stipple nil :background "grey95" :foreground "SystemWindowText" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 111))))
- '(font-lock-comment-face ((((class color) (min-colors 88) (background light)) (:foreground "Firebrick" :slant italic))))
- '(font-lock-doc-face ((t (:background "grey90" :foreground "goldenrod"))))
- '(font-lock-function-name-face ((((class color) (min-colors 88) (background light)) (:foreground "Blue1" :weight bold))))
- '(font-lock-string-face ((((class color) (min-colors 88) (background light)) (:background "ivory" :foreground "darkolivegreen4")))))
 
 
 ;; Pretty black background color theme.
