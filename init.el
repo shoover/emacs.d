@@ -277,3 +277,5 @@
  (t
   (load-file "~/emacs/color/color-theme-6.6.0/themes/shawn.elc")
   (color-theme-shawn)))
+
+(server-start)
