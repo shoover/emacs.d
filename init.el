@@ -124,7 +124,7 @@
 (setq inferior-lisp-program
       (let* ((java-path "java")
              (java-options "")
-             (clojure-path "c:/users/shawn/clojure_20080329/")
+             (clojure-path "c:/users/shawn/src/clojure/work/")
              (class-path-delimiter ";")
              (class-path (mapconcat (lambda (s) s)
                                     ;; Add other paths to this list
