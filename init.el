@@ -8,6 +8,7 @@
                        "~/"
                      "c:/users/shawn/")
   "My home directory is the root of my emacs load-path.")
+(cd emacs-root)
 
 ;; Add elisp directories under ~/emacs to my load path.
 (require 'cl)
@@ -20,7 +21,7 @@
   (add-path "emacs/site-lisp/remember-2.0")
   (add-path "emacs/site-lisp/clojure")
   (add-path "emacs/site-lisp/org-6.06b/lisp")
-  (add-path "emacs/site-lisp/slime-2.0")
+  (add-path "emacs/site-lisp/slime-cvs")
   )
 
 ;; Code to integrate cygwin emacs and screen. Might not actually care about
@@ -142,16 +143,17 @@
           '(lambda ()
              (define-key clojure-mode-map "\C-x\C-e" 'lisp-eval-last-sexp)))
 
+;; You'd think slime could just run inferior-lisp-program to start Clojure,
+;; but it was complaining about the java args. One string with the batch
+;; file seems to work.
 (defvar clojure-exe (concat clojure-path "clj.bat"))
 (defun clojure-slime ()
+  (interactive)
   (require 'slime)
-  (slime-setup)
-  (setq slime-multiprocessing t)
-
   (add-to-list 'load-path "~/src/clojure/swank-clojure")
   (require 'swank-clojure)
   (setq slime-lisp-implementations
-        '((clojure (clojure-exe) :init clojure-init)))
+        `((clojure (,clojure-exe) :init clojure-init)))
   (slime))
 
 
