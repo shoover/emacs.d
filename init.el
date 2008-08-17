@@ -5,9 +5,9 @@
 (defvar emacs-root (if (or (eq system-type 'cygwin)
                            (eq system-type 'gnu/linux)
                            (eq system-type 'linux))
-                       "/home/shawn/"
+                       "~/"
                      "c:/users/shawn/")
-  "My home directory — the root of my emacs load-path.")
+  "My home directory is the root of my emacs load-path.")
 
 ;; Add elisp directories under ~/emacs to my load path.
 (require 'cl)
@@ -282,5 +282,14 @@
 (require 'color-theme)
 ;; For load time efficiency, only my theme is loaded. Run
 ;; color-theme-initialize at any time to see the rest of the themes.
-(load-file "~/emacs/color/color-theme-6.6.0/themes/shawn.elc")
-(color-theme-shawn)
+(cond
+ ((< emacs-major-version 22)
+  (color-theme-initialize)
+  (color-theme-calm-forest)
+  (global-font-lock-mode 1)
+  (global-hl-line-mode nil))
+ (t
+  (load-file "~/emacs/color/color-theme-6.6.0/themes/shawn.elc")
+  (color-theme-shawn)))
+
+(server-start)
