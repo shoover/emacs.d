@@ -15,11 +15,12 @@
                    (add-to-list 'load-path
                                 (concat emacs-root p))))
   (add-path "emacs/lisp")      ;; all my personal elisp code
+  (add-path "emacs/color/color-theme-6.6.0") ;; my color preferences
   (add-path "emacs/site-lisp") ;; elisp stuff I find on the 'net
   (add-path "emacs/site-lisp/remember-2.0")
   (add-path "emacs/site-lisp/clojure")
-  (add-path "emacs/color/color-theme-6.6.0") ;; my color preferences
   (add-path "emacs/site-lisp/org-6.06b/lisp")
+  (add-path "emacs/site-lisp/slime-2.0")
   )
 
 ;; Code to integrate cygwin emacs and screen. Might not actually care about
@@ -121,10 +122,10 @@
 ;; Clojure
 ;; Perhaps someday I'll want this to be buffer local, but let's try it
 ;; globally for now.
+(defvar clojure-path "c:/users/shawn/src/clojure/work/")
 (setq inferior-lisp-program
       (let* ((java-path "java")
              (java-options "")
-             (clojure-path "c:/users/shawn/src/clojure/work/")
              (class-path-delimiter ";")
              (class-path (mapconcat (lambda (s) s)
                                     ;; Add other paths to this list
@@ -140,6 +141,19 @@
 (add-hook 'clojure-mode-hook
           '(lambda ()
              (define-key clojure-mode-map "\C-x\C-e" 'lisp-eval-last-sexp)))
+
+(defvar clojure-exe (concat clojure-path "clj.bat"))
+(defun clojure-slime ()
+  (require 'slime)
+  (slime-setup)
+  (setq slime-multiprocessing t)
+
+  (add-to-list 'load-path "~/src/clojure/swank-clojure")
+  (require 'swank-clojure)
+  (setq slime-lisp-implementations
+        '((clojure (clojure-exe) :init clojure-init)))
+  (slime))
+
 
 ;; CMake
 (autoload 'cmake-mode "cmake-mode" "Edit CMake definitions" t)
