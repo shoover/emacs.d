@@ -18,10 +18,11 @@
   (add-path "emacs/lisp")      ;; all my personal elisp code
   (add-path "emacs/color/color-theme-6.6.0") ;; my color preferences
   (add-path "emacs/site-lisp") ;; elisp stuff I find on the 'net
-  (add-path "emacs/site-lisp/remember-2.0")
   (add-path "emacs/site-lisp/clojure")
   (add-path "emacs/site-lisp/org-6.06b/lisp")
+  (add-path "emacs/site-lisp/remember-2.0")
   (add-path "emacs/site-lisp/slime-cvs")
+  (add-path "emacs/site-lisp/swank-clojure")
   )
 
 ;; Code to integrate cygwin emacs and screen. Might not actually care about
@@ -111,7 +112,7 @@
 
 ;; Buffer switching
 (require 'iswitchb)
-(iswitchb-default-keybindings)
+(iswitchb-mode 1)
 
 ;; C
 (add-hook 'c-mode-hook
@@ -150,7 +151,6 @@
 (defun clojure-slime ()
   (interactive)
   (require 'slime)
-  (add-to-list 'load-path "~/src/clojure/swank-clojure")
   (require 'swank-clojure)
   (setq slime-lisp-implementations
         `((clojure (,clojure-exe) :init clojure-init)))
@@ -288,6 +288,7 @@
 (cond
  ((< emacs-major-version 22)
   (color-theme-initialize)
+  (declare-function color-theme-calm-forest "~/emacs/color/color-theme-6.6.0/themes/color-theme-library.el" nil)
   (color-theme-calm-forest)
   (global-font-lock-mode 1)
   (global-hl-line-mode nil))
