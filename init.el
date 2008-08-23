@@ -162,6 +162,32 @@
   (require 'distel)
   (distel-setup))
 
+(defun sah-erlang-drop-to-body ()
+  "This function is a drop-in enhancement for comment-indent-new-line for
+   erlang-mode. If you're in a function clause it jumps you down to the
+   function body without having to skip past the closing ) or type the
+   freakin arrow."
+
+  (interactive)
+  (undo-boundary)
+
+  (cond
+   ;; Assume ) at point is part of an argument list inserted by an electric
+   ;; command, in which case the arrow is already there.
+   ((looking-at ")")
+    (end-of-line))
+   ;; Assume preceeding ) was manually typed by user and there is no arrow.
+   ((looking-back ")")
+    (insert " ->"))
+   (t))
+  (comment-indent-new-line))
+
+;; erlang-mode-map doesn't seem to be available after requiring erlang-start,
+;; so I wait until erlang-mode is loaded to set up the keys.
+(add-hook 'erlang-mode-hook (lambda ()
+                              (define-key erlang-mode-map "\M-j"
+                                'sah-erlang-drop-to-body)))
+
 ;; org-mode
 (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
 (require 'org)
@@ -231,6 +257,9 @@
              (setq tab-width 2)
              (setq indent-tabs-mode nil)))
 
+;; Text
+(add-hook 'text-mode-hook 'turn-on-auto-fill)
+
 ;; YAML
 (autoload 'yaml-mode "yaml-mode" "Edit YAML files" t)
 (add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
@@ -256,9 +285,18 @@
  '(pr-gs-command "c:\\Program Files\\gs\\gs8.62\\bin\\gswin32c.exe")
  '(pr-gv-command "C:\\Program Files\\Ghostgum\\gsview\\gsview32.exe")
  '(show-paren-mode t)
+ '(indent-tabs-mode nil)
+ '(tab-always-indent t)
+ '(tab-width 2)
  '(transient-mark-mode t)
  '(w32shell-cygwin-bin "C:\\cygwin\\bin"))
 
+(custom-set-faces
+  ;; custom-set-faces was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+ )
 
 ;; Pretty black background color theme.
 ;; Call this after all the other useless color settings so none of its
@@ -280,9 +318,3 @@
   (color-theme-shawn)))
 
 (server-start)
-(custom-set-faces
-  ;; custom-set-faces was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
- )
