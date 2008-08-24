@@ -161,6 +161,13 @@
 
 
 ;;;
+
+(defimplementation make-output-stream (write-string)
+  (make-instance 'slime-output-stream :output-fn write-string))
+
+(defimplementation make-input-stream (read-string)
+  (make-instance 'slime-output-stream :input-fn read-string))
+
 (defimplementation make-fn-streams (input-fn output-fn)
   (let* ((output (make-instance 'slime-output-stream 
                                 :output-fn output-fn))

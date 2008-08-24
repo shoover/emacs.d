@@ -1,3 +1,109 @@
+2008-08-22  Helmut Eller  <heller@common-lisp.net>
+
+	Some focus handling in multiframe setups.
+
+	* slime.el (slime-pop-to-buffer): New function.
+	(slime-switch-to-output-buffer): Use it.
+
+2008-08-22  Helmut Eller  <heller@common-lisp.net>
+
+	Use lazy lists in the inspector.
+
+	* swank.lisp (lcons): New data type.
+	(lcons*, lcons-car, lcons-cdr, llist-range): New functions.
+	(emacs-inspect array): Use lazy lists.
+	(istate>elisp): The istate.content is now be a lazy list.
+	(iline): New utility.
+	(prepare-range, prepare-part): Replaces inspector-content.
+
+2008-08-22  Helmut Eller  <heller@common-lisp.net>
+
+	Implement streams with a length limit.
+	Use them to truncate printer output in backtraces.
+
+	* swank-backend.lisp (make-output-stream, make-input-stream):
+	Split make-fn-streams up into two functions.
+
+	* swank.lisp (call/truncated-output-to-string): New function.
+	(backtrace, istate>elisp, to-line): Use it.
+	(frame-locals-for-emacs): Use to-line.
+
+2008-08-22  Helmut Eller  <heller@common-lisp.net>
+
+	In backtraces, escape newlines in strings as \n.
+
+	* swank.lisp (*backtrace-pprint-dispatch-table*): New.
+	(*backtrace-printer-bindings*): Use it.
+
+2008-08-22  Stas Boukarev <stassats@gmail.com>
+
+	* metering.lisp: Add deftypes for time-type and cons-type, which
+	are not defined in newer versions of CCL.
+
+2008-08-22  Stelian Ionescu <sionescu@common-lisp.net>
+
+	* swank-ecl.lisp: Add a few EVAL-WHENs to fix compilation.
+
+2008-08-22  Helmut Eller  <heller@common-lisp.net>
+
+	Collect most of the inspector state in a structure.
+	Truncate the printer output more aggressively.
+
+	* swank.lisp (inspector-state): New structure.
+	(*istate*): New variable holds the current state.
+	(inspect-object, inspector-content, inspector-nth-part)
+	(inspector-range, inspector-call-nth-action, describe-inspectee):
+	Use it.
+	(inspector-pop, inspector-next): Implemented forward/backward a
+	bit differently.
+	(emacs-inspect/printer-bindings, istate>elisp): New functions.
+	(to-line, truncate-string): New functions.
+
+2008-08-22  Tobias C. Rittweiler  <tcr@freebits.de>
+
+	Compiling a file `let*.lisp' on SBCL via C-c C-k resulted in an
+	error, because it parsed the asterisk to a wild pathname. Fix
+	that.
+
+	* swank-backend.lisp (definterface parse-emacs-filename): New.
+	PARSE-NAMESTRING by default.
+
+	* swank-sbcl.lisp (defimplementation parse-emacs-filename): Use
+	SB-EXT:PARSE-NATIVE-NAMESTRING.
+
+	* swank.lisp (compile-file-for-emacs): Use PARSE-EMACS-FILENAME.
+	(compile-file-if-needed): Ditto.
+	(load-file): Ditto.
+	(swank-require): Ditto.
+
+2008-08-18  Helmut Eller  <heller@common-lisp.net>
+
+	* swank.lisp (install-fd-handler): Bind *emacs-connection* with
+	with-connection, for case when the signal hander is called out of
+	the blue.
+	(swank-debugger-hook): Don't assume that the hook argument is
+	#'swank-debugger-hook itself.
+
+	* test.sh (usage): Use cat rather not echo for here-documents.
+
+2008-08-17  Helmut Eller  <heller@common-lisp.net>
+
+	* slime.el (slime-inspector-show-source): New command.
+	(slime-inspector-mode-map): Bind it to ".".
+	(sldb-highlight-sexp): Use slime-flash-region rather than a
+	permanent overlay.
+	(slime-popup-buffer-quit): Must call bury-buffer without argument.
+
+	* swank.lisp (find-source-location-for-emacs): New function.
+
+	* slime.el (slime-add-local-hook): Renamed from add-local-hook.
+	(slime-switch-to-output-buffer): Drop the connection argument.  It
+	was never used.
+	(slime-switch-to-output-buffer-search-all-frames): Deleted. Use
+	display-buffer-reuse-frames instead.
+	(slime-switch-to-output-buffer): Use pop-to-buffer to select the
+	window and frame.
+
 2008-08-15  Tobias C. Rittweiler  <tcr@freebits.de>
 
 	* slime.el (slime-switch-to-output-buffer): Fix regression
@@ -19,9 +125,9 @@
 
 2008-08-17  B.Scott Michel <scooter.phd@gmail.com>
 
-       * swank-loader.lisp (dump-image): Move this function to the end of
-       the file to stop SBCL from reporting two times the same false
-       alarm.
+	* swank-loader.lisp (dump-image): Move this function to the end of
+	the file to stop SBCL from reporting two times the same false
+	alarm.
 
 2008-08-15  Tobias C. Rittweiler  <tcr@freebits.de>
 

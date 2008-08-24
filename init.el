@@ -1,6 +1,6 @@
 ;; I keep all my emacs-related stuff under ~/emacs. ~/.emacs should be pretty
-;; thin. It might contain machine-specific settings, but mainly it should
-;; exist to load this file.
+;; thin. It can contain machine-specific settings, but mainly it exists to
+;; load this file.
 
 (defvar emacs-root (if (or (eq system-type 'cygwin)
                            (eq system-type 'gnu/linux)

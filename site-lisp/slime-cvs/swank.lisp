@@ -109,10 +109,28 @@ Redirection is done while Lisp is processing a request for Emacs.")
     (*print-right-margin*     . 65))
   "A set of printer variables used in the debugger.")
 
+(defvar *backtrace-pprint-dispatch-table*
+  (let ((table (copy-pprint-dispatch nil)))
+    (flet ((escape-string (stream string)
+             (write-char #\" stream)
+             (loop for c across string do
+                   (case c
+                     (#\" (write-string "\\\"" stream))
+                     (#\newline (write-string "\\n" stream))
+                     (#\return (write-string "\\r" stream))
+                     (t (write-char c stream))))
+             (write-char #\" stream)))
+      (set-pprint-dispatch 'string  #'escape-string 0 table)
+      table)))
+
 (defvar *backtrace-printer-bindings*
-  `((*print-pretty*           . nil)
+  `((*print-pretty*           . t)
+    (*print-readably*         . nil)
     (*print-level*            . 4)
-    (*print-length*           . 6))
+    (*print-length*           . 6)
+    (*print-lines*            . 1)
+    (*print-right-margin*     . 200)
+    (*print-pprint-dispatch*  . ,*backtrace-pprint-dispatch-table*))
   "Pretter settings for printing backtraces.")
 
 (defvar *default-worker-thread-bindings* '()
@@ -1167,7 +1185,8 @@ The processing is done in the extent of the toplevel restart."
          (lambda () 
            (invoke-or-queue-interrupt
             (lambda () 
-              (dispatch-event `(:emacs-interrupt ,(current-thread-id))))))))
+              (with-connection (connection)
+                (dispatch-event `(:emacs-interrupt ,(current-thread-id)))))))))
   (handle-or-process-requests connection))
 
 (defun deinstall-fd-handler (connection)
@@ -1466,11 +1485,11 @@ NIL if streams are not globally redirected.")
 (defun encode-message (message stream)
   (let* ((string (prin1-to-string-for-emacs message))
          (length (length string)))
+    (assert (<= length #xffffff))
     (log-event "WRITE: ~A~%" string)
-    (without-interrupts
-      (let ((*print-pretty* nil))
-        (format stream "~6,'0x" length))
-      (write-string string stream))
+    (let ((*print-pretty* nil))
+      (format stream "~6,'0x" length))
+    (write-string string stream)
     ;;(terpri stream)
     (finish-output stream)))
 
@@ -1933,6 +1952,33 @@ Return the full package-name and the string to use in the prompt."
         (string (write-string s out))
         (character (write-char s out))))))
 
+(defun truncate-string (string width &optional ellipsis)
+  (let ((len (length string)))
+    (cond ((< len width) string)
+          (ellipsis (cat (subseq string 0 width) ellipsis))
+          (t (subseq string 0 width)))))
+
+(defun call/truncated-output-to-string (length function 
+                                        &optional (ellipsis ".."))
+  "Call FUNCTION with a new stream, return the output written to the stream.
+If FUNCTION tries to write more than LENGTH characters, it will be
+aborted and return immediately with the output written so far."
+  (let ((buffer (make-string (+ length (length ellipsis))))
+        (fill-pointer 0))
+    (block buffer-full
+      (flet ((write-output (string)
+               (let* ((free (- length fill-pointer))
+                      (count (min free (length string))))
+                 (replace buffer string :start1 fill-pointer :end2 count)
+                 (incf fill-pointer count)
+                 (when (> (length string) free)
+                   (replace buffer ellipsis :start1 fill-pointer)
+                   (return-from buffer-full buffer)))))
+        (let ((stream (make-output-stream #'write-output)))
+          (funcall function stream)
+          (finish-output stream)
+          (subseq buffer 0 fill-pointer))))))
+
 (defun package-string-for-prompt (package)
   "Return the shortest nickname (or canonical name) of PACKAGE."
   (unparse-name
@@ -2045,9 +2091,10 @@ after Emacs causes a restart to be invoked."
 
 (defun swank-debugger-hook (condition hook)
   "Debugger function for binding *DEBUGGER-HOOK*."
+  (declare (ignore hook))
   (restart-case 
       (call-with-debugger-hook 
-       hook (lambda () (invoke-slime-debugger condition)))
+       #'swank-debugger-hook (lambda () (invoke-slime-debugger condition)))
     (default-debugger (&optional v)
       :report "Use default debugger." (declare (ignore v))
       (invoke-default-debugger condition))))
@@ -2165,13 +2212,16 @@ format suitable for Emacs."
   "Return a list ((I FRAME) ...) of frames from START to END.
 I is an integer describing and FRAME a string."
   (loop for frame in (compute-backtrace start end)
-        for i from start
-        collect (list i (with-output-to-string (stream)
-                          (handler-case
-                              (with-bindings *backtrace-printer-bindings*
-                                (print-frame frame stream))
-                            (t ()
-                              (format stream "[error printing frame]")))))))
+        for i from start collect 
+        (list i 
+              (call/truncated-output-to-string 
+               100
+               (lambda (stream)
+                 (handler-case
+                     (with-bindings *backtrace-printer-bindings*
+                       (print-frame frame stream))
+                   (t ()
+                     (format stream "[error printing frame]"))))))))
 
 (defslimefun debugger-info-for-emacs (start end)
   "Return debugger state, with stack frames from START to END.
@@ -2257,7 +2307,7 @@ the local variables in the frame INDEX."
     (mapcar (lambda (frame-locals)
               (destructuring-bind (&key name id value) frame-locals
                 (list :name (prin1-to-string name) :id id
-                      :value (to-string value))))
+                      :value (to-line value))))
             (frame-locals index))))
 
 (defslimefun frame-catch-tags-for-emacs (frame-index)
@@ -2375,9 +2425,10 @@ Record compiler notes signalled as `compiler-condition's."
       (let ((*compile-print* nil))
         (swank-compiler 
          (lambda ()
-           (swank-compile-file filename load-p
-                               (or (guess-external-format filename)
-                                   :default))))))))
+           (let ((pathname (parse-emacs-filename filename)))
+             (swank-compile-file pathname load-p
+                                 (or (guess-external-format pathname)
+                                     :default)))))))))
 
 (defslimefun compile-string-for-emacs (string buffer position directory debug)
   "Compile STRING (exerpted from BUFFER at POSITION).
@@ -2402,17 +2453,18 @@ Record compiler notes signalled as `compiler-condition's."
         (file-newer-p source-file fasl-file))))
 
 (defslimefun compile-file-if-needed (filename loadp)
-  (cond ((requires-compile-p filename)
-         (compile-file-for-emacs filename loadp))
-        (loadp
-         (load (compile-file-pathname filename))
-         nil)))
+  (let ((pathname (parse-emacs-filename filename)))
+    (cond ((requires-compile-p pathname)
+           (compile-file-for-emacs pathname loadp))
+          (loadp
+           (load (compile-file-pathname pathname))
+           nil))))
 
 
 ;;;; Loading
 
 (defslimefun load-file (filename)
-  (to-string (load filename)))
+  (to-string (load (parse-emacs-filename filename))))
 
 
 ;;;;; swank-require
@@ -2421,7 +2473,9 @@ Record compiler notes signalled as `compiler-condition's."
   "Load the module MODULE."
   (dolist (module (if (listp modules) modules (list modules)))
     (unless (member (string module) *modules* :test #'string=)
-      (require module (or filename (module-filename module)))))
+      (require module (if filename
+                          (parse-emacs-filename filename)
+                          (module-filename module)))))
   *modules*)
 
 (defvar *find-module* 'find-module
@@ -2742,6 +2796,19 @@ Include the nicknames if NICKNAMES is true."
 (defslimefun find-definition-for-thing (thing)
   (find-source-location thing))
 
+(defslimefun find-source-location-for-emacs (spec)
+  (find-source-location (value-spec-ref spec)))
+
+(defun value-spec-ref (spec)
+  (destructure-case spec
+    ((:string string package)
+     (with-buffer-syntax (package)
+       (eval (read-from-string string))))
+    ((:inspector part) 
+     (inspector-nth-part part))
+    ((:sldb frame var)
+     (frame-var-value frame var))))
+  
 (defslimefun find-definitions-for-emacs (name)
   "Return a list ((DSPEC LOCATION) ...) of definitions for NAME.
 DSPEC is a string and LOCATION a source location. NAME is a string."
@@ -2770,113 +2837,147 @@ DSPEC is a string and LOCATION a source location. NAME is a string."
 
 ;;;; Inspecting
 
-(defvar *inspectee*)
-(defvar *inspectee-content*)
-(defvar *inspectee-parts*) 
-(defvar *inspectee-actions*)
-(defvar *inspector-stack*)
+(defstruct (inspector-state (:conc-name istate.))
+  object 
+  (parts (make-array 10 :adjustable t :fill-pointer 0))
+  (actions (make-array 10 :adjustable t :fill-pointer 0))
+  content
+  next previous)
+
+(defvar *istate* nil)
 (defvar *inspector-history*)
 
 (defun reset-inspector ()
-  (setq *inspectee* nil
-        *inspectee-content* nil
-        *inspectee-parts* (make-array 10 :adjustable t :fill-pointer 0)
-        *inspectee-actions* (make-array 10 :adjustable t :fill-pointer 0)
-        *inspector-stack* '()
+  (setq *istate* nil
         *inspector-history* (make-array 10 :adjustable t :fill-pointer 0)))
-
+  
 (defslimefun init-inspector (string)
   (with-buffer-syntax ()
     (reset-inspector)
     (inspect-object (eval (read-from-string string)))))
 
 (defun inspect-object (o)
-  (push (setq *inspectee* o) *inspector-stack*)
-  (unless (find o *inspector-history*)
-    (vector-push-extend o *inspector-history*))
-  (let ((*print-pretty* nil) ; print everything in the same line
-        (*print-circle* t)
-        (*print-readably* nil))
-    (setq *inspectee-content* (inspector-content (emacs-inspect o))))
-  (list :title (with-output-to-string (s)
-                 (print-unreadable-object (o s :type t :identity t)))
-        :id (assign-index o *inspectee-parts*)
-        :content (content-range *inspectee-content* 0 500)))
+  (let ((previous *istate*)
+        (content (emacs-inspect/printer-bindings o)))
+    (unless (find o *inspector-history*)
+      (vector-push-extend o *inspector-history*))
+    (setq *istate* (make-inspector-state :object o :previous previous 
+                                         :content content))
+    (if previous (setf (istate.next previous) *istate*))
+    (istate>elisp *istate*)))
 
-(defun inspector-content (specs)
-  (loop for part in specs collect 
-        (etypecase part
-          (string part)
-          (cons (destructure-case part
-                  ((:newline) 
-                   '#.(string #\newline))
-                  ((:value obj &optional str) 
-                   (value-part obj str))
-                  ((:action label lambda &key (refreshp t)) 
-                   (action-part label lambda refreshp)))))))
+(defun emacs-inspect/printer-bindings (object)
+  (let ((*print-lines* 1) (*print-right-margin* 75)
+        (*print-pretty* t) (*print-readably* nil))
+    (emacs-inspect object)))
+
+(defun istate>elisp (istate)
+  (list :title (call/truncated-output-to-string
+                200
+                (lambda (s)
+                  (print-unreadable-object ((istate.object istate)
+                                           s :type t :identity t))))
+        :id (assign-index (istate.object istate) (istate.parts istate))
+        :content (prepare-range istate 0 500)))
+
+(defun prepare-range (istate start end)
+  (let* ((range (content-range (istate.content istate) start end))
+         (ps (loop for part in range append (prepare-part part istate))))
+    (list ps 
+          (if (< (length ps) (- end start))
+              (+ start (length ps))
+              (+ end 1000))
+          start end)))
+
+(defun prepare-part (part istate)
+  (let ((newline '#.(string #\newline)))
+    (etypecase part
+      (string (list part))
+      (cons (destructure-case part
+              ((:newline) (list newline))
+              ((:value obj &optional str) 
+               (list (value-part obj str (istate.parts istate))))
+              ((:action label lambda &key (refreshp t)) 
+               (action-part label lambda refreshp 
+                            (istate.actions istate)))
+              ((:line label value)
+               (list (princ-to-string label) ": "
+                     (value-part value nil (istate.parts istate))
+                     newline)))))))
+
+(defun value-part (object string parts)
+  (list :value 
+        (or string (print-part-to-string object))
+        (assign-index object parts)))
+
+(defun action-part (label lambda refreshp actions)
+  (list :action label (assign-index (list lambda refreshp) actions)))
 
 (defun assign-index (object vector)
   (let ((index (fill-pointer vector)))
     (vector-push-extend object vector)
     index))
 
-(defun value-part (object string)
-  (list :value 
-        (or string (print-part-to-string object))
-        (assign-index object *inspectee-parts*)))
-
-(defun action-part (label lambda refreshp)
-  (list :action label (assign-index (list lambda refreshp)
-                                    *inspectee-actions*)))
-
 (defun print-part-to-string (value)
-  (let ((string (to-string value))
-        (pos (position value *inspector-history*)))
+  (let* ((string (to-line value))
+         (pos (position value *inspector-history*)))
     (if pos
         (format nil "#~D=~A" pos string)
         string)))
 
+;; Print OBJECT to a single line. Return the string.
+(defun to-line  (object &optional (width 75))
+  (call/truncated-output-to-string
+   width
+   (lambda (*standard-output*)
+     (write object :right-margin width :lines 1))
+   ".."))
+
 (defun content-range (list start end)
-  (let* ((len (length list)) (end (min len end)))
-    (list (subseq list start end) len start end)))
+  (typecase list
+    (list (let ((len (length list)))
+            (subseq list start (min len end))))
+    (lcons (llist-range list start end))))
 
 (defslimefun inspector-nth-part (index)
-  (aref *inspectee-parts* index))
+  (aref (istate.parts *istate*) index))
 
 (defslimefun inspect-nth-part (index)
   (with-buffer-syntax ()
     (inspect-object (inspector-nth-part index))))
 
 (defslimefun inspector-range (from to)
-  (content-range *inspectee-content* from to))
+  (prepare-range *istate* from to))
 
 (defslimefun inspector-call-nth-action (index &rest args)
-  (destructuring-bind (fun refreshp) (aref *inspectee-actions* index)
+  (destructuring-bind (fun refreshp) (aref (istate.actions *istate*) index)
     (apply fun args)
     (if refreshp
-        (inspect-object (pop *inspector-stack*))
+        (inspector-reinspect)
         ;; tell emacs that we don't want to refresh the inspector buffer
         nil)))
 
 (defslimefun inspector-pop ()
-  "Drop the inspector stack and inspect the second element.
-Return nil if there's no second element."
+  "Inspect the previous object.
+Return nil if there's no previous object."
   (with-buffer-syntax ()
-    (cond ((cdr *inspector-stack*)
-           (pop *inspector-stack*)
-           (inspect-object (pop *inspector-stack*)))
+    (cond ((istate.previous *istate*)
+           (setq *istate* (istate.previous *istate*))
+           (istate>elisp *istate*))
           (t nil))))
 
 (defslimefun inspector-next ()
-  "Inspect the next element in the *inspector-history*."
+  "Inspect the next element in the history of inspected objects.."
   (with-buffer-syntax ()
-    (let ((pos (position *inspectee* *inspector-history*)))
-      (cond ((= (1+ pos) (length *inspector-history*))
-             nil)
-            (t (inspect-object (aref *inspector-history* (1+ pos))))))))
+    (cond ((istate.next *istate*)
+           (setq *istate* (istate.next *istate*))
+           (istate>elisp *istate*))
+          (t nil))))
 
 (defslimefun inspector-reinspect ()
-  (inspect-object *inspectee*))
+  (setf (istate.content *istate*)
+        (emacs-inspect/printer-bindings (istate.object *istate*)))
+  (istate>elisp *istate*))
 
 (defslimefun quit-inspector ()
   (reset-inspector)
@@ -2885,7 +2986,7 @@ Return nil if there's no second element."
 (defslimefun describe-inspectee ()
   "Describe the currently inspected object."
   (with-buffer-syntax ()
-    (describe-to-string *inspectee*)))
+    (describe-to-string (istate.object *istate*))))
 
 (defslimefun pprint-inspector-part (index)
   "Pretty-print the currently inspected object."
@@ -2907,6 +3008,51 @@ Return nil if there's no second element."
     (reset-inspector)
     (inspect-object (frame-var-value frame var))))
 
+;;;;; Lazy lists 
+
+(defstruct (lcons (:constructor %lcons (car %cdr))
+                  (:predicate lcons?))
+  car 
+  (%cdr nil :type (or null lcons function))
+  (forced? nil))
+
+(defmacro lcons (car cdr)
+  `(%lcons ,car (lambda () ,cdr)))
+
+(defmacro lcons* (car cdr &rest more)
+  (cond ((null more) `(lcons ,car ,cdr))
+        (t `(lcons ,car (lcons* ,cdr ,@more)))))
+
+(defun lcons-cdr (lcons)
+  (with-struct* (lcons- @ lcons) 
+    (cond ((@ forced?)
+           (@ %cdr))
+          (t
+           (let ((value (funcall (@ %cdr))))
+             (setf (@ forced?) t
+                   (@ %cdr) value))))))
+
+(defun llist-range (llist start end)
+  (llist-take (llist-skip llist start) (- end start)))
+
+(defun llist-skip (lcons index)
+  (do ((i 0 (1+ i))
+       (l lcons (lcons-cdr l)))
+      ((or (= i index) (null l))
+       l)))
+
+(defun llist-take (lcons count)
+  (let ((result '()))
+    (do ((i 0 (1+ i))
+         (l lcons (lcons-cdr l)))
+        ((or (= i count)
+             (null l)))
+      (push (lcons-car l) result))
+    (nreverse result)))
+
+(defun iline (label value)
+  `(:line ,label ,value))
+
 ;;;;; Lists
 
 (defmethod emacs-inspect ((o cons))
@@ -2918,10 +3064,6 @@ Return nil if there's no second element."
   (label-value-line* 
    ('car (car cons))
    ('cdr (cdr cons))))
-
-;; (inspect-list '#1=(a #1# . #1# ))
-;; (inspect-list (list* 'a 'b 'c))
-;; (inspect-list (make-list 10000))
 
 (defun inspect-list (list)
   (multiple-value-bind (length tail) (safe-length list)
@@ -2958,6 +3100,8 @@ Return NIL if LIST is circular."
 
 ;;;;; Hashtables
 
+
+
 (defmethod emacs-inspect ((ht hash-table))
   (append
    (label-value-line*
@@ -2984,17 +3128,19 @@ Return NIL if LIST is circular."
 ;;;;; Arrays
 
 (defmethod emacs-inspect ((array array))
-  (append
-   (label-value-line*
-    ("Dimensions" (array-dimensions array))
-    ("Element type" (array-element-type array))
-    ("Total size" (array-total-size array))
-    ("Adjustable" (adjustable-array-p array)))
-   (when (array-has-fill-pointer-p array)
-     (label-value-line "Fill pointer" (fill-pointer array)))
-   '("Contents:" (:newline))
-   (loop for i below (array-total-size array)
-         append (label-value-line i (row-major-aref array i)))))
+  (lcons*
+   (iline "Dimensions" (array-dimensions array))
+   (iline "Element type" (array-element-type array))
+   (iline "Total size" (array-total-size array))
+   (iline "Adjustable" (adjustable-array-p array))
+   (iline "Fill pointer" (if (array-has-fill-pointer-p array)
+                             (fill-pointer array)))
+   "Contents:" '(:newline)
+   (labels ((k (i max)
+              (cond ((= i max) '())
+                    (t (lcons (iline i (row-major-aref array i))
+                              (k (1+ i) max))))))
+     (k 0 (array-total-size array)))))
 
 ;;;;; Chars
 
