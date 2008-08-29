@@ -251,15 +251,16 @@
 (autoload 'yaml-mode "yaml-mode" "Edit YAML files" t)
 (add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
 
+(server-start)
 
 ;; Assumed registry settings (HKLM/Software/GNU/Emacs):
 ;;   Emacs.toolBar: 0
 ;;   Emacs.full
 (custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
+  ;; custom-set-variables was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
  '(ansi-color-for-comint-mode t)
  '(c-doc-comment-style (quote set-from-style))
  '(column-number-mode t)
@@ -296,4 +297,9 @@
   (load-file "~/emacs/color/color-theme-6.6.0/themes/shawn.elc")
   (color-theme-shawn)))
 
-(server-start)
+(custom-set-faces
+  ;; custom-set-faces was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+ '(tooltip ((t (:inherit variable-pitch :background "systeminfowindow" :foreground "black")))))
