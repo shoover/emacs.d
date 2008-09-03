@@ -167,16 +167,21 @@
           (lambda () (require 'dired-sort-map)))
 
 ;; Erlang
-;; TODO: get erlang dir from env
-(add-to-list 'load-path "C:/Program Files/erl5.5.5/lib/tools-2.5.5/emacs")
-(setq erlang-root-dir "C:/Program Files/erl5.5.5")
-(add-to-list 'exec-path "C:/Program Files/erl5.5.5/bin")
-;; Not all my machines have erlang set up
-(ignore-errors
-  (require 'erlang-start)
-  (add-to-list 'load-path "c:/users/shawn/emacs/site-lisp/distel/elisp")
-  (require 'distel)
-  (distel-setup))
+(defun my-erlang ()
+  "Load erlang. It's just in a function because I don't use it often enough
+   to need all the time."
+  (interactive)
+
+  ;; TODO: get erlang dir from env
+  (add-to-list 'load-path "C:/Program Files/erl5.5.5/lib/tools-2.5.5/emacs")
+  (setq erlang-root-dir "C:/Program Files/erl5.5.5")
+  (add-to-list 'exec-path "C:/Program Files/erl5.5.5/bin")
+  ;; Not all my machines have erlang set up
+  (ignore-errors
+    (require 'erlang-start)
+    (add-to-list 'load-path "c:/users/shawn/emacs/site-lisp/distel/elisp")
+    (require 'distel)
+    (distel-setup)))
 
 (defun sah-erlang-drop-to-body ()
   "This function is a drop-in enhancement for comment-indent-new-line for
