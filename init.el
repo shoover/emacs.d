@@ -282,39 +282,6 @@
 
 (server-start)
 
-;; Assumed registry settings (HKLM/Software/GNU/Emacs):
-;;   Emacs.toolBar: 0
-;;   Emacs.full
-(custom-set-variables
-  ;; custom-set-variables was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
- '(ansi-color-for-comint-mode t)
- '(c-doc-comment-style (quote set-from-style))
- '(column-number-mode t)
- '(completion-ignored-extensions (quote (".obj" ".pdb" ".svn/" "CVS/" ".o" "~" ".bin" ".bak" ".obj" ".map" ".ico" ".pif" ".lnk" ".a" ".ln" ".blg" ".bbl" ".dll" ".drv" ".vxd" ".386" ".elc" ".lof" ".glo" ".idx" ".lot" ".fmt" ".tfm" ".class" ".fas" ".lib" ".mem" ".x86f" ".sparcf" ".fasl" ".ufsl" ".fsl" ".dxl" ".pfsl" ".dfsl" ".p64fsl" ".d64fsl" ".dx64fsl" ".lo" ".la" ".gmo" ".mo" ".toc" ".aux" ".cp" ".fn" ".ky" ".pg" ".tp" ".vr" ".cps" ".fns" ".kys" ".pgs" ".tps" ".vrs" ".pyc" ".pyo")))
- '(fill-column 78)
- '(global-hl-line-mode t)
- '(org-agenda-files (quote ("~/action/action.org")))
- '(org-cycle-include-plain-lists t)
- '(org-tags-column 67)
- '(pr-gs-command "c:\\Program Files\\gs\\gs8.62\\bin\\gswin32c.exe")
- '(pr-gv-command "C:\\Program Files\\Ghostgum\\gsview\\gsview32.exe")
- '(show-paren-mode t)
- '(indent-tabs-mode nil)
- '(tab-always-indent t)
- '(tab-width 2)
- '(transient-mark-mode t)
- '(w32shell-cygwin-bin "C:\\cygwin\\bin"))
-
-(custom-set-faces
-  ;; custom-set-faces was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
- )
-
 ;; Pretty black background color theme.
 ;; Call this after all the other useless color settings so none of its
 ;; beauty gets overwritten by them.
@@ -335,9 +302,38 @@
   (load-file "~/emacs/color/color-theme-6.6.0/themes/shawn.elc")
   (color-theme-shawn)))
 
+;; Assumed registry settings (HKLM/Software/GNU/Emacs):
+;;   Emacs.toolBar: 0
+;;   Emacs.full
+(custom-set-variables
+  ;; custom-set-variables was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+ '(ansi-color-for-comint-mode t)
+ '(c-doc-comment-style (quote set-from-style))
+ '(column-number-mode t)
+ '(completion-ignored-extensions (quote (".obj" ".pdb" ".svn/" "CVS/" ".o" "~" ".bin" ".bak" ".obj" ".map" ".ico" ".pif" ".lnk" ".a" ".ln" ".blg" ".bbl" ".dll" ".drv" ".vxd" ".386" ".elc" ".lof" ".glo" ".idx" ".lot" ".fmt" ".tfm" ".class" ".fas" ".lib" ".mem" ".x86f" ".sparcf" ".fasl" ".ufsl" ".fsl" ".dxl" ".pfsl" ".dfsl" ".p64fsl" ".d64fsl" ".dx64fsl" ".lo" ".la" ".gmo" ".mo" ".toc" ".aux" ".cp" ".fn" ".ky" ".pg" ".tp" ".vr" ".cps" ".fns" ".kys" ".pgs" ".tps" ".vrs" ".pyc" ".pyo")))
+ '(fill-column 78)
+ '(global-hl-line-mode t)
+ '(indent-tabs-mode nil)
+ '(org-agenda-files (quote ("~/action/action.org")))
+ '(org-cycle-include-plain-lists t)
+ '(org-tags-column 67)
+ '(pr-gs-command "c:\\Program Files\\gs\\gs8.62\\bin\\gswin32c.exe")
+ '(pr-gv-command "C:\\Program Files\\Ghostgum\\gsview\\gsview32.exe")
+ '(show-paren-mode t)
+ '(tab-always-indent t)
+ '(tab-width 2)
+ '(transient-mark-mode t)
+ '(w32shell-cygwin-bin "C:\\cygwin\\bin"))
+
 (custom-set-faces
   ;; custom-set-faces was added by Custom.
   ;; If you edit it by hand, you could mess it up, so be careful.
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
+ '(mode-line ((t (:background "wheat" :foreground "black" :inverse-video t :box (:line-width 1 :color "wheat")))))
+ '(mode-line-highlight ((t (:inherit highlight :background "black" :foreground "wheat" :inverse-video nil))))
  '(tooltip ((t (:inherit variable-pitch :background "systeminfowindow" :foreground "black")))))
+
