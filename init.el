@@ -18,11 +18,12 @@
   (add-path "emacs/lisp")      ;; all my personal elisp code
   (add-path "emacs/color/color-theme-6.6.0") ;; my color preferences
   (add-path "emacs/site-lisp") ;; elisp stuff I find on the 'net
-  (add-path "emacs/site-lisp/remember-2.0")
   (add-path "emacs/site-lisp/clojure")
   (add-path "emacs/site-lisp/swank-clojure")
   (add-path "emacs/site-lisp/org-6.06b/lisp")
+  (add-path "emacs/site-lisp/remember-2.0")
   (add-path "emacs/site-lisp/slime-cvs")
+  (add-path "emacs/site-lisp/swank-clojure")
   )
 
 ;; Code to integrate cygwin emacs and screen. Might not actually care about
@@ -112,7 +113,7 @@
 
 ;; Buffer switching
 (require 'iswitchb)
-(iswitchb-default-keybindings)
+(iswitchb-mode 1)
 
 ;; C
 (add-hook 'c-mode-hook
@@ -169,16 +170,47 @@
           (lambda () (require 'dired-sort-map)))
 
 ;; Erlang
-;; TODO: get erlang dir from env
-(add-to-list 'load-path "C:/Program Files/erl5.5.5/lib/tools-2.5.5/emacs")
-(setq erlang-root-dir "C:/Program Files/erl5.5.5")
-(add-to-list 'exec-path "C:/Program Files/erl5.5.5/bin")
-;; Not all my machines have erlang set up
-(ignore-errors
-  (require 'erlang-start)
-  (add-to-list 'load-path "c:/users/shawn/emacs/site-lisp/distel/elisp")
-  (require 'distel)
-  (distel-setup))
+(defun my-erlang ()
+  "Load erlang. It's just in a function because I don't use it often enough
+   to need all the time."
+  (interactive)
+
+  ;; TODO: get erlang dir from env
+  (add-to-list 'load-path "C:/Program Files/erl5.5.5/lib/tools-2.5.5/emacs")
+  (setq erlang-root-dir "C:/Program Files/erl5.5.5")
+  (add-to-list 'exec-path "C:/Program Files/erl5.5.5/bin")
+  ;; Not all my machines have erlang set up
+  (ignore-errors
+    (require 'erlang-start)
+    (add-to-list 'load-path "c:/users/shawn/emacs/site-lisp/distel/elisp")
+    (require 'distel)
+    (distel-setup)))
+
+(defun sah-erlang-drop-to-body ()
+  "This function is a drop-in enhancement for comment-indent-new-line for
+   erlang-mode. If you're in a function clause it jumps you down to the
+   function body without having to skip past the closing ) or type the
+   freakin arrow."
+
+  (interactive)
+  (undo-boundary)
+
+  (cond
+   ;; Assume ) at point is part of an argument list inserted by an electric
+   ;; command, in which case the arrow is already there.
+   ((looking-at ")")
+    (end-of-line))
+   ;; Assume preceeding ) was manually typed by user and there is no arrow.
+   ((looking-back ")")
+    (insert " ->"))
+   (t))
+  (comment-indent-new-line))
+
+;; erlang-mode-map doesn't seem to be available after requiring erlang-start,
+;; so I wait until erlang-mode is loaded to set up the keys.
+(add-hook 'erlang-mode-hook (lambda ()
+                              (define-key erlang-mode-map "\M-j"
+                                'sah-erlang-drop-to-body)))
 
 ;; org-mode
 (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
@@ -252,33 +284,14 @@
              (setq tab-width 2)
              (setq indent-tabs-mode nil)))
 
+;; Text
+(add-hook 'text-mode-hook 'turn-on-auto-fill)
+
 ;; YAML
 (autoload 'yaml-mode "yaml-mode" "Edit YAML files" t)
 (add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
 
-
-;; Assumed registry settings (HKLM/Software/GNU/Emacs):
-;;   Emacs.toolBar: 0
-;;   Emacs.full
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(ansi-color-for-comint-mode t)
- '(c-doc-comment-style (quote set-from-style))
- '(column-number-mode t)
- '(fill-column 78)
- '(global-hl-line-mode t)
- '(org-agenda-files (quote ("~/action/action.org")))
- '(org-cycle-include-plain-lists t)
- '(org-tags-column 67)
- '(pr-gs-command "c:\\Program Files\\gs\\gs8.62\\bin\\gswin32c.exe")
- '(pr-gv-command "C:\\Program Files\\Ghostgum\\gsview\\gsview32.exe")
- '(show-paren-mode t)
- '(transient-mark-mode t)
- '(w32shell-cygwin-bin "C:\\cygwin\\bin"))
-
+(server-start)
 
 ;; Pretty black background color theme.
 ;; Call this after all the other useless color settings so none of its
@@ -292,6 +305,7 @@
 (cond
  ((< emacs-major-version 22)
   (color-theme-initialize)
+  (declare-function color-theme-calm-forest "~/emacs/color/color-theme-6.6.0/themes/color-theme-library.el" nil)
   (color-theme-calm-forest)
   (global-font-lock-mode 1)
   (global-hl-line-mode nil))
@@ -299,4 +313,38 @@
   (load-file "~/emacs/color/color-theme-6.6.0/themes/shawn.elc")
   (color-theme-shawn)))
 
-(server-start)
+;; Assumed registry settings (HKLM/Software/GNU/Emacs):
+;;   Emacs.toolBar: 0
+;;   Emacs.full
+(custom-set-variables
+  ;; custom-set-variables was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+ '(ansi-color-for-comint-mode t)
+ '(c-doc-comment-style (quote set-from-style))
+ '(column-number-mode t)
+ '(completion-ignored-extensions (quote (".obj" ".pdb" ".svn/" "CVS/" ".o" "~" ".bin" ".bak" ".obj" ".map" ".ico" ".pif" ".lnk" ".a" ".ln" ".blg" ".bbl" ".dll" ".drv" ".vxd" ".386" ".elc" ".lof" ".glo" ".idx" ".lot" ".fmt" ".tfm" ".class" ".fas" ".lib" ".mem" ".x86f" ".sparcf" ".fasl" ".ufsl" ".fsl" ".dxl" ".pfsl" ".dfsl" ".p64fsl" ".d64fsl" ".dx64fsl" ".lo" ".la" ".gmo" ".mo" ".toc" ".aux" ".cp" ".fn" ".ky" ".pg" ".tp" ".vr" ".cps" ".fns" ".kys" ".pgs" ".tps" ".vrs" ".pyc" ".pyo")))
+ '(fill-column 78)
+ '(global-hl-line-mode t)
+ '(indent-tabs-mode nil)
+ '(org-agenda-files (quote ("~/action/action.org")))
+ '(org-cycle-include-plain-lists t)
+ '(org-tags-column 67)
+ '(pr-gs-command "c:\\Program Files\\gs\\gs8.62\\bin\\gswin32c.exe")
+ '(pr-gv-command "C:\\Program Files\\Ghostgum\\gsview\\gsview32.exe")
+ '(show-paren-mode t)
+ '(tab-always-indent t)
+ '(tab-width 2)
+ '(transient-mark-mode t)
+ '(w32shell-cygwin-bin "C:\\cygwin\\bin"))
+
+(custom-set-faces
+  ;; custom-set-faces was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+ '(mode-line ((t (:background "wheat" :foreground "black" :inverse-video t :box (:line-width 1 :color "wheat")))))
+ '(mode-line-highlight ((t (:inherit highlight :background "black" :foreground "wheat" :inverse-video nil))))
+ '(tooltip ((t (:inherit variable-pitch :background "systeminfowindow" :foreground "black")))))
+
