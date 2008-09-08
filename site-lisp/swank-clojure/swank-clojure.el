@@ -9,7 +9,7 @@
 ;;;
 
 (eval-and-compile 
-  (defvar swank-clojure-path
+   (defvar swank-clojure-path
     (let ((path (file-truename (or (locate-library "swank-clojure")
                                    load-file-name))))
       (and path (file-name-directory path)))

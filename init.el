@@ -151,6 +151,10 @@
   (interactive)
   (setq swank-clojure-jar-path (concat clojure-path "clojure.jar"))
   (require 'swank-clojure-autoload)
+  (defvar swank-clojure-path
+    (let ((path (file-truename (or (locate-library "swank-clojure")
+                                   load-file-name))))
+      (and path (concat "/" (file-name-directory path)))))
   (require 'slime)
   (slime))
 
