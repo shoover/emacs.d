@@ -292,26 +292,6 @@
 
 (server-start)
 
-;; Pretty black background color theme.
-;; Call this after all the other useless color settings so none of its
-;; beauty gets overwritten by them.
-;;
-;; Other decent themes are Charcoal black, Goldenrod (in a brownish sort
-;; of way), Calm forest, Blue sea (for a blue background), and Classic.
-(require 'color-theme)
-;; For load time efficiency, only my theme is loaded. Run
-;; color-theme-initialize at any time to see the rest of the themes.
-(cond
- ((< emacs-major-version 22)
-  (color-theme-initialize)
-  (declare-function color-theme-calm-forest "~/emacs/color/color-theme-6.6.0/themes/color-theme-library.el" nil)
-  (color-theme-calm-forest)
-  (global-font-lock-mode 1)
-  (global-hl-line-mode nil))
- (t
-  (load-file "~/emacs/color/color-theme-6.6.0/themes/shawn.elc")
-  (color-theme-shawn)))
-
 ;; Assumed registry settings (HKLM/Software/GNU/Emacs):
 ;;   Emacs.toolBar: 0
 ;;   Emacs.full
@@ -347,3 +327,23 @@
  '(mode-line-highlight ((t (:inherit highlight :background "black" :foreground "wheat" :inverse-video nil))))
  '(tooltip ((t (:inherit variable-pitch :background "systeminfowindow" :foreground "black")))))
 
+
+;; Pretty black background color theme.
+;; Call this after all the other useless color settings so none of its
+;; beauty gets overwritten by them.
+;;
+;; Other decent themes are Charcoal black, Goldenrod (in a brownish sort
+;; of way), Calm forest, Blue sea (for a blue background), and Classic.
+(require 'color-theme)
+;; For load time efficiency, only my theme is loaded. Run
+;; color-theme-initialize at any time to see the rest of the themes.
+(cond
+ ((< emacs-major-version 22)
+  (color-theme-initialize)
+  (declare-function color-theme-calm-forest "~/emacs/color/color-theme-6.6.0/themes/color-theme-library.el" nil)
+  (color-theme-calm-forest)
+  (global-font-lock-mode 1)
+  (global-hl-line-mode nil))
+ (t
+  (load-file "~/emacs/color/color-theme-6.6.0/themes/shawn.elc")
+  (color-theme-shawn)))
