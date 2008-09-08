@@ -20,6 +20,7 @@
   (add-path "emacs/site-lisp") ;; elisp stuff I find on the 'net
   (add-path "emacs/site-lisp/remember-2.0")
   (add-path "emacs/site-lisp/clojure")
+  (add-path "emacs/site-lisp/swank-clojure")
   (add-path "emacs/site-lisp/org-6.06b/lisp")
   (add-path "emacs/site-lisp/slime-cvs")
   )
@@ -132,7 +133,8 @@
                                     ;; Add other paths to this list
                                     ;; if you want to have other
                                     ;; things in your classpath.
-                                    (list (concat clojure-path "clojure.jar"))
+                                    (list (concat clojure-path "clojure.jar")
+                                          (concat clojure-path "../contrib/clojure-contrib.jar"))
                                     class-path-delimiter)))
         (concat java-path
                 " " java-options
@@ -150,10 +152,10 @@
 (defun clojure-slime ()
   (interactive)
   (require 'slime)
-  (add-to-list 'load-path "~/src/clojure/swank-clojure")
   (require 'swank-clojure)
   (setq slime-lisp-implementations
-        `((clojure (,clojure-exe) :init clojure-init)))
+        ;;`((clojure (,clojure-exe) :init clojure-init)))
+        `((clojure ("java" "-cp" "c:/users/shawn/src/clojure/work/clojure.jar;c:/users/shawn/src/clojure/contrib/clojure-contrib.jar" "clojure.lang.Repl") :init clojure-init)))
   (slime))
 
 
@@ -219,6 +221,9 @@
 (autoload 'nsis-mode "nsis-mode" "Edit Nullsoft installer scripts" t)
 (add-to-list 'auto-mode-alist '("\\.nsi.tmpl$"  . nsis-mode))
 (add-to-list 'auto-mode-alist '("\\.nsh$"  . nsis-mode))
+
+;; PHP
+(add-to-list 'auto-mode-alist '("\\.php$" . html-mode))
 
 ;; Python
 (autoload 'python-mode "python-mode" "Edit Python source" t)
