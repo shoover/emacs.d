@@ -345,7 +345,7 @@
   (global-font-lock-mode 1)
   (global-hl-line-mode nil))
  (t
-  (load-file "~/emacs/color/color-theme-6.6.0/themes/shawn.elc")
+  (load-file "~/emacs/site-lisp/color-theme-6.6.0/themes/shawn.elc")
   (color-theme-shawn)))
 
 (cd emacs-root)
