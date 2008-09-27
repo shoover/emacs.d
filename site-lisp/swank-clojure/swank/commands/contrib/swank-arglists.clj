@@ -1,6 +1,8 @@
-(in-ns 'swank)
+(in-ns 'swank.commands.contrib)
 
-(defn arglist-for-echo-area [raw-specs & options]
+((slime-fn 'swank-require) :swank-c-p-c)
+
+(defslimefn arglist-for-echo-area [raw-specs & options]
   (let [{:keys [arg-indices
                 print-right-margin
                 print-lines]} (apply hash-map options)]
@@ -8,13 +10,13 @@
     (if (and raw-specs
              (seq? raw-specs)
              (seq? (first raw-specs)))
-      (operator-arglist (ffirst raw-specs) *buffer-package*)
+      ((slime-fn 'operator-arglist) (ffirst raw-specs) *current-package*)
       nil)))
 
-(defn variable-desc-for-echo-area [variable-name]
-  (with-buffer-syntax
+(defslimefn variable-desc-for-echo-area [variable-name]
+  (with-emacs-package
    (or
-    (when-let sym (from-string variable-name)
+    (when-let sym (read-from-string variable-name)
       (when-let var (resolve sym)
         (when (. var isBound)
           (str variable-name " => " (var-get var)))))

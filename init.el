@@ -8,7 +8,6 @@
                        "~/"
                      "c:/users/shawn/")
   "My home directory is the root of my emacs load-path.")
-(cd emacs-root)
 
 ;; Add elisp directories under ~/emacs to my load path.
 (require 'cl)
@@ -148,14 +147,15 @@
 ;; You'd think slime could just run inferior-lisp-program to start Clojure,
 ;; but it was complaining about the java args. One string with the batch
 ;; file seems to work.
-(defvar clojure-exe (concat clojure-path "clj.bat"))
 (defun clojure-slime ()
   (interactive)
+  (setq swank-clojure-jar-path (concat clojure-path "clojure.jar"))
+  (require 'swank-clojure-autoload)
+  (defvar swank-clojure-path
+    (let ((path (file-truename (or (locate-library "swank-clojure")
+                                   load-file-name))))
+      (and path (concat "/" (file-name-directory path)))))
   (require 'slime)
-  (require 'swank-clojure)
-  (setq slime-lisp-implementations
-        ;;`((clojure (,clojure-exe) :init clojure-init)))
-        `((clojure ("java" "-cp" "c:/users/shawn/src/clojure/work/clojure.jar;c:/users/shawn/src/clojure/contrib/clojure-contrib.jar" "clojure.lang.Repl") :init clojure-init)))
   (slime))
 
 
@@ -347,3 +347,5 @@
  (t
   (load-file "~/emacs/color/color-theme-6.6.0/themes/shawn.elc")
   (color-theme-shawn)))
+
+(cd emacs-root)
