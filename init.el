@@ -91,8 +91,6 @@
   (interactive)
   (set-selective-display (if selective-display nil 1)))
 
-(load-library "xia-compilation")
-
 ;;; Custom keybindings
 (global-set-key "\C-x\C-m" 'execute-extended-command)
 (global-set-key "\M-s"     'isearch-forward-regexp)
@@ -238,9 +236,6 @@
 (setq remember-annotation-functions '(org-remember-annotation))
 (setq remember-handler-functions '(org-remember-handler))
 (add-hook 'remember-mode-hook 'org-remember-apply-template)
-
-;; Handel logs
-(require 'handel-log-mode)
 
 ;; Make
 (setq compile-command "make ")
