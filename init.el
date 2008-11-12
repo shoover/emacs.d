@@ -118,6 +118,12 @@
              (setq tab-width 2)
              (setq c-basic-offset 2)))
 
+
+;; C#
+(require 'csharp-mode)
+(add-to-list 'auto-mode-alist '("\\.cs$" . csharp-mode))
+
+
 ;; Clojure
 ;; Perhaps someday I'll want this to be buffer local, but let's try it
 ;; globally for now.
