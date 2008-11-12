@@ -120,7 +120,7 @@
 
 
 ;; C#
-(require 'csharp-mode)
+(autoload 'csharp-mode "csharp-mode" "Edit C# files")
 (add-to-list 'auto-mode-alist '("\\.cs$" . csharp-mode))
 
 
