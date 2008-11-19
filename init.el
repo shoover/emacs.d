@@ -142,25 +142,13 @@
         (concat java-path
                 " " java-options
                 " -cp " class-path " clojure.lang.Repl")))
-(autoload 'clojure-mode "clojure-mode" "Edit clojure code" t)
-(add-to-list 'auto-mode-alist '("\\.clj$" . clojure-mode))
-(add-hook 'clojure-mode-hook
-          '(lambda ()
-             (define-key clojure-mode-map "\C-x\C-e" 'lisp-eval-last-sexp)))
-
-;; You'd think slime could just run inferior-lisp-program to start Clojure,
-;; but it was complaining about the java args. One string with the batch
-;; file seems to work.
-(defun clojure-slime ()
-  (interactive)
-  (setq swank-clojure-jar-path (concat clojure-path "clojure.jar"))
-  (require 'swank-clojure-autoload)
-  (defvar swank-clojure-path
-    (let ((path (file-truename (or (locate-library "swank-clojure")
-                                   load-file-name))))
-      (and path (concat "/" (file-name-directory path)))))
-  (require 'slime)
-  (slime))
+(require 'clojure-paredit)
+(require 'swank-clojure-autoload)       
+(swank-clojure-config
+ (setq swank-clojure-jar-path (concat clojure-path "clojure.jar"))
+ ;;(setq swank-clojure-extra-classpaths (list "/path/to/extra/classpaths"))
+ )
+(autoload 'slime "slime" "Load slime for swank-clojure" t)
 
 
 ;; CMake
