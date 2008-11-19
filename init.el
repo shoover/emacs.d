@@ -160,6 +160,11 @@
 (add-hook 'dired-mode-hook
           (lambda () (require 'dired-sort-map)))
 
+
+;; erc
+(setq erc-autojoin-channels-alist '(("freenode.net" "#clojure")))
+
+
 ;; Erlang
 (defun my-erlang ()
   "Load erlang. It's just in a function because I don't use it often enough
