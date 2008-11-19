@@ -12,7 +12,7 @@
 
 (defvar *tmp*)
 
-(eval-when (:compile-toplevel)
+(eval-when (:compile-toplevel :load-toplevel :execute)
 (if (find-package :gray)
   (import-from :gray *gray-stream-symbols* :swank-backend)
   (import-from :ext *gray-stream-symbols* :swank-backend))
@@ -122,7 +122,7 @@
    :location
    (if *buffer-name*
        (make-location (list :buffer *buffer-name*)
-                      (list :position *buffer-start-position*))
+                      (list :offset *buffer-start-position* 0))
        ;; ;; compiler::*current-form*
        ;; (if compiler::*current-function*
        ;;     (make-location (list :file *compile-filename*)
@@ -143,9 +143,7 @@
   (declare (ignore external-format))
   (with-compilation-hooks ()
     (let ((*buffer-name* nil))
-      (multiple-value-bind (fn warn fail) 
-          (compile-file *compile-filename*)
-        (when load-p (unless fail (load fn)))))))
+      (compile-file *compile-filename* :load t))))
 
 (defimplementation swank-compile-string (string &key buffer position directory
                                                 debug)
@@ -155,7 +153,7 @@
           (*buffer-start-position* position)
           (*buffer-string* string))
       (with-input-from-string (s string)
-        (compile-from-stream s :load t)))))
+        (not (nth-value 2 (compile-from-stream s :load t)))))))
 
 (defun compile-from-stream (stream &rest args)
   (let ((file (si::mkstemp "TMP:ECLXXXXXX")))
@@ -170,31 +168,45 @@
 
 ;;;; Documentation
 
+(defun grovel-docstring-for-arglist (name type)
+  (flet ((compute-arglist-offset (docstring)
+           (when docstring
+             (let ((pos1 (search "Args: " docstring)))
+               (if pos1
+                   (+ pos1 6)
+                   (let ((pos2 (search "Syntax: " docstring)))
+                     (when pos2
+                       (+ pos2 8))))))))
+    (let* ((docstring (si::get-documentation name type))
+           (pos (compute-arglist-offset docstring)))
+      (if pos
+          (multiple-value-bind (arglist errorp)
+              (ignore-errors
+                (values (read-from-string docstring t nil :start pos)))
+            (if errorp :not-available (cdr arglist)))
+          :not-available ))))
+
 (defimplementation arglist (name)
-  (or (functionp name) (setf name (symbol-function name)))
-  (if (functionp name)
-      (typecase name 
-        (generic-function
-         (clos::generic-function-lambda-list name))
-        (compiled-function
-         ; most of the compiled functions have an Args: line in their docs
-         (with-input-from-string (s (or
-                                     (si::get-documentation
-                                      (si:compiled-function-name name) 'function)
-                                     ""))
-           (do ((line (read-line s nil) (read-line s nil)))
-               ((not line) :not-available)
-             (ignore-errors
-               (if (string= (subseq line 0 6) "Args: ")
-                   (return-from nil
-                     (read-from-string (subseq line 6))))))))
-         ;
-        (function
-         (let ((fle (function-lambda-expression name)))
-           (case (car fle)
-             (si:lambda-block (caddr fle))
-             (t               :not-available)))))
-      :not-available))
+  (cond ((special-operator-p name)
+         (grovel-docstring-for-arglist name 'function))
+        ((macro-function name)
+         (grovel-docstring-for-arglist name 'function))
+        ((or (functionp name) (fboundp name))
+         (multiple-value-bind (name fndef)
+             (if (functionp name)
+                 (values (function-name name) name)
+                 (values name (fdefinition name)))
+           (typecase fndef
+             (generic-function
+              (clos::generic-function-lambda-list fndef))
+             (compiled-function
+              (grovel-docstring-for-arglist name 'function))
+             (function
+              (let ((fle (function-lambda-expression fndef)))
+                (case (car fle)
+                  (si:lambda-block (caddr fle))
+                  (t               :not-available)))))))
+        (t :not-available)))
 
 (defimplementation function-name (f)
   (si:compiled-function-name f))
@@ -220,7 +232,7 @@
 
 ;;; Debugging
 
-(eval-when (:compile-toplevel)
+(eval-when (:compile-toplevel :load-toplevel :execute)
   (import
    '(si::*break-env*
      si::*ihs-top*
@@ -272,11 +284,11 @@
   (declare (type function debugger-loop-fn))
   (let* ((*tpl-commands* si::tpl-commands)
          (*ihs-top* (ihs-top 'call-with-debugging-environment))
-	 (*ihs-current* *ihs-top*)
-	 (*frs-base* (or (sch-frs-base *frs-top* *ihs-base*) (1+ (frs-top))))
-	 (*frs-top* (frs-top))
-	 (*read-suppress* nil)
-	 (*tpl-level* (1+ *tpl-level*))
+         (*ihs-current* *ihs-top*)
+         (*frs-base* (or (sch-frs-base *frs-top* *ihs-base*) (1+ (frs-top))))
+         (*frs-top* (frs-top))
+         (*read-suppress* nil)
+         (*tpl-level* (1+ *tpl-level*))
          (*backtrace* (loop for ihs from *ihs-base* below *ihs-top*
                             collect (list (si::ihs-fun ihs)
                                           (si::ihs-env ihs)
@@ -289,7 +301,7 @@
                    (unless (si::fixnump name)
                      (push name (third x)))))))
     (setf *backtrace* (remove-if #'is-ignorable-fun-p (nreverse *backtrace*)))
-    (Setf *tmp* *backtrace*)
+    (setf *tmp* *backtrace*)
     (set-break-env)
     (set-current-ihs)
     (let ((*ihs-base* *ihs-top*))
@@ -303,7 +315,8 @@
 (defimplementation compute-backtrace (start end)
   (when (numberp end)
     (setf end (min end (length *backtrace*))))
-  (subseq *backtrace* start end))
+  (loop for f in (subseq *backtrace* start end)
+        collect f))
 
 (defun frame-name (frame)
   (let ((x (first frame)))
