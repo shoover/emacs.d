@@ -20,16 +20,16 @@
    could not be read."
   ([] (try
        (let [path-to-secret (str (user-home-path) File/separator ".slime-secret")]
-         (with-open secret (BufferedReader. (FileReader. path-to-secret))
+         (with-open [secret (BufferedReader. (FileReader. path-to-secret))]
            (.readLine secret)))
        (catch Throwable e nil))))
 
 (defn- accept-authenticated-connection
   "If a slime-secret file exists, verify that the incomming connection
    has sent it and the authentication string matches."
-  ([#^Socket socket]
-     (returning conn (make-connection socket)
-       (when-let secret (slime-secret)
+  ([#^Socket socket opts]
+     (returning conn (make-connection socket (get opts :encoding *default-encoding*))
+       (when-let [secret (slime-secret)]
          (let [first-val (read-from-connection conn)]
            (when-not (= first-val secret)
              (.close socket)
@@ -42,13 +42,15 @@
 
 (def dont-close nil)
 
-(defn- socket-serve [connection-serve socket]
-  (with-connection (accept-authenticated-connection socket)
-    (binding [*out* (make-output-redirection *current-connection*)]
-      (dosync (ref-set (*current-connection* :writer-redir) *out*))
-      (dosync (alter *connections* conj *current-connection*))
-      (connection-serve *current-connection*)
-      (not dont-close))))
+(defn- socket-serve [connection-serve socket opts]
+  (with-connection (accept-authenticated-connection socket opts)
+    (let [out-redir (make-output-redirection *current-connection*)]
+      (binding [*out* out-redir
+                *err* (java.io.PrintWriter. out-redir)]
+        (dosync (ref-set (*current-connection* :writer-redir) *out*))
+        (dosync (alter *connections* conj *current-connection*))
+        (connection-serve *current-connection*)
+        (not dont-close)))))
 
 
 ;; Setup frontent
@@ -56,8 +58,8 @@
   "Starts a server. The port it started on will be called as an
   argument to (announce-fn port). A connection will then be created
   and (connection-serve conn) will then be called."
-  ([port announce-fn connection-serve]
-     (let [ss (socket-server port (partial socket-serve connection-serve))
+  ([port announce-fn connection-serve opts]
+     (let [ss (socket-server port #(socket-serve connection-serve % opts))
            local-port (.getLocalPort ss)]
        (announce-fn local-port)
        local-port)))
@@ -69,7 +71,7 @@
 (defn announce-port-to-file
   "Writes the given port number into a file."
   ([#^String file port]
-     (with-open out (new java.io.FileWriter file)
+     (with-open [out (new java.io.FileWriter file)]
        (doto out
          (write (str port "\n"))
          (flush)))))

@@ -1,2 +1,2 @@
-rem Update swank-clojure from git repo on shoover-mobile.
-cd swank-clojure && rm -rf * && xcopy c:\users\shawn\swank-clojure . /S && rm -rf .git && hg addre . && cd ..
+rem Update swank-clojure from git repo
+cd swank-clojure && rm -rf * && xcopy ..\..\..\swank-clojure . /S && rm -rf .git && hg addre . && cd ..
