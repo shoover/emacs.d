@@ -1,3 +1,11 @@
+2008-09-20  James TD Smith  <ahktenzero@mohorovi.cc>
+
+	* lisp/org-checklist.el: New file.
+
+2008-09-02  Carsten Dominik  <dominik@science.uva.nl>
+
+	* lisp/org-mairix.el: Update to version 0.5.
+
 2008-07-04  Christian Egli  <christian.egli@alumni.ethz.ch>
 
 	* scripts/org2hpda: the default location of the diary file should

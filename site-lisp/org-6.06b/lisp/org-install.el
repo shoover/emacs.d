@@ -3,10 +3,10 @@
 ;;;;;;  org-iswitchb org-map-entries org-open-link-from-string org-open-at-point-global
 ;;;;;;  org-insert-link-global org-store-link org-run-like-in-org-mode
 ;;;;;;  turn-on-orgstruct++ turn-on-orgstruct orgstruct-mode org-global-cycle
-;;;;;;  org-cycle org-mode) "org" "lisp/org.el" (18586 9658))
+;;;;;;  org-cycle org-mode) "org" "lisp/org.el" (18713 21167))
 ;;; Generated autoloads from lisp/org.el
 
-(autoload (quote org-mode) "org" "\
+(autoload 'org-mode "org" "\
 Outline-based notes management and organizer, alias
 \"Carsten's outline-mode for keeping track of everything.\"
 
@@ -23,9 +23,11 @@ can be exported as a structured ASCII or HTML file.
 
 The following commands are available:
 
-\\{org-mode-map}" t nil)
+\\{org-mode-map}
 
-(autoload (quote org-cycle) "org" "\
+\(fn)" t nil)
+
+(autoload 'org-cycle "org" "\
 Visibility cycling for Org-mode.
 
 - When this function is called with a prefix argument, rotate the entire
@@ -33,9 +35,11 @@ Visibility cycling for Org-mode.
   1. OVERVIEW: Show only top-level headlines.
   2. CONTENTS: Show all headlines of all levels, but no body text.
   3. SHOW ALL: Show everything.
-  When called with two C-c C-u prefixes, switch to the startup visibility,
+  When called with two C-u C-u prefixes, switch to the startup visibility,
   determined by the variable `org-startup-folded', and by any VISIBILITY
   properties in the buffer.
+  When called with three C-u C-u C-u prefixed, show the entire buffer,
+  including drawers.
 
 - When point is at the beginning of a headline, rotate the subtree started
   by this line through 3 different states (local cycling)
@@ -55,14 +59,18 @@ Visibility cycling for Org-mode.
 
 - Special case: if point is at the beginning of the buffer and there is
   no headline in line 1, this function will act as if called with prefix arg.
-  But only if also the variable `org-cycle-global-at-bob' is t." t nil)
+  But only if also the variable `org-cycle-global-at-bob' is t.
 
-(autoload (quote org-global-cycle) "org" "\
+\(fn &optional ARG)" t nil)
+
+(autoload 'org-global-cycle "org" "\
 Cycle the global visibility.  For details see `org-cycle'.
 With C-u prefix arg, switch to startup visibility.
-With a numeric prefix, show all headlines up to that level." t nil)
+With a numeric prefix, show all headlines up to that level.
 
-(autoload (quote orgstruct-mode) "org" "\
+\(fn &optional ARG)" t nil)
+
+(autoload 'orgstruct-mode "org" "\
 Toggle the minor more `orgstruct-mode'.
 This mode is for using Org-mode structure commands in other modes.
 The following key behave as if Org-mode was active, if the cursor
@@ -83,41 +91,58 @@ C-c -	    Cycle list bullet
 TAB         Cycle item visibility
 M-RET       Insert new heading/item
 S-M-RET     Insert new TODO heading / Chekbox item
-C-c C-c     Set tags / toggle checkbox" t nil)
+C-c C-c     Set tags / toggle checkbox
 
-(autoload (quote turn-on-orgstruct) "org" "\
-Unconditionally turn on `orgstruct-mode'." nil nil)
+\(fn &optional ARG)" t nil)
 
-(autoload (quote turn-on-orgstruct++) "org" "\
+(autoload 'turn-on-orgstruct "org" "\
+Unconditionally turn on `orgstruct-mode'.
+
+\(fn)" nil nil)
+
+(autoload 'turn-on-orgstruct++ "org" "\
 Unconditionally turn on `orgstruct-mode', and force org-mode indentations.
 In addition to setting orgstruct-mode, this also exports all indentation and
 autofilling variables from org-mode into the buffer.  Note that turning
-off orgstruct-mode will *not* remove these additional settings." nil nil)
+off orgstruct-mode will *not* remove these additional settings.
 
-(autoload (quote org-run-like-in-org-mode) "org" nil nil nil)
+\(fn)" nil nil)
 
-(autoload (quote org-store-link) "org" "\
+(autoload 'org-run-like-in-org-mode "org" "\
+Not documented
+
+\(fn CMD)" nil nil)
+
+(autoload 'org-store-link "org" "\
 \\<org-mode-map>Store an org-link to the current location.
 This link is added to `org-stored-links' and can later be inserted
 into an org-buffer with \\[org-insert-link].
 
 For some link types, a prefix arg is interpreted:
 For links to usenet articles, arg negates `org-usenet-links-prefer-google'.
-For file links, arg negates `org-context-in-file-links'." t nil)
+For file links, arg negates `org-context-in-file-links'.
 
-(autoload (quote org-insert-link-global) "org" "\
+\(fn ARG)" t nil)
+
+(autoload 'org-insert-link-global "org" "\
 Insert a link like Org-mode does.
-This command can be called in any mode to insert a link in Org-mode syntax." t nil)
+This command can be called in any mode to insert a link in Org-mode syntax.
 
-(autoload (quote org-open-at-point-global) "org" "\
+\(fn)" t nil)
+
+(autoload 'org-open-at-point-global "org" "\
 Follow a link like Org-mode does.
 This command can be called in any mode to follow a link that has
-Org-mode syntax." t nil)
+Org-mode syntax.
 
-(autoload (quote org-open-link-from-string) "org" "\
-Open a link in the string S, as if it was in Org-mode." t nil)
+\(fn)" t nil)
 
-(autoload (quote org-map-entries) "org" "\
+(autoload 'org-open-link-from-string "org" "\
+Open a link in the string S, as if it was in Org-mode.
+
+\(fn S &optional ARG)" t nil)
+
+(autoload 'org-map-entries "org" "\
 Call FUNC at each headline selected by MATCH in SCOPE.
 
 FUNC is a function or a lisp form.  The function will be called without
@@ -152,25 +177,36 @@ the scanner.  The following items can be given here:
              will be used as value for `org-agenda-skip-function', so whenever
              the the function returns t, FUNC will not be called for that
              entry and search will continue from the point where the
-             function leaves it." nil nil)
+             function leaves it.
 
-(autoload (quote org-iswitchb) "org" "\
+\(fn FUNC &optional MATCH SCOPE &rest SKIP)" nil nil)
+
+(autoload 'org-iswitchb "org" "\
 Use `iswitchb-read-buffer' to prompt for an Org buffer to switch to.
 With a prefix argument, restrict available to files.
 With two prefix arguments, restrict available buffers to agenda files.
 
-Due to some yet unresolved reason, global function
-`iswitchb-mode' needs to be active for this function to work." t nil)
+Due to some yet unresolved reason, the global function
+`iswitchb-mode' needs to be active for this function to work.
 
-(autoload (quote org-cycle-agenda-files) "org" "\
+\(fn &optional ARG)" t nil)
+
+(autoload 'org-cycle-agenda-files "org" "\
 Cycle through the files in `org-agenda-files'.
 If the current buffer visits an agenda file, find the next one in the list.
-If the current buffer does not, find the first agenda file." t nil)
+If the current buffer does not, find the first agenda file.
 
-(autoload (quote org-require-autoloaded-modules) "org" nil t nil)
+\(fn)" t nil)
 
-(autoload (quote org-customize) "org" "\
-Call the customize function with org as argument." t nil)
+(autoload 'org-require-autoloaded-modules "org" "\
+Not documented
+
+\(fn)" t nil)
+
+(autoload 'org-customize "org" "\
+Call the customize function with org as argument.
+
+\(fn)" t nil)
 
 ;;;***
 
@@ -178,10 +214,10 @@ Call the customize function with org as argument." t nil)
 ;;;;;;  org-agenda-list-stuck-projects org-tags-view org-todo-list
 ;;;;;;  org-search-view org-agenda-list org-batch-store-agenda-views
 ;;;;;;  org-store-agenda-views org-batch-agenda-csv org-batch-agenda
-;;;;;;  org-agenda) "org-agenda" "lisp/org-agenda.el" (18586 9658))
+;;;;;;  org-agenda) "org-agenda" "lisp/org-agenda.el" (18713 21167))
 ;;; Generated autoloads from lisp/org-agenda.el
 
-(autoload (quote org-agenda) "org-agenda" "\
+(autoload 'org-agenda "org-agenda" "\
 Dispatch agenda commands to collect entries to the agenda buffer.
 Prompts for a command to execute.  Any prefix arg will be passed
 on to the selected command.  The default selections are:
@@ -204,17 +240,21 @@ If the current buffer is in Org-mode and visiting a file, you can also
 first press `<' once to indicate that the agenda should be temporarily
 \(until the next use of \\[org-agenda]) restricted to the current file.
 Pressing `<' twice means to restrict to the current subtree or region
-\(if active)." t nil)
+\(if active).
 
-(autoload (quote org-batch-agenda) "org-agenda" "\
+\(fn ARG &optional KEYS RESTRICTION)" t nil)
+
+(autoload 'org-batch-agenda "org-agenda" "\
 Run an agenda command in batch mode and send the result to STDOUT.
 If CMD-KEY is a string of length 1, it is used as a key in
 `org-agenda-custom-commands' and triggers this command.  If it is a
 longer string it is used as a tags/todo match string.
 Paramters are alternating variable names and values that will be bound
-before running the agenda command." nil (quote macro))
+before running the agenda command.
 
-(autoload (quote org-batch-agenda-csv) "org-agenda" "\
+\(fn CMD-KEY &rest PARAMETERS)" nil (quote macro))
+
+(autoload 'org-batch-agenda-csv "org-agenda" "\
 Run an agenda command in batch mode and send the result to STDOUT.
 If CMD-KEY is a string of length 1, it is used as a key in
 `org-agenda-custom-commands' and triggers this command.  If it is a
@@ -247,14 +287,21 @@ time         The time, like 15:00-16:50
 extra        Sting with extra planning info
 priority-l   The priority letter if any was given
 priority-n   The computed numerical priority
-agenda-day   The day in the agenda where this is listed" nil (quote macro))
+agenda-day   The day in the agenda where this is listed
 
-(autoload (quote org-store-agenda-views) "org-agenda" nil t nil)
+\(fn CMD-KEY &rest PARAMETERS)" nil (quote macro))
 
-(autoload (quote org-batch-store-agenda-views) "org-agenda" "\
-Run all custom agenda commands that have a file argument." nil (quote macro))
+(autoload 'org-store-agenda-views "org-agenda" "\
+Not documented
 
-(autoload (quote org-agenda-list) "org-agenda" "\
+\(fn &rest PARAMETERS)" t nil)
+
+(autoload 'org-batch-store-agenda-views "org-agenda" "\
+Run all custom agenda commands that have a file argument.
+
+\(fn &rest PARAMETERS)" nil (quote macro))
+
+(autoload 'org-agenda-list "org-agenda" "\
 Produce a daily/weekly view from all files in variable `org-agenda-files'.
 The view will be for the current day or week, but from the overview buffer
 you will be able to go to other days/weeks.
@@ -269,9 +316,11 @@ span INCLUDE-ALL days.  Lisp programs should instead specify NDAYS to change
 the number of days.  NDAYS defaults to `org-agenda-ndays'.
 
 START-DAY defaults to TODAY, or to the most recent match for the weekday
-given in `org-agenda-start-on-weekday'." t nil)
+given in `org-agenda-start-on-weekday'.
 
-(autoload (quote org-search-view) "org-agenda" "\
+\(fn &optional INCLUDE-ALL START-DAY NDAYS)" t nil)
+
+(autoload 'org-search-view "org-agenda" "\
 Show all entries that contain words or regular expressions.
 If the first character of the search string is an asterisks,
 search only the headlines.
@@ -297,27 +346,35 @@ exclamation mark, this also means to look at TODO entries only, an effect
 that can also be achieved with a prefix argument.
 
 This command searches the agenda files, and in addition the files listed
-in `org-agenda-text-search-extra-files'." t nil)
+in `org-agenda-text-search-extra-files'.
 
-(autoload (quote org-todo-list) "org-agenda" "\
+\(fn &optional TODO-ONLY STRING EDIT-AT)" t nil)
+
+(autoload 'org-todo-list "org-agenda" "\
 Show all TODO entries from all agenda file in a single list.
 The prefix arg can be used to select a specific TODO keyword and limit
 the list to these.  When using \\[universal-argument], you will be prompted
 for a keyword.  A numeric prefix directly selects the Nth keyword in
-`org-todo-keywords-1'." t nil)
+`org-todo-keywords-1'.
 
-(autoload (quote org-tags-view) "org-agenda" "\
+\(fn ARG)" t nil)
+
+(autoload 'org-tags-view "org-agenda" "\
 Show all headlines for all `org-agenda-files' matching a TAGS criterion.
-The prefix arg TODO-ONLY limits the search to TODO entries." t nil)
+The prefix arg TODO-ONLY limits the search to TODO entries.
 
-(autoload (quote org-agenda-list-stuck-projects) "org-agenda" "\
+\(fn &optional TODO-ONLY MATCH)" t nil)
+
+(autoload 'org-agenda-list-stuck-projects "org-agenda" "\
 Create agenda view for projects that are stuck.
 Stuck projects are project that have no next actions.  For the definitions
 of what a project is and how to check if it stuck, customize the variable
 `org-stuck-projects'.
-MATCH is being ignored." t nil)
+MATCH is being ignored.
 
-(autoload (quote org-diary) "org-agenda" "\
+\(fn &rest IGNORE)" t nil)
+
+(autoload 'org-diary "org-agenda" "\
 Return diary information from org-files.
 This function can be used in a \"sexp\" diary entry in the Emacs calendar.
 It accesses org files and extracts information from those files to be
@@ -361,13 +418,17 @@ So the example above may also be written as
 
 The function expects the lisp variables `entry' and `date' to be provided
 by the caller, because this is how the calendar works.  Don't use this
-function from a program - use `org-agenda-get-day-entries' instead." nil nil)
+function from a program - use `org-agenda-get-day-entries' instead.
 
-(autoload (quote org-calendar-goto-agenda) "org-agenda" "\
+\(fn &rest ARGS)" nil nil)
+
+(autoload 'org-calendar-goto-agenda "org-agenda" "\
 Compute the Org-mode agenda for the calendar date displayed at the cursor.
-This is a command that has to be installed in `calendar-mode-map'." t nil)
+This is a command that has to be installed in `calendar-mode-map'.
 
-(autoload (quote org-agenda-to-appt) "org-agenda" "\
+\(fn)" t nil)
+
+(autoload 'org-agenda-to-appt "org-agenda" "\
 Activate appointments found in `org-agenda-files'.
 With a \\[universal-argument] prefix, refresh the list of
 appointements.
@@ -385,27 +446,50 @@ either 'headline or 'category.  For example:
     (category \"Work\"))
 
 will only add headlines containing IMPORTANT or headlines
-belonging to the \"Work\" category." t nil)
+belonging to the \"Work\" category.
+
+\(fn &optional REFRESH FILTER)" t nil)
+
+;;;***
+
+;;;### (autoloads (org-attach) "org-attach" "lisp/org-attach.el"
+;;;;;;  (18713 21167))
+;;; Generated autoloads from lisp/org-attach.el
+
+(autoload 'org-attach "org-attach" "\
+The dispatcher for attachment commands.
+Shows a list of commands and prompts for another key to execute a command.
+
+\(fn)" t nil)
 
 ;;;***
 
 ;;;### (autoloads (org-bbdb-anniversaries) "org-bbdb" "lisp/org-bbdb.el"
-;;;;;;  (18586 9658))
+;;;;;;  (18713 21167))
 ;;; Generated autoloads from lisp/org-bbdb.el
 
-(autoload (quote org-bbdb-anniversaries) "org-bbdb" "\
-Extract anniversaries from BBDB for display in the agenda." nil nil)
+(autoload 'org-bbdb-anniversaries "org-bbdb" "\
+Extract anniversaries from BBDB for display in the agenda.
+
+\(fn)" nil nil)
 
 ;;;***
 
-;;;### (autoloads (org-get-clocktable) "org-clock" "lisp/org-clock.el"
-;;;;;;  (18586 9658))
+;;;### (autoloads (org-clock-persistence-insinuate org-get-clocktable)
+;;;;;;  "org-clock" "lisp/org-clock.el" (18713 21167))
 ;;; Generated autoloads from lisp/org-clock.el
 
-(autoload (quote org-get-clocktable) "org-clock" "\
+(autoload 'org-get-clocktable "org-clock" "\
 Get a formatted clocktable with parameters according to PROPS.
 The table is created in a temporary buffer, fully formatted and
-fontified, and then returned." nil nil)
+fontified, and then returned.
+
+\(fn &rest PROPS)" nil nil)
+
+(autoload 'org-clock-persistence-insinuate "org-clock" "\
+Set up hooks for clock persistence
+
+\(fn)" nil nil)
 
 ;;;***
 
@@ -415,10 +499,16 @@ fontified, and then returned." nil nil)
 ;;;;;;  org-replace-region-by-html org-export-as-html-to-buffer org-export-as-html-batch
 ;;;;;;  org-export-as-html-and-open org-insert-export-options-template
 ;;;;;;  org-export-visible org-export-as-ascii org-export) "org-exp"
-;;;;;;  "lisp/org-exp.el" (18586 9658))
+;;;;;;  "lisp/org-exp.el" (18713 21775))
 ;;; Generated autoloads from lisp/org-exp.el
 
-(autoload (quote org-export) "org-exp" "\
+(put 'org-export-html-style 'safe-local-variable 'booleanp)
+
+(put 'org-export-html-style 'safe-local-variable 'stringp)
+
+(put 'org-export-html-style-extra 'safe-local-variable 'stringp)
+
+(autoload 'org-export "org-exp" "\
 Export dispatcher for Org-mode.
 When `org-export-run-in-background' is non-nil, try to run the command
 in the background.  This will be done only for commands that write
@@ -426,15 +516,19 @@ to a file.  For details see the docstring of `org-export-run-in-background'.
 
 The prefix argument ARG will be passed to the exporter.  However, if
 ARG is a double universal prefix `C-u C-u', that means to inverse the
-value of `org-export-run-in-background'." t nil)
+value of `org-export-run-in-background'.
 
-(autoload (quote org-export-as-ascii) "org-exp" "\
+\(fn &optional ARG)" t nil)
+
+(autoload 'org-export-as-ascii "org-exp" "\
 Export the outline as a pretty ASCII file.
 If there is an active region, export only the region.
 The prefix ARG specifies how many levels of the outline should become
-underlined headlines.  The default is 3." t nil)
+underlined headlines.  The default is 3.
 
-(autoload (quote org-export-visible) "org-exp" "\
+\(fn ARG)" t nil)
+
+(autoload 'org-export-visible "org-exp" "\
 Create a copy of the visible part of the current buffer, and export it.
 The copy is created in a temporary buffer and removed after use.
 TYPE is the final key (as a string) that also select the export command in
@@ -442,35 +536,47 @@ the `C-c C-e' export dispatcher.
 As a special case, if the you type SPC at the prompt, the temporary
 org-mode file will not be removed but presented to you so that you can
 continue to use it.  The prefix arg ARG is passed through to the exporting
-command." t nil)
+command.
 
-(autoload (quote org-insert-export-options-template) "org-exp" "\
-Insert into the buffer a template with information for exporting." t nil)
+\(fn TYPE ARG)" t nil)
 
-(autoload (quote org-export-as-html-and-open) "org-exp" "\
+(autoload 'org-insert-export-options-template "org-exp" "\
+Insert into the buffer a template with information for exporting.
+
+\(fn)" t nil)
+
+(autoload 'org-export-as-html-and-open "org-exp" "\
 Export the outline as HTML and immediately open it with a browser.
 If there is an active region, export only the region.
 The prefix ARG specifies how many levels of the outline should become
-headlines.  The default is 3.  Lower levels will become bulleted lists." t nil)
+headlines.  The default is 3.  Lower levels will become bulleted lists.
 
-(autoload (quote org-export-as-html-batch) "org-exp" "\
+\(fn ARG)" t nil)
+
+(autoload 'org-export-as-html-batch "org-exp" "\
 Call `org-export-as-html', may be used in batch processing as
 emacs 	--batch
 	--load=$HOME/lib/emacs/org.el
 	--eval \"(setq org-export-headline-levels 2)\"
-	--visit=MyFile --funcall org-export-as-html-batch" nil nil)
+	--visit=MyFile --funcall org-export-as-html-batch
 
-(autoload (quote org-export-as-html-to-buffer) "org-exp" "\
+\(fn)" nil nil)
+
+(autoload 'org-export-as-html-to-buffer "org-exp" "\
 Call `org-exort-as-html` with output to a temporary buffer.
-No file is created.  The prefix ARG is passed through to `org-export-as-html'." t nil)
+No file is created.  The prefix ARG is passed through to `org-export-as-html'.
 
-(autoload (quote org-replace-region-by-html) "org-exp" "\
+\(fn ARG)" t nil)
+
+(autoload 'org-replace-region-by-html "org-exp" "\
 Assume the current region has org-mode syntax, and convert it to HTML.
 This can be used in any buffer.  For example, you could write an
 itemized list in org-mode syntax in an HTML buffer and then use this
-command to convert it." t nil)
+command to convert it.
 
-(autoload (quote org-export-region-as-html) "org-exp" "\
+\(fn BEG END)" t nil)
+
+(autoload 'org-export-region-as-html "org-exp" "\
 Convert region from BEG to END in org-mode buffer to HTML.
 If prefix arg BODY-ONLY is set, omit file header, footer, and table of
 contents, and only produce the region of converted text, useful for
@@ -483,9 +589,11 @@ a Lisp program could call this function in the following way:
   (setq html (org-export-region-as-html beg end t 'string))
 
 When called interactively, the output buffer is selected, and shown
-in a window.  A non-interactive call will only return the buffer." t nil)
+in a window.  A non-interactive call will only return the buffer.
 
-(autoload (quote org-export-as-html) "org-exp" "\
+\(fn BEG END &optional BODY-ONLY BUFFER)" t nil)
+
+(autoload 'org-export-as-html "org-exp" "\
 Export the outline as a pretty HTML file.
 If there is an active region, export only the region.  The prefix
 ARG specifies how many levels of the outline should become
@@ -499,9 +607,11 @@ name and export to that buffer.  If TO-BUFFER is the symbol
 resulting HTML as a string.  When BODY-ONLY is set, don't produce
 the file header and footer, simply return the content of
 <body>...</body>, without even the body tags themselves.  When
-PUB-DIR is set, use this as the publishing directory." t nil)
+PUB-DIR is set, use this as the publishing directory.
 
-(autoload (quote org-export-htmlize-generate-css) "org-exp" "\
+\(fn ARG &optional HIDDEN EXT-PLIST TO-BUFFER BODY-ONLY PUB-DIR)" t nil)
+
+(autoload 'org-export-htmlize-generate-css "org-exp" "\
 Create the CSS for all font definitions in the current Emacs session.
 Use this to create face definitions in your CSS style file that can then
 be used by code snippets transformed by htmlize.
@@ -511,53 +621,71 @@ need into your CSS file.
 
 If you then set `org-export-htmlize-output-type' to `css', calls to
 the function `org-export-htmlize-region-for-paste' will produce code
-that uses these same face definitions." t nil)
+that uses these same face definitions.
 
-(autoload (quote org-export-icalendar-this-file) "org-exp" "\
+\(fn)" t nil)
+
+(autoload 'org-export-icalendar-this-file "org-exp" "\
 Export current file as an iCalendar file.
 The iCalendar file will be located in the same directory as the Org-mode
-file, but with extension `.ics'." t nil)
+file, but with extension `.ics'.
 
-(autoload (quote org-export-icalendar-all-agenda-files) "org-exp" "\
+\(fn)" t nil)
+
+(autoload 'org-export-icalendar-all-agenda-files "org-exp" "\
 Export all files in `org-agenda-files' to iCalendar .ics files.
 Each iCalendar file will be located in the same directory as the Org-mode
-file, but with extension `.ics'." t nil)
+file, but with extension `.ics'.
 
-(autoload (quote org-export-icalendar-combine-agenda-files) "org-exp" "\
+\(fn)" t nil)
+
+(autoload 'org-export-icalendar-combine-agenda-files "org-exp" "\
 Export all files in `org-agenda-files' to a single combined iCalendar file.
-The file is stored under the name `org-combined-agenda-icalendar-file'." t nil)
+The file is stored under the name `org-combined-agenda-icalendar-file'.
 
-(autoload (quote org-export-as-xoxo) "org-exp" "\
+\(fn)" t nil)
+
+(autoload 'org-export-as-xoxo "org-exp" "\
 Export the org buffer as XOXO.
-The XOXO buffer is named *xoxo-<source buffer name>*" t nil)
+The XOXO buffer is named *xoxo-<source buffer name>*
+
+\(fn &optional BUFFER)" t nil)
 
 ;;;***
 
-;;;### (autoloads (org-export-as-latex org-export-region-as-latex
-;;;;;;  org-replace-region-by-latex org-export-as-latex-to-buffer
+;;;### (autoloads (org-export-as-pdf-and-open org-export-as-pdf org-export-as-latex
+;;;;;;  org-export-region-as-latex org-replace-region-by-latex org-export-as-latex-to-buffer
 ;;;;;;  org-export-as-latex-batch) "org-export-latex" "lisp/org-export-latex.el"
-;;;;;;  (18586 9658))
+;;;;;;  (18713 21167))
 ;;; Generated autoloads from lisp/org-export-latex.el
 
-(autoload (quote org-export-as-latex-batch) "org-export-latex" "\
-Call `org-export-as-latex', may be used in batch processing as
+(autoload 'org-export-as-latex-batch "org-export-latex" "\
+Call `org-export-as-latex', may be used in batch processing.
+For example:
+
 emacs 	--batch
 	--load=$HOME/lib/emacs/org.el
 	--eval \"(setq org-export-headline-levels 2)\"
-	--visit=MyFile --funcall org-export-as-latex-batch" nil nil)
+	--visit=MyFile --funcall org-export-as-latex-batch
 
-(autoload (quote org-export-as-latex-to-buffer) "org-export-latex" "\
+\(fn)" nil nil)
+
+(autoload 'org-export-as-latex-to-buffer "org-export-latex" "\
 Call `org-exort-as-latex` with output to a temporary buffer.
-No file is created.  The prefix ARG is passed through to `org-export-as-latex'." t nil)
+No file is created.  The prefix ARG is passed through to `org-export-as-latex'.
 
-(autoload (quote org-replace-region-by-latex) "org-export-latex" "\
+\(fn ARG)" t nil)
+
+(autoload 'org-replace-region-by-latex "org-export-latex" "\
 Replace the region from BEG to END with its LaTeX export.
 It assumes the region has `org-mode' syntax, and then convert it to
 LaTeX.  This can be used in any buffer.  For example, you could
 write an itemized list in `org-mode' syntax in an LaTeX buffer and
-then use this command to convert it." t nil)
+then use this command to convert it.
 
-(autoload (quote org-export-region-as-latex) "org-export-latex" "\
+\(fn BEG END)" t nil)
+
+(autoload 'org-export-region-as-latex "org-export-latex" "\
 Convert region from BEG to END in `org-mode' buffer to LaTeX.
 If prefix arg BODY-ONLY is set, omit file header, footer, and table of
 contents, and only produce the region of converted text, useful for
@@ -570,9 +698,11 @@ a Lisp program could call this function in the following way:
   (setq latex (org-export-region-as-latex beg end t 'string))
 
 When called interactively, the output buffer is selected, and shown
-in a window.  A non-interactive call will only retunr the buffer." t nil)
+in a window.  A non-interactive call will only retunr the buffer.
 
-(autoload (quote org-export-as-latex) "org-export-latex" "\
+\(fn BEG END &optional BODY-ONLY BUFFER)" t nil)
+
+(autoload 'org-export-as-latex "org-export-latex" "\
 Export current buffer to a LaTeX file.
 If there is an active region, export only the region.  The prefix
 ARG specifies how many levels of the outline should become
@@ -588,108 +718,165 @@ buffer behind but just return the resulting LaTeX as a string.
 When BODY-ONLY is set, don't produce the file header and footer,
 simply return the content of egin{document}...nd{document},
 without even the egin{document} and nd{document} commands.
-when PUB-DIR is set, use this as the publishing directory." t nil)
+when PUB-DIR is set, use this as the publishing directory.
+
+\(fn ARG &optional HIDDEN EXT-PLIST TO-BUFFER BODY-ONLY PUB-DIR)" t nil)
+
+(autoload 'org-export-as-pdf "org-export-latex" "\
+Export as LaTeX, then process through to PDF.
+
+\(fn ARG &optional HIDDEN EXT-PLIST TO-BUFFER BODY-ONLY PUB-DIR)" t nil)
+
+(autoload 'org-export-as-pdf-and-open "org-export-latex" "\
+Export as LaTeX, then process through to PDF, and open.
+
+\(fn ARG)" t nil)
 
 ;;;***
 
 ;;;### (autoloads (org-id-find org-id-goto org-id-get-with-outline-drilling
 ;;;;;;  org-id-get-with-outline-path-completion org-id-get org-id-copy
-;;;;;;  org-id-get-create) "org-id" "lisp/org-id.el" (18586 9658))
+;;;;;;  org-id-get-create) "org-id" "lisp/org-id.el" (18713 21167))
 ;;; Generated autoloads from lisp/org-id.el
 
-(autoload (quote org-id-get-create) "org-id" "\
+(autoload 'org-id-get-create "org-id" "\
 Create an ID for the current entry and return it.
 If the entry already has an ID, just return it.
-With optional argument FORCE, force the creation of a new ID." t nil)
+With optional argument FORCE, force the creation of a new ID.
 
-(autoload (quote org-id-copy) "org-id" "\
+\(fn &optional FORCE)" t nil)
+
+(autoload 'org-id-copy "org-id" "\
 Copy the ID of the entry at point to the kill ring.
-Create an ID if necessary." t nil)
+Create an ID if necessary.
 
-(autoload (quote org-id-get) "org-id" "\
+\(fn)" t nil)
+
+(autoload 'org-id-get "org-id" "\
 Get the ID property of the entry at point-or-marker POM.
 If POM is nil, refer to the entry at point.
 If the entry does not have an ID, the function returns nil.
 However, when CREATE is non nil, create an ID if none is present already.
 PREFIX will be passed through to `org-id-new'.
-In any case, the ID of the entry is returned." nil nil)
+In any case, the ID of the entry is returned.
 
-(autoload (quote org-id-get-with-outline-path-completion) "org-id" "\
+\(fn &optional POM CREATE PREFIX)" nil nil)
+
+(autoload 'org-id-get-with-outline-path-completion "org-id" "\
 Use outline-path-completion to retrieve the ID of an entry.
 TARGETS may be a setting for `org-refile-targets' to define the eligible
 headlines.  When omitted, all headlines in all agenda files are
 eligible.
-It returns the ID of the entry.  If necessary, the ID is created." nil nil)
+It returns the ID of the entry.  If necessary, the ID is created.
 
-(autoload (quote org-id-get-with-outline-drilling) "org-id" "\
+\(fn &optional TARGETS)" nil nil)
+
+(autoload 'org-id-get-with-outline-drilling "org-id" "\
 Use an outline-cycling interface to retrieve the ID of an entry.
 This only finds entries in the current buffer, using `org-get-location'.
-It returns the ID of the entry.  If necessary, the ID is created." nil nil)
+It returns the ID of the entry.  If necessary, the ID is created.
 
-(autoload (quote org-id-goto) "org-id" "\
+\(fn &optional TARGETS)" nil nil)
+
+(autoload 'org-id-goto "org-id" "\
 Switch to the buffer containing the entry with id ID.
-Move the cursor to that entry in that buffer." t nil)
+Move the cursor to that entry in that buffer.
 
-(autoload (quote org-id-find) "org-id" "\
+\(fn ID)" t nil)
+
+(autoload 'org-id-find "org-id" "\
 Return the location of the entry with the id ID.
 The return value is a cons cell (file-name . position), or nil
 if there is no entry with that ID.
-With optional argument MARKERP, return the position as a new marker." nil nil)
+With optional argument MARKERP, return the position as a new marker.
+
+\(fn ID &optional MARKERP)" nil nil)
 
 ;;;***
 
 ;;;### (autoloads (org-irc-store-link) "org-irc" "lisp/org-irc.el"
-;;;;;;  (18586 9658))
+;;;;;;  (18713 21167))
 ;;; Generated autoloads from lisp/org-irc.el
 
-(autoload (quote org-irc-store-link) "org-irc" "\
-Dispatch to the appropriate function to store a link to an IRC session." nil nil)
+(autoload 'org-irc-store-link "org-irc" "\
+Dispatch to the appropriate function to store a link to an IRC session.
+
+\(fn)" nil nil)
 
 ;;;***
 
 ;;;### (autoloads (org-publish-current-project org-publish-current-file
 ;;;;;;  org-publish-all org-publish) "org-publish" "lisp/org-publish.el"
-;;;;;;  (18586 9658))
+;;;;;;  (18713 21167))
 ;;; Generated autoloads from lisp/org-publish.el
 
-(autoload (quote org-publish) "org-publish" "\
-Publish PROJECT." t nil)
+(defalias 'org-publish-project 'org-publish)
 
-(autoload (quote org-publish-all) "org-publish" "\
+(autoload 'org-publish "org-publish" "\
+Publish PROJECT.
+
+\(fn PROJECT &optional FORCE)" t nil)
+
+(autoload 'org-publish-all "org-publish" "\
 Publish all projects.
-With prefix argument, force publish all files." t nil)
+With prefix argument, force publish all files.
 
-(autoload (quote org-publish-current-file) "org-publish" "\
+\(fn &optional FORCE)" t nil)
+
+(autoload 'org-publish-current-file "org-publish" "\
 Publish the current file.
-With prefix argument, force publish the file." t nil)
+With prefix argument, force publish the file.
 
-(autoload (quote org-publish-current-project) "org-publish" "\
+\(fn &optional FORCE)" t nil)
+
+(autoload 'org-publish-current-project "org-publish" "\
 Publish the project associated with the current file.
 With a prefix argument, force publishing of all files in
-the project." t nil)
+the project.
+
+\(fn &optional FORCE)" t nil)
+
+;;;***
+
+;;;### (autoloads (org-plot/gnuplot) "org-plot" "lisp/org-plot.el"
+;;;;;;  (18713 21167))
+;;; Generated autoloads from lisp/org-plot.el
+
+(autoload 'org-plot/gnuplot "org-plot" "\
+Plot table using gnuplot. Gnuplot options can be specified with PARAMS.
+If not given options will be taken from the +PLOT
+line directly before or after the table.
+
+\(fn &optional PARAMS)" t nil)
 
 ;;;***
 
 ;;;### (autoloads (org-remember-handler org-remember org-remember-apply-template
 ;;;;;;  org-remember-annotation org-remember-insinuate) "org-remember"
-;;;;;;  "lisp/org-remember.el" (18586 9658))
+;;;;;;  "lisp/org-remember.el" (18713 21167))
 ;;; Generated autoloads from lisp/org-remember.el
 
-(autoload (quote org-remember-insinuate) "org-remember" "\
-Setup remember.el for use wiht Org-mode." nil nil)
+(autoload 'org-remember-insinuate "org-remember" "\
+Setup remember.el for use with Org-mode.
 
-(autoload (quote org-remember-annotation) "org-remember" "\
+\(fn)" nil nil)
+
+(autoload 'org-remember-annotation "org-remember" "\
 Return a link to the current location as an annotation for remember.el.
 If you are using Org-mode files as target for data storage with
 remember.el, then the annotations should include a link compatible with the
-conventions in Org-mode.  This function returns such a link." nil nil)
+conventions in Org-mode.  This function returns such a link.
 
-(autoload (quote org-remember-apply-template) "org-remember" "\
+\(fn)" nil nil)
+
+(autoload 'org-remember-apply-template "org-remember" "\
 Initialize *remember* buffer with template, invoke `org-mode'.
 This function should be placed into `remember-mode-hook' and in fact requires
-to be run from that hook to function properly." nil nil)
+to be run from that hook to function properly.
 
-(autoload (quote org-remember) "org-remember" "\
+\(fn &optional USE-CHAR SKIP-INTERACTIVE)" nil nil)
+
+(autoload 'org-remember "org-remember" "\
 Call `remember'.  If this is already a remember buffer, re-apply template.
 If there is an active region, make sure remember uses it as initial content
 of the remember buffer.
@@ -700,55 +887,67 @@ stores its notes.  With a double prefix arg `C-u C-u', go to the last
 note stored by remember.
 
 Lisp programs can set ORG-FORCE-REMEMBER-TEMPLATE-CHAR to a character
-associated with a template in `org-remember-templates'." t nil)
+associated with a template in `org-remember-templates'.
 
-(autoload (quote org-remember-handler) "org-remember" "\
+\(fn &optional GOTO ORG-FORCE-REMEMBER-TEMPLATE-CHAR)" t nil)
+
+(autoload 'org-remember-handler "org-remember" "\
 Store stuff from remember.el into an org file.
-First prompts for an org file.  If the user just presses return, the value
-of `org-default-notes-file' is used.
-Then the command offers the headings tree of the selected file in order to
-file the text at a specific location.
-You can either immediately press RET to get the note appended to the
-file, or you can use vertical cursor motion and visibility cycling (TAB) to
-find a better place.  Then press RET or <left> or <right> in insert the note.
+When the template has specified a file and a headline, the entry is filed
+there, or in the location defined by `org-default-notes-file' and
+`org-remember-default-headline'.
 
-Key      Cursor position   Note gets inserted
------------------------------------------------------------------------------
-RET      buffer-start      as level 1 heading at end of file
-RET      on headline       as sublevel of the heading at cursor
-RET      no heading        at cursor position, level taken from context.
-			   Or use prefix arg to specify level manually.
-<left>   on headline       as same level, before current heading
-<right>  on headline       as same level, after current heading
+If no defaults have been defined, or if the current prefix argument
+is 1 (so you must use `C-1 C-c C-c' to exit remember), an interactive
+process is used to select the target location.
 
-So the fastest way to store the note is to press RET RET to append it to
-the default file.  This way your current train of thought is not
-interrupted, in accordance with the principles of remember.el.
-You can also get the fast execution without prompting by using
-C-u C-c C-c to exit the remember buffer.  See also the variable
-`org-remember-store-without-prompt'.
+When the prefix is 0 (i.e. when remember is exited with `C-0 C-c C-c'),
+the entry is filed to the same location as the previous note.
 
-Before being stored away, the function ensures that the text has a
-headline, i.e. a first line that starts with a \"*\".  If not, a headline
-is constructed from the current date and some additional data.
+When the prefix is 2 (i.e. when remember is exited with `C-2 C-c C-c'),
+the entry is fild as a subentry of the entry where the clock is
+currently running.
+
+When `C-u' has been used as prefix argument, the note is stored and emacs
+moves point to the new location of the note, so that editing can be
+continued there (smilar to inserting \"%&\" into the tempate).
+
+Before storing the note, the function ensures that the text has an
+org-mode-style headline, i.e. a first line that starts with
+a \"*\".  If not, a headline is constructed from the current date and
+some additional data.
 
 If the variable `org-adapt-indentation' is non-nil, the entire text is
 also indented so that it starts in the same column as the headline
 \(i.e. after the stars).
 
-See also the variable `org-reverse-note-order'." nil nil)
+See also the variable `org-reverse-note-order'.
+
+\(fn)" nil nil)
 
 ;;;***
 
-;;;### (autoloads (orgtbl-mode turn-on-orgtbl) "org-table" "lisp/org-table.el"
-;;;;;;  (18586 9658))
+;;;### (autoloads (org-table-to-lisp orgtbl-mode turn-on-orgtbl)
+;;;;;;  "org-table" "lisp/org-table.el" (18713 21167))
 ;;; Generated autoloads from lisp/org-table.el
 
-(autoload (quote turn-on-orgtbl) "org-table" "\
-Unconditionally turn on `orgtbl-mode'." nil nil)
+(autoload 'turn-on-orgtbl "org-table" "\
+Unconditionally turn on `orgtbl-mode'.
 
-(autoload (quote orgtbl-mode) "org-table" "\
-The `org-mode' table editor as a minor mode for use in other modes." t nil)
+\(fn)" nil nil)
+
+(autoload 'orgtbl-mode "org-table" "\
+The `org-mode' table editor as a minor mode for use in other modes.
+
+\(fn &optional ARG)" t nil)
+
+(autoload 'org-table-to-lisp "org-table" "\
+Convert the table at point to a Lisp structure.
+The structure will be a list.  Each item is either the symbol `hline'
+for a horizontal separator line, or a list of field values as strings.
+The table is taken from the parameter TXT, or from the buffer at point.
+
+\(fn &optional TXT)" nil nil)
 
 ;;;***
 

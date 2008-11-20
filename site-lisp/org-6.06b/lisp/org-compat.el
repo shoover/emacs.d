@@ -5,7 +5,7 @@
 ;; Author: Carsten Dominik <carsten at orgmode dot org>
 ;; Keywords: outlines, hypermedia, calendar, wp
 ;; Homepage: http://orgmode.org
-;; Version: 6.06b
+;; Version: 6.12b
 ;;
 ;; This file is part of GNU Emacs.
 ;;
@@ -29,6 +29,8 @@
 ;; versions of GNU Emacs.
 
 ;;; Code:
+
+(require 'org-macs)
 
 (defconst org-xemacs-p (featurep 'xemacs)) ; not used by org.el itself
 (defconst org-format-transports-properties-p
@@ -148,6 +150,22 @@ that will be added to PLIST.  Returns the string that was modified."
   string)
 (put 'org-add-props 'lisp-indent-function 2)
 
+(defun org-fit-window-to-buffer (&optional window max-height min-height
+					   shrink-only)
+  "Fit WINDOW to the buffer, but only if it is not a side-by-side window.
+WINDOW defaults to the selected window.  MAX-HEIGHT and MIN-HEIGHT are
+passed through to `fit-window-to-buffer'.  If SHRINK-ONLY is set, call
+`shrink-window-if-larger-than-buffer' instead, the hight limit are
+ignored in this case."
+  (cond ((> (frame-width) (window-width window))
+	 ;; do nothing if another window would suffer
+	 )
+	((and (fboundp 'fit-window-to-buffer) (not shrink-only))
+	 (fit-window-to-buffer window max-height min-height))
+	((fboundp 'shrink-window-if-larger-than-buffer)
+	 (shrink-window-if-larger-than-buffer window)))
+  (or window (selected-window)))
+
 ;; Region compatibility
 
 (defvar org-ignore-region nil
@@ -174,7 +192,7 @@ that can be added."
    ((fboundp 'add-to-invisibility-spec)
     (add-to-invisibility-spec arg))
    ((or (null buffer-invisibility-spec) (eq buffer-invisibility-spec t))
-	(setq buffer-invisibility-spec (list arg)))
+    (setq buffer-invisibility-spec (list arg)))
    (t
     (setq buffer-invisibility-spec
 	  (cons arg buffer-invisibility-spec)))))
@@ -195,57 +213,73 @@ that can be added."
 
 (defun org-indent-to-column (column &optional minimum buffer)
   "Work around a bug with extents with invisibility in XEmacs."
- (if (featurep 'xemacs)
-     (let ((ext-inv (extent-list
-                     nil (point-at-bol) (point-at-eol)
-                     'all-extents-closed-open 'invisible))
-           ext-inv-specs)
-       (dolist (ext ext-inv)
-         (when (extent-property ext 'invisible)
-           (add-to-list 'ext-inv-specs (list ext (extent-property
-						  ext 'invisible)))
-           (set-extent-property ext 'invisible nil)))
-       (indent-to-column column minimum buffer)
-       (dolist (ext-inv-spec ext-inv-specs)
-         (set-extent-property (car ext-inv-spec) 'invisible
-			      (cadr ext-inv-spec))))
-   (indent-to-column column minimum)))
+  (if (featurep 'xemacs)
+      (let ((ext-inv (extent-list
+		      nil (point-at-bol) (point-at-eol)
+		      'all-extents-closed-open 'invisible))
+	    ext-inv-specs)
+	(dolist (ext ext-inv)
+	  (when (extent-property ext 'invisible)
+	    (add-to-list 'ext-inv-specs (list ext (extent-property
+						   ext 'invisible)))
+	    (set-extent-property ext 'invisible nil)))
+	(indent-to-column column minimum buffer)
+	(dolist (ext-inv-spec ext-inv-specs)
+	  (set-extent-property (car ext-inv-spec) 'invisible
+			       (cadr ext-inv-spec))))
+    (indent-to-column column minimum)))
 
 (defun org-indent-line-to (column)
   "Work around a bug with extents with invisibility in XEmacs."
- (if (featurep 'xemacs)
-     (let ((ext-inv (extent-list
-                     nil (point-at-bol) (point-at-eol)
-                     'all-extents-closed-open 'invisible))
-           ext-inv-specs)
-       (dolist (ext ext-inv)
-         (when (extent-property ext 'invisible)
-           (add-to-list 'ext-inv-specs (list ext (extent-property
-						  ext 'invisible)))
-           (set-extent-property ext 'invisible nil)))
-       (indent-line-to column)
-       (dolist (ext-inv-spec ext-inv-specs)
-         (set-extent-property (car ext-inv-spec) 'invisible
-			      (cadr ext-inv-spec))))
-   (indent-line-to column)))
+  (if (featurep 'xemacs)
+      (let ((ext-inv (extent-list
+		      nil (point-at-bol) (point-at-eol)
+		      'all-extents-closed-open 'invisible))
+	    ext-inv-specs)
+	(dolist (ext ext-inv)
+	  (when (extent-property ext 'invisible)
+	    (add-to-list 'ext-inv-specs (list ext (extent-property
+						   ext 'invisible)))
+	    (set-extent-property ext 'invisible nil)))
+	(indent-line-to column)
+	(dolist (ext-inv-spec ext-inv-specs)
+	  (set-extent-property (car ext-inv-spec) 'invisible
+			       (cadr ext-inv-spec))))
+    (indent-line-to column)))
 
 (defun org-move-to-column (column &optional force buffer)
- (if (featurep 'xemacs)
-     (let ((ext-inv (extent-list
-                     nil (point-at-bol) (point-at-eol)
-                     'all-extents-closed-open 'invisible))
-           ext-inv-specs)
-       (dolist (ext ext-inv)
-         (when (extent-property ext 'invisible)
-           (add-to-list 'ext-inv-specs (list ext (extent-property ext
-								  'invisible)))
-           (set-extent-property ext 'invisible nil)))
-       (move-to-column column force buffer)
-       (dolist (ext-inv-spec ext-inv-specs)
-         (set-extent-property (car ext-inv-spec) 'invisible
-			      (cadr ext-inv-spec))))
-   (move-to-column column force)))
- 
+  (if (featurep 'xemacs)
+      (let ((ext-inv (extent-list
+		      nil (point-at-bol) (point-at-eol)
+		      'all-extents-closed-open 'invisible))
+	    ext-inv-specs)
+	(dolist (ext ext-inv)
+	  (when (extent-property ext 'invisible)
+	    (add-to-list 'ext-inv-specs (list ext (extent-property ext
+								   'invisible)))
+	    (set-extent-property ext 'invisible nil)))
+	(move-to-column column force buffer)
+	(dolist (ext-inv-spec ext-inv-specs)
+	  (set-extent-property (car ext-inv-spec) 'invisible
+			       (cadr ext-inv-spec))))
+    (move-to-column column force)))
+
+(defun org-get-x-clipboard-compat (value)
+  "Get the clipboard value on XEmacs or Emacs 21"
+  (cond (org-xemacs-p (org-no-warnings (get-selection-no-error value)))
+	((fboundp 'x-get-selection)
+	 (condition-case nil
+	     (or (x-get-selection value 'UTF8_STRING)
+		 (x-get-selection value 'COMPOUND_TEXT)
+		 (x-get-selection value 'STRING)
+		 (x-get-selection value 'TEXT))
+	   (error nil)))))
+
+(defun org-propertize (string &rest properties)
+  (if (featurep 'xemacs)
+      (add-text-properties 0 (length string) properties string)
+    (apply 'propertize string properties)))
+
 (provide 'org-compat)
 
 ;; arch-tag: a0a0579f-e68c-4bdf-9e55-93768b846bbe

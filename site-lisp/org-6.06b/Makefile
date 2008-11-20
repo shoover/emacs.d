@@ -20,7 +20,7 @@ prefix=/usr/local
 lispdir = $(prefix)/share/emacs/site-lisp
 
 # Where info files go.
-infodir = $(prefix)/info
+infodir = $(prefix)/share/info
 
 ##----------------------------------------------------------------------
 ## YOU MAY NEED TO EDIT THESE
@@ -49,11 +49,11 @@ MAKEINFO = makeinfo
 # How to create the HTML file
 TEXI2HTML = makeinfo --html --number-sections
 
-# How to move the byte compiled files to their destination.  
-MV = mv
-
-# How to copy the lisp files to their distination.
+# How to copy the lisp files and elc files to their distination.
 CP = cp -p
+
+# Name of the program to install info files
+INSTALL_INFO=install-info
 
 ##----------------------------------------------------------------------
 ##  BELOW THIS LINE ON YOUR OWN RISK!
@@ -62,6 +62,7 @@ CP = cp -p
 # The following variables need to be defined by the maintainer
 LISPF      = 	org.el			\
 		org-agenda.el		\
+	     	org-attach.el		\
 	     	org-archive.el		\
 		org-bbdb.el		\
 		org-bibtex.el		\
@@ -77,12 +78,14 @@ LISPF      = 	org.el			\
 		org-info.el		\
 		org-jsinfo.el		\
 		org-irc.el		\
+		org-list.el		\
 		org-mac-message.el	\
 	     	org-macs.el		\
 		org-mew.el              \
 		org-mhe.el		\
 		org-mouse.el		\
 		org-publish.el		\
+		org-plot.el		\
 		org-remember.el		\
 		org-rmail.el		\
 		org-table.el		\
@@ -130,6 +133,7 @@ install-lisp: $(LISPFILES) $(ELCFILES)
 install-info: $(INFOFILES)
 	if [ ! -d $(infodir) ]; then $(MKDIR) $(infodir); else true; fi ;
 	$(CP) $(INFOFILES) $(infodir)
+	$(INSTALL_INFO) --info-file=$(INFOFILES) --info-dir=$(infodir)
 
 install-noutline: xemacs/noutline.elc
 	if [ ! -d $(lispdir) ]; then $(MKDIR) $(lispdir); else true; fi ;
@@ -197,6 +201,7 @@ card:	doc/orgcard.pdf doc/orgcard.ps doc/orgcard_letter.pdf doc/orgcard_letter.p
 distfile:
 	@if [ "X$(TAG)" = "X" ]; then echo "*** No tag ***"; exit 1; fi
 	touch doc/org.texi doc/orgcard.tex # force update
+	make cleancontrib
 	make info
 	make doc
 	make lisp/org-install.el
@@ -245,6 +250,9 @@ relup:
 db:
 	grep -e '(debug)' lisp/*el
 
+cleancontrib:
+	find contrib -name \*~ -exec rm {} \;
+
 cleanelc:
 	rm -f $(ELCFILES)
 cleandoc:
@@ -253,11 +261,20 @@ cleandoc:
 	(cd doc; rm -f *.toc *.tp *.tps *.vr *.vrs *.log *.html *.ps)
 	(cd doc; rm -f orgcard_letter.tex orgcard_letter.pdf)
 	(cd doc; rm -rf manual)
+
+cleanrel:
+	rm -rf RELEASEDIR
+	rm -rf org-6.*
+	rm -f org-6*zip org-6*tar.gz
+
 clean:
 	make cleanelc
 	make cleandoc
+	make cleanrel
 	rm -f *~ */*~ */*/*~
-	rm -rf RELEASEDIR
+
+cleanall:
+	make clean
 	rm -f lisp/org-install.el
 
 .el.elc:
@@ -282,26 +299,29 @@ dummy:
 
 lisp/org.elc:           lisp/org-macs.elc lisp/org-compat.elc lisp/org-faces.elc
 lisp/org-agenda.elc:       lisp/org.elc
+lisp/org-attach.elc:       lisp/org.elc lisp/org-id.elc
 lisp/org-archive.elc:      lisp/org.elc
 lisp/org-bbdb.elc:         lisp/org.elc
 lisp/org-bibtex.elc:       lisp/org.elc
 lisp/org-clock.elc:        lisp/org.elc
 lisp/org-colview.elc:      lisp/org.elc
 lisp/org-colview-xemacs.elc:      lisp/org.elc
-lisp/org-compat.elc:
+lisp/org-compat.elc:       lisp/org-macs.elc
 lisp/org-exp.elc:          lisp/org.elc lisp/org-agenda.elc
 lisp/org-export-latex.elc: lisp/org.elc lisp/org-exp.elc
-lisp/org-faces.elc:                    lisp/org-macs.elc lisp/org-compat.elc
+lisp/org-faces.elc:        lisp/org-macs.elc lisp/org-compat.elc
 lisp/org-gnus.elc:         lisp/org.elc
 lisp/org-id.elc:           lisp/org.elc
 lisp/org-info.elc:         lisp/org.elc
-lisp/org-jsinfo.elc:       lisp/org.elc lisp/org-exp.elc
 lisp/org-irc.elc:          lisp/org.elc
+lisp/org-jsinfo.elc:       lisp/org.elc lisp/org-exp.elc
+lisp/org-list.elc:         lisp/org-macs.elc lisp/org-compat.elc
 lisp/org-mac-message.elc:  lisp/org.elc
 lisp/org-macs.elc:
 lisp/org-mew.elc:          lisp/org.elc
 lisp/org-mhe.elc:          lisp/org.elc
 lisp/org-mouse.elc:        lisp/org.elc
+lisp/org-plot.elc:         lisp/org.elc lisp/org-exp.elc lisp/org-table.elc
 lisp/org-publish.elc:
 lisp/org-remember.elc:     lisp/org.elc
 lisp/org-rmail.elc:        lisp/org.elc
