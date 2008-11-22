@@ -18,7 +18,7 @@
   (add-path "emacs/site-lisp") ;; elisp stuff I find on the 'net
   (add-path "emacs/site-lisp/clojure")
   (add-path "emacs/site-lisp/color-theme-6.6.0") ;; my color preferences
-  (add-path "emacs/site-lisp/org-6.06b/lisp")
+  (add-path "emacs/site-lisp/org-6.12b/lisp")
   (add-path "emacs/site-lisp/remember-2.0")
   (add-path "emacs/site-lisp/slime-cvs")
   (add-path "emacs/site-lisp/swank-clojure")
@@ -91,8 +91,6 @@
   (interactive)
   (set-selective-display (if selective-display nil 1)))
 
-(load-library "xia-compilation")
-
 ;;; Custom keybindings
 (global-set-key "\C-x\C-m" 'execute-extended-command)
 (global-set-key "\M-s"     'isearch-forward-regexp)
@@ -120,6 +118,12 @@
              (setq tab-width 2)
              (setq c-basic-offset 2)))
 
+
+;; C#
+(autoload 'csharp-mode "csharp-mode" "Edit C# files")
+(add-to-list 'auto-mode-alist '("\\.cs$" . csharp-mode))
+
+
 ;; Clojure
 ;; Perhaps someday I'll want this to be buffer local, but let's try it
 ;; globally for now.
@@ -138,25 +142,13 @@
         (concat java-path
                 " " java-options
                 " -cp " class-path " clojure.lang.Repl")))
-(autoload 'clojure-mode "clojure-mode" "Edit clojure code" t)
-(add-to-list 'auto-mode-alist '("\\.clj$" . clojure-mode))
-(add-hook 'clojure-mode-hook
-          '(lambda ()
-             (define-key clojure-mode-map "\C-x\C-e" 'lisp-eval-last-sexp)))
-
-;; You'd think slime could just run inferior-lisp-program to start Clojure,
-;; but it was complaining about the java args. One string with the batch
-;; file seems to work.
-(defun clojure-slime ()
-  (interactive)
-  (setq swank-clojure-jar-path (concat clojure-path "clojure.jar"))
-  (require 'swank-clojure-autoload)
-  (defvar swank-clojure-path
-    (let ((path (file-truename (or (locate-library "swank-clojure")
-                                   load-file-name))))
-      (and path (concat "/" (file-name-directory path)))))
-  (require 'slime)
-  (slime))
+(require 'clojure-paredit)
+(require 'swank-clojure-autoload)       
+(swank-clojure-config
+ (setq swank-clojure-jar-path (concat clojure-path "clojure.jar"))
+ ;;(setq swank-clojure-extra-classpaths (list "/path/to/extra/classpaths"))
+ )
+(autoload 'slime "slime" "Load slime for swank-clojure" t)
 
 
 ;; CMake
@@ -167,6 +159,11 @@
 ;; dired sorting hooks
 (add-hook 'dired-mode-hook
           (lambda () (require 'dired-sort-map)))
+
+
+;; erc
+(setq erc-autojoin-channels-alist '(("freenode.net" "#clojure")))
+
 
 ;; Erlang
 (defun my-erlang ()
@@ -238,9 +235,6 @@
 (setq remember-annotation-functions '(org-remember-annotation))
 (setq remember-handler-functions '(org-remember-handler))
 (add-hook 'remember-mode-hook 'org-remember-apply-template)
-
-;; Handel logs
-(require 'handel-log-mode)
 
 ;; Make
 (setq compile-command "make ")
