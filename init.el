@@ -129,7 +129,7 @@
 ;; Clojure
 ;; Perhaps someday I'll want this to be buffer local, but let's try it
 ;; globally for now.
-(defvar clojure-path "c:/users/shawn/src/clojure/work/")
+(defvar clojure-path "c:/users/shawn/clojure/work/")
 (setq inferior-lisp-program
       (let* ((java-path "java")
              (java-options "")
