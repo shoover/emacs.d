@@ -43,6 +43,8 @@
 ;; Allow "y or n" instead of "yes or no"
 (fset 'yes-or-no-p 'y-or-n-p)
 
+(setq inhibit-splash-screen t)
+
 ;; Allow bullet lists starting with - to delimit paragraphs for use with
 ;; fill-paragraph. fill-individual-paragraphs accomplishes what I want, but it
 ;; requires that you have an active region.
