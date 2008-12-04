@@ -14,7 +14,7 @@
      (let [prefixes (.split prefix delimiter -1)
            targets (.split target delimiter -1)]
        (when (<= (count prefixes) (count targets))
-         (every? true? (map #(.startsWith %1 %2) targets prefixes))))))
+         (every? true? (map #(.startsWith #^String %1 %2) targets prefixes))))))
 
 (defn- unacronym
   "Interposes delimiter between each character of string."
@@ -29,11 +29,13 @@
 
 (defn- find-ns-str
   "Given an string its-name, returns either an ns if a like named ns
-  exists, or nil. If its-name is nil, returns nil."
+  exists, or nil. If its-name is nil, returns the default ns."
   ([its-name] (find-ns-str its-name nil))
   ([its-name cur-ns-name]
-     (and its-name
-          (resolve-ns (symbol its-name) (maybe-ns cur-ns-name)))))
+     (if (nil? its-name)
+       (maybe-ns nil)
+       (and its-name
+            (resolve-ns (symbol its-name) (maybe-ns cur-ns-name))))))
 
 (defn- completion-list-ns
   "Returns a list of nses that are possible compound completions of sym.
@@ -94,6 +96,7 @@
                                          ;; only for non-empty strings
                                          (.charAt string
                                                   (dec (.length string))))
+                             #^String
                              prefix (reduce largest-common-prefix matches)]
                          ;; Remove trailing \- or \. (if completing a
                          ;; namespace) from longest completable
@@ -105,7 +108,7 @@
                               (or (= \- (last-char prefix))
                                   (and (not (char-position \/ prefix))
                                        (= \. (last-char prefix))))
-                              (not-every? #(.startsWith % prefix)
+                              (not-every? #(.startsWith #^String % prefix)
                                           matches))
                            (.substring prefix 0 (dec (.length prefix)))
                            prefix))

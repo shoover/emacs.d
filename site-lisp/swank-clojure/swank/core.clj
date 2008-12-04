@@ -12,12 +12,12 @@
 (def *current-package*)
 
 (defn maybe-ns [package]
-    (cond
-     (symbol? package) (or (find-ns package) (maybe-ns 'user))
-     (string? package) (maybe-ns (symbol package))
-     (keyword? package) (maybe-ns (name package))
-     (instance? clojure.lang.Namespace package) package
-     :else (maybe-ns 'user)))
+  (cond
+   (symbol? package) (or (find-ns package) (maybe-ns 'user))
+   (string? package) (maybe-ns (symbol package))
+   (keyword? package) (maybe-ns (name package))
+   (instance? clojure.lang.Namespace package) package
+   :else (maybe-ns 'user)))
 
 (defmacro with-emacs-package [& body]
   `(binding [*ns* (maybe-ns *current-package*)]
@@ -37,7 +37,7 @@
 
 ;; Exceptions for debugging
 (def *debug-quit-exception* (Exception. "Debug quit"))
-(def *current-exception*)
+(def #^Throwable *current-exception*)
 
 ;; Handle Evaluation
 (defn send-to-emacs
@@ -191,7 +191,8 @@
 
          (= action :return)
          (let [[thread & ret] args]
-           (write-to-connection conn `(:return ~@ret)))
+           (binding [*print-level* nil, *print-length* nil]
+             (write-to-connection conn `(:return ~@ret))))
 
          (one-of? action
                   :write-string :presentation-start :presentation-end
