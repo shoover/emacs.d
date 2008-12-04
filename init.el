@@ -286,6 +286,10 @@
 (autoload 'yaml-mode "yaml-mode" "Edit YAML files" t)
 (add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
 
+;; XAML
+(add-to-list 'auto-mode-alist '("\\.xaml$" . nxml-mode))
+
+
 (server-start)
 
 ;; Assumed registry settings (HKLM/Software/GNU/Emacs):
@@ -300,11 +304,14 @@
  '(c-doc-comment-style (quote set-from-style))
  '(column-number-mode t)
  '(completion-ignored-extensions (quote (".obj" ".pdb" ".svn/" "CVS/" ".o" "~" ".bin" ".bak" ".obj" ".map" ".ico" ".pif" ".lnk" ".a" ".ln" ".blg" ".bbl" ".dll" ".drv" ".vxd" ".386" ".elc" ".lof" ".glo" ".idx" ".lot" ".fmt" ".tfm" ".class" ".fas" ".lib" ".mem" ".x86f" ".sparcf" ".fasl" ".ufsl" ".fsl" ".dxl" ".pfsl" ".dfsl" ".p64fsl" ".d64fsl" ".dx64fsl" ".lo" ".la" ".gmo" ".mo" ".toc" ".aux" ".cp" ".fn" ".ky" ".pg" ".tp" ".vr" ".cps" ".fns" ".kys" ".pgs" ".tps" ".vrs" ".pyc" ".pyo")))
+ '(erc-fill-function (quote erc-fill-static))
+ '(erc-fill-variable-maximum-indentation 5)
  '(erc-hide-list (quote ("JOIN" "PART" "QUIT")))
  '(erc-nick "shoover")
  '(erc-port 6667)
  '(erc-prompt-for-password nil)
  '(erc-server "irc.freenode.net")
+ '(erc-timestamp-use-align-to t)
  '(erc-user-full-name "Shawn Hoover")
  '(fill-column 78)
  '(global-hl-line-mode t)
