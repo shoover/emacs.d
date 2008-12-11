@@ -213,6 +213,21 @@
 ;; org-mode
 (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
 (require 'org)
+(setq org-publish-project-alist
+      '(("workorg"
+         :base-directory "~/action"
+         :exclude ".org"
+         :include ("apps.org")
+         :publishing-directory "z:/users/shawn/html"
+         :section-numbers t
+         :table-of-contents t)
+        ("workdocs"
+         :base-directory "~/action"
+         :base-extension "docx\\|pptx"
+         :publishing-directory "z:/users/shawn/html"
+         :publishing-function org-publish-attachment)
+        ("work" :components ("workorg" "workdocs"))
+        ))
 (add-hook 'org-mode-hook
           (lambda ()
             (turn-on-auto-fill)
