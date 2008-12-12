@@ -228,6 +228,17 @@
          :publishing-directory "z:/users/shawn/html"
          :publishing-function org-publish-attachment)
         ("work" :components ("workorg" "workdocs"))
+        ("clojure-box-org"
+         :base-directory "c:/docume~1/shawn/desktop/clojure-box-setup/web"
+         :publishing-directory "c:/tmp"
+         ;;:publishing-directory "ftp://clojure.bighugh.com"
+         :style "<link rel=stylesheet href=\"styles.css\" type=\"text/css\">")
+        ("clojure-box-extra"
+         :base-directory "c:/docume~1/shawn/desktop/clojure-box-setup/web"
+         :base-extension "css"
+         :publishing-function org-publish-attachment
+         :publishing-directory "c:/tmp")
+        ("clojure-box" :components ("clojure-box-org" "clojure-box-extra"))
         ))
 (add-hook 'org-mode-hook
           (lambda ()
