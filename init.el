@@ -1,3 +1,4 @@
+
 ;; I keep all my emacs-related stuff under ~/emacs. ~/.emacs should be pretty
 ;; thin. It can contain machine-specific settings, but mainly it exists to
 ;; load this file.
@@ -62,7 +63,7 @@
 (defun gtd ()
   "Find my org-mode list"
   (interactive)
-  (find-file "~/action/action.org"))
+  (find-file (concat my-org-dir "/action.org")))
 
 (defun indent-buffer ()
   "Indent the entire buffer. Seems like emacs should have this."
@@ -213,6 +214,7 @@
 ;; org-mode
 (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
 (require 'org)
+(defvar my-org-dir "~/action")
 (add-hook 'org-mode-hook
           (lambda ()
             (turn-on-auto-fill)
@@ -220,8 +222,8 @@
             (define-key org-mode-map "\C-cl" 'org-store-link)
             
             ;; Variables used to save remember notes
-            (setq org-directory "~/action")
-            (setq org-default-notes-file "~/action/action.org")
+            (setq org-directory my-org-dir)
+            (setq org-default-notes-file (concat my-org-dir "/action.org"))
 
             ;; One template--insert note at top of org file
             (setq org-remember-templates
