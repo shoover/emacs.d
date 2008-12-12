@@ -1,4 +1,3 @@
-
 ;; I keep all my emacs-related stuff under ~/emacs. ~/.emacs should be pretty
 ;; thin. It can contain machine-specific settings, but mainly it exists to
 ;; load this file.
@@ -19,7 +18,7 @@
   (add-path "emacs/site-lisp") ;; elisp stuff I find on the 'net
   (add-path "emacs/site-lisp/clojure")
   (add-path "emacs/site-lisp/color-theme-6.6.0") ;; my color preferences
-  (add-path "emacs/site-lisp/org-6.12b/lisp")
+  (add-path "emacs/site-lisp/org/lisp")
   (add-path "emacs/site-lisp/remember-2.0")
   (add-path "emacs/site-lisp/slime-cvs")
   (add-path "emacs/site-lisp/swank-clojure")
@@ -63,7 +62,7 @@
 (defun gtd ()
   "Find my org-mode list"
   (interactive)
-  (find-file (concat my-org-dir "/action.org")))
+  (find-file "~/action/action.org"))
 
 (defun indent-buffer ()
   "Indent the entire buffer. Seems like emacs should have this."
@@ -215,6 +214,21 @@
 (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
 (require 'org)
 (defvar my-org-dir "~/action")
+(setq org-publish-project-alist
+      '(("workorg"
+         :base-directory "~/action"
+         :exclude ".org"
+         :include ("apps.org")
+         :publishing-directory "z:/users/shawn/html"
+         :section-numbers t
+         :table-of-contents t)
+        ("workdocs"
+         :base-directory "~/action"
+         :base-extension "docx\\|pptx"
+         :publishing-directory "z:/users/shawn/html"
+         :publishing-function org-publish-attachment)
+        ("work" :components ("workorg" "workdocs"))
+        ))
 (add-hook 'org-mode-hook
           (lambda ()
             (turn-on-auto-fill)
@@ -288,6 +302,10 @@
 (autoload 'yaml-mode "yaml-mode" "Edit YAML files" t)
 (add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
 
+;; XAML
+(add-to-list 'auto-mode-alist '("\\.xaml$" . nxml-mode))
+
+
 (server-start)
 
 ;; Assumed registry settings (HKLM/Software/GNU/Emacs):
@@ -302,11 +320,14 @@
  '(c-doc-comment-style (quote set-from-style))
  '(column-number-mode t)
  '(completion-ignored-extensions (quote (".obj" ".pdb" ".svn/" "CVS/" ".o" "~" ".bin" ".bak" ".obj" ".map" ".ico" ".pif" ".lnk" ".a" ".ln" ".blg" ".bbl" ".dll" ".drv" ".vxd" ".386" ".elc" ".lof" ".glo" ".idx" ".lot" ".fmt" ".tfm" ".class" ".fas" ".lib" ".mem" ".x86f" ".sparcf" ".fasl" ".ufsl" ".fsl" ".dxl" ".pfsl" ".dfsl" ".p64fsl" ".d64fsl" ".dx64fsl" ".lo" ".la" ".gmo" ".mo" ".toc" ".aux" ".cp" ".fn" ".ky" ".pg" ".tp" ".vr" ".cps" ".fns" ".kys" ".pgs" ".tps" ".vrs" ".pyc" ".pyo")))
+ '(erc-fill-function (quote erc-fill-static))
+ '(erc-fill-variable-maximum-indentation 5)
  '(erc-hide-list (quote ("JOIN" "PART" "QUIT")))
  '(erc-nick "shoover")
  '(erc-port 6667)
  '(erc-prompt-for-password nil)
  '(erc-server "irc.freenode.net")
+ '(erc-timestamp-use-align-to t)
  '(erc-user-full-name "Shawn Hoover")
  '(fill-column 78)
  '(global-hl-line-mode t)
