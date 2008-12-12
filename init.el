@@ -62,7 +62,7 @@
 (defun gtd ()
   "Find my org-mode list"
   (interactive)
-  (find-file "~/action/action.org"))
+  (find-file (concat my-org-dir "/action.org")))
 
 (defun indent-buffer ()
   "Indent the entire buffer. Seems like emacs should have this."
