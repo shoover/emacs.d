@@ -336,7 +336,6 @@
  '(erc-hide-list (quote ("JOIN" "PART" "QUIT")))
  '(erc-nick "shoover")
  '(erc-port 6667)
- '(erc-prompt-for-password nil)
  '(erc-server "irc.freenode.net")
  '(erc-timestamp-use-align-to t)
  '(erc-user-full-name "Shawn Hoover")
