@@ -45,6 +45,9 @@
 
 (setq inhibit-splash-screen t)
 
+;; Subtle face for parens in lisp modes
+(require 'parenface)
+
 ;; Allow bullet lists starting with - to delimit paragraphs for use with
 ;; fill-paragraph. fill-individual-paragraphs accomplishes what I want, but it
 ;; requires that you have an active region.
@@ -360,6 +363,7 @@
   ;; If there is more than one, they won't work right.
  '(mode-line ((t (:background "wheat" :foreground "black" :inverse-video t :box (:line-width 1 :color "wheat")))))
  '(mode-line-highlight ((t (:inherit highlight :background "black" :foreground "wheat" :inverse-video nil))))
+ '(mode-line-inactive ((default (:inherit mode-line)) (((class color) (min-colors 88) (background dark)) (:background "grey30" :foreground "grey50" :box (:line-width -1 :color "grey40") :weight light))))
  '(tooltip ((t (:inherit variable-pitch :background "systeminfowindow" :foreground "black")))))
 
 
