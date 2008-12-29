@@ -218,15 +218,15 @@
 (require 'org)
 (defvar my-org-dir "~/action")
 (setq org-publish-project-alist
-      '(("workorg"
-         :base-directory "~/action"
+      `(("workorg"
+         :base-directory ,my-org-dir
          :exclude ".org"
          :include ("apps.org")
          :publishing-directory "z:/users/shawn/html"
          :section-numbers t
          :table-of-contents t)
         ("workdocs"
-         :base-directory "~/action"
+         :base-directory ,my-org-dir
          :base-extension "docx\\|pptx"
          :publishing-directory "z:/users/shawn/html"
          :publishing-function org-publish-attachment)
