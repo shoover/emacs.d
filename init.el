@@ -199,7 +199,9 @@ scan-error if not."
 (swank-clojure-config
  (setq swank-clojure-jar-path (concat clojure-path "clojure.jar"))
  ;;(setq swank-clojure-extra-classpaths (list "/path/to/extra/classpaths"))
- )
+ (add-hook 'slime-connected-hook (lambda ()
+                                   (interactive)
+                                   (slime-redirect-inferior-output))))
 (autoload 'slime "slime" "Load slime for swank-clojure" t)
 
 
