@@ -1,10 +1,17 @@
 ;; I keep all my emacs-related stuff under ~/emacs. ~/.emacs should be pretty
 ;; thin. It can contain machine-specific settings, but mainly it exists to
-;; load this file.
+;; load this file. Something like this:
+;; (defvar my-org-dir "~/Dropbox/action")
+;; (defvar clojure-path "~/clojure-svn/")
+;; (setq custom-file "~/emacs/init.el")
+;; (load custom-file)
 
-(defvar emacs-root (if (or (eq system-type 'cygwin)
-                           (eq system-type 'gnu/linux)
-                           (eq system-type 'linux))
+(defvar nix (or (eq system-type 'cygwin)
+                (eq system-type 'gnu/linux)
+                (eq system-type 'linux)
+                (eq system-type 'darwin)))
+
+(defvar emacs-root (if nix
                        "~/"
                      "c:/users/shawn/")
   "My home directory is the root of my emacs load-path.")
@@ -163,10 +170,10 @@ scan-error if not."
 ;; Perhaps someday I'll want this to be buffer local, but let's try it
 ;; globally for now.
 (defvar clojure-path "c:/users/shawn/clojure/work/")
+(defvar class-path-delimiter (if nix ":" ";"))
 (setq inferior-lisp-program
       (let* ((java-path "java")
              (java-options "")
-             (class-path-delimiter ";")
              (class-path (mapconcat (lambda (s) s)
                                     ;; Add other paths to this list
                                     ;; if you want to have other
@@ -182,7 +189,9 @@ scan-error if not."
 (swank-clojure-config
  (setq swank-clojure-jar-path (concat clojure-path "clojure.jar"))
  ;;(setq swank-clojure-extra-classpaths (list "/path/to/extra/classpaths"))
- )
+ (add-hook 'slime-connected-hook (lambda ()
+                                   (interactive)
+                                   (slime-redirect-inferior-output))))
 (autoload 'slime "slime" "Load slime for swank-clojure" t)
 
 
@@ -413,6 +422,7 @@ scan-error if not."
   (color-theme-calm-forest)
   (global-font-lock-mode 1)
   (global-hl-line-mode nil))
+ ((featurep 'aquamacs) nil)
  (t
   (load-file "~/emacs/site-lisp/color-theme-6.6.0/themes/shawn.elc")
   (color-theme-shawn)))
