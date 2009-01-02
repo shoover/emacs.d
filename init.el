@@ -21,21 +21,11 @@
   (add-path "emacs/site-lisp/org/lisp")
   (add-path "emacs/site-lisp/remember-2.0")
   (add-path "emacs/site-lisp/slime-cvs")
-  (add-path "emacs/site-lisp/swank-clojure")
-  )
+  (add-path "emacs/site-lisp/swank-clojure"))
 
-;; Code to integrate cygwin emacs and screen. Might not actually care about
-;; this since I never got around to running a persistent cygwin emacs server.
-;; (add-hook 'after-init-hook 'server-start)
-;; (add-hook 'server-done-hook
-;;   (lambda ()
-;;     (shell-command
-;;       "screen -r -X select `cat ~/tmp/.emacsclient-caller`")))
+(defvar my-org-dir "~/action")
+(defvar my-action-org (concat my-org-dir "/action/action.org"))
  
-;; Printing
-;; TODO: figure out the printer based on where we are
-(defvar printer-name "//FPGACRUNCHER/Printer4")
-
 ;; Tab defaults
 (setq-default indent-tabs-mode nil)
 (setq default-tab-width 2)
@@ -58,14 +48,14 @@
 ;;; Functions
 
 (defun emacs ()
-  "Find my elisp code"
+  "Find my init file"
   (interactive)
   (find-file "~/emacs/init.el"))
 
 (defun gtd ()
   "Find my org-mode list"
   (interactive)
-  (find-file (concat my-org-dir "/action.org")))
+  (find-file my-action-org))
 
 (defun indent-buffer ()
   "Indent the entire buffer. Seems like emacs should have this."
@@ -256,7 +246,6 @@ scan-error if not."
 ;; org-mode
 (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
 (require 'org)
-(defvar my-org-dir "~/action")
 (setq org-publish-project-alist
       `(("workorg"
          :base-directory ,my-org-dir
@@ -288,14 +277,16 @@ scan-error if not."
             (turn-on-auto-fill)
             (define-key org-mode-map "\C-ca" 'org-agenda)
             (define-key org-mode-map "\C-cl" 'org-store-link)
+
+            (setq org-agenda-files (list my-action-org))
             
             ;; Variables used to save remember notes
             (setq org-directory my-org-dir)
-            (setq org-default-notes-file (concat my-org-dir "/action.org"))
+            (setq org-default-notes-file my-action-org)
 
             ;; One template--insert note at top of org file
             (setq org-remember-templates
-                  '((?t "%?\n  %i\n  %a" "~/action/action.org")))
+                  `((?t "%?\n  %i\n  %a" ,my-action-org)))
             ;;(?j "* %U %?\n\n  %i\n  %a" "~/.notes")
             ;;(?i "* %^{Title}\n  %i\n  %a" "~/.notes" "New Ideas")))
 
@@ -385,7 +376,6 @@ scan-error if not."
  '(fill-column 78)
  '(global-hl-line-mode t)
  '(indent-tabs-mode nil)
- '(org-agenda-files (quote ("~/action/action.org")))
  '(org-cycle-include-plain-lists t)
  '(org-tags-column 67)
  '(pr-gs-command "c:\\Program Files\\gs\\gs8.62\\bin\\gswin32c.exe")
@@ -394,7 +384,7 @@ scan-error if not."
  '(tab-always-indent t)
  '(tab-width 2)
  '(transient-mark-mode t)
- '(w32shell-cygwin-bin "C:\\cygwin\\bin"))
+ '(w32shell-cygwin-bin "C:\\bin"))
 
 (custom-set-faces
   ;; custom-set-faces was added by Custom.
