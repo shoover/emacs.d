@@ -31,7 +31,7 @@
   (add-path "emacs/site-lisp/swank-clojure"))
 
 (defvar my-org-dir "~/action")
-(defvar my-action-org (concat my-org-dir "/action/action.org"))
+(defvar my-action-org (concat my-org-dir "/action.org"))
  
 ;; Tab defaults
 (setq-default indent-tabs-mode nil)
