@@ -142,7 +142,7 @@
                                     ;; if you want to have other
                                     ;; things in your classpath.
                                     (list (concat clojure-path "clojure.jar")
-                                          (concat clojure-path "../contrib/clojure-contrib.jar"))
+                                          (concat clojure-path "../mirror/clojure-contrib-mirror/clojure-contrib.jar"))
                                     class-path-delimiter)))
         (concat java-path
                 " " java-options
