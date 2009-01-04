@@ -1,10 +1,17 @@
 ;; I keep all my emacs-related stuff under ~/emacs. ~/.emacs should be pretty
 ;; thin. It can contain machine-specific settings, but mainly it exists to
-;; load this file.
+;; load this file. Something like this:
+;; (defvar my-org-dir "~/Dropbox/action")
+;; (defvar clojure-path "~/clojure-svn/")
+;; (setq custom-file "~/emacs/init.el")
+;; (load custom-file)
 
-(defvar emacs-root (if (or (eq system-type 'cygwin)
-                           (eq system-type 'gnu/linux)
-                           (eq system-type 'linux))
+(defvar nix (or (eq system-type 'cygwin)
+                (eq system-type 'gnu/linux)
+                (eq system-type 'linux)
+                (eq system-type 'darwin)))
+
+(defvar emacs-root (if nix
                        "~/"
                      "c:/users/shawn/")
   "My home directory is the root of my emacs load-path.")
@@ -21,21 +28,11 @@
   (add-path "emacs/site-lisp/org/lisp")
   (add-path "emacs/site-lisp/remember-2.0")
   (add-path "emacs/site-lisp/slime-cvs")
-  (add-path "emacs/site-lisp/swank-clojure")
-  )
+  (add-path "emacs/site-lisp/swank-clojure"))
 
-;; Code to integrate cygwin emacs and screen. Might not actually care about
-;; this since I never got around to running a persistent cygwin emacs server.
-;; (add-hook 'after-init-hook 'server-start)
-;; (add-hook 'server-done-hook
-;;   (lambda ()
-;;     (shell-command
-;;       "screen -r -X select `cat ~/tmp/.emacsclient-caller`")))
+(defvar my-org-dir "~/action")
+(defvar my-action-org (concat my-org-dir "/action.org"))
  
-;; Printing
-;; TODO: figure out the printer based on where we are
-(defvar printer-name "//FPGACRUNCHER/Printer4")
-
 ;; Tab defaults
 (setq-default indent-tabs-mode nil)
 (setq default-tab-width 2)
@@ -58,14 +55,14 @@
 ;;; Functions
 
 (defun emacs ()
-  "Find my elisp code"
+  "Find my init file"
   (interactive)
   (find-file "~/emacs/init.el"))
 
 (defun gtd ()
   "Find my org-mode list"
   (interactive)
-  (find-file (concat my-org-dir "/action.org")))
+  (find-file my-action-org))
 
 (defun indent-buffer ()
   "Indent the entire buffer. Seems like emacs should have this."
@@ -95,6 +92,46 @@
   "A poor-man's version of code folding. From jao."
   (interactive)
   (set-selective-display (if selective-display nil 1)))
+
+;; paredit keyboard tweaks--from Bill Clementson
+(defun check-region-parens ()
+  "Check if parentheses in the region are balanced. Signals a
+scan-error if not."
+  (interactive)
+  (save-restriction
+    (save-excursion
+    (let ((deactivate-mark nil))
+      (condition-case c
+          (progn
+            (narrow-to-region (region-beginning) (region-end))
+            (goto-char (point-min))
+            (while (/= 0 (- (point)
+                            (forward-list))))
+            t)
+        (scan-error (signal 'scan-error
+                            '("Region parentheses not balanced"))))))))
+
+(defun paredit-backward-maybe-delete-region ()
+  (interactive)
+  (if mark-active
+      (progn
+        (check-region-parens)
+        (cua-delete-region))
+    (paredit-backward-delete)))
+
+(defun paredit-forward-maybe-delete-region ()
+  (interactive)
+  (if mark-active
+      (progn
+        (check-region-parens)
+        (cua-delete-region))
+    (paredit-forward-delete)))
+
+(eval-after-load 'paredit
+  '(progn
+     (define-key paredit-mode-map (kbd "<delete>") 'paredit-forward-maybe-delete-region)
+     (define-key paredit-mode-map (kbd "DEL") 'paredit-backward-maybe-delete-region)
+     (define-key paredit-mode-map (kbd ";")   'self-insert-command)))
 
 ;;; Custom keybindings
 (global-set-key "\C-x\C-m" 'execute-extended-command)
@@ -133,10 +170,10 @@
 ;; Perhaps someday I'll want this to be buffer local, but let's try it
 ;; globally for now.
 (defvar clojure-path "c:/users/shawn/clojure/work/")
+(defvar class-path-delimiter (if nix ":" ";"))
 (setq inferior-lisp-program
       (let* ((java-path "java")
              (java-options "")
-             (class-path-delimiter ";")
              (class-path (mapconcat (lambda (s) s)
                                     ;; Add other paths to this list
                                     ;; if you want to have other
@@ -152,7 +189,9 @@
 (swank-clojure-config
  (setq swank-clojure-jar-path (concat clojure-path "clojure.jar"))
  ;;(setq swank-clojure-extra-classpaths (list "/path/to/extra/classpaths"))
- )
+ (add-hook 'slime-connected-hook (lambda ()
+                                   (interactive)
+                                   (slime-redirect-inferior-output))))
 (autoload 'slime "slime" "Load slime for swank-clojure" t)
 
 
@@ -216,17 +255,16 @@
 ;; org-mode
 (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
 (require 'org)
-(defvar my-org-dir "~/action")
 (setq org-publish-project-alist
-      '(("workorg"
-         :base-directory "~/action"
+      `(("workorg"
+         :base-directory ,my-org-dir
          :exclude ".org"
          :include ("apps.org")
          :publishing-directory "z:/users/shawn/html"
          :section-numbers t
          :table-of-contents t)
         ("workdocs"
-         :base-directory "~/action"
+         :base-directory ,my-org-dir
          :base-extension "docx\\|pptx"
          :publishing-directory "z:/users/shawn/html"
          :publishing-function org-publish-attachment)
@@ -248,14 +286,16 @@
             (turn-on-auto-fill)
             (define-key org-mode-map "\C-ca" 'org-agenda)
             (define-key org-mode-map "\C-cl" 'org-store-link)
+
+            (setq org-agenda-files (list my-action-org))
             
             ;; Variables used to save remember notes
             (setq org-directory my-org-dir)
-            (setq org-default-notes-file (concat my-org-dir "/action.org"))
+            (setq org-default-notes-file my-action-org)
 
             ;; One template--insert note at top of org file
             (setq org-remember-templates
-                  '((?t "%?\n  %i\n  %a" "~/action/action.org")))
+                  `((?t "%?\n  %i\n  %a" ,my-action-org)))
             ;;(?j "* %U %?\n\n  %i\n  %a" "~/.notes")
             ;;(?i "* %^{Title}\n  %i\n  %a" "~/.notes" "New Ideas")))
 
@@ -345,7 +385,6 @@
  '(fill-column 78)
  '(global-hl-line-mode t)
  '(indent-tabs-mode nil)
- '(org-agenda-files (quote ("~/action/action.org")))
  '(org-cycle-include-plain-lists t)
  '(org-tags-column 67)
  '(pr-gs-command "c:\\Program Files\\gs\\gs8.62\\bin\\gswin32c.exe")
@@ -354,7 +393,7 @@
  '(tab-always-indent t)
  '(tab-width 2)
  '(transient-mark-mode t)
- '(w32shell-cygwin-bin "C:\\cygwin\\bin"))
+ '(w32shell-cygwin-bin "C:\\bin"))
 
 (custom-set-faces
   ;; custom-set-faces was added by Custom.
@@ -383,6 +422,7 @@
   (color-theme-calm-forest)
   (global-font-lock-mode 1)
   (global-hl-line-mode nil))
+ ((featurep 'aquamacs) nil)
  (t
   (load-file "~/emacs/site-lisp/color-theme-6.6.0/themes/shawn.elc")
   (color-theme-shawn)))
