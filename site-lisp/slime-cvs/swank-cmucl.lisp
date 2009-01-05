@@ -200,7 +200,7 @@ specific functions.")
    (when timeout (return nil))
    (multiple-value-bind (in out) (make-pipe)
      (let* ((f (constantly t))
-            (handlers (loop for s in (cons in streams)
+            (handlers (loop for s in (cons in (mapcar #'to-fd-stream streams))
                             collect (add-one-shot-handler s f))))
        (unwind-protect
             (handler-bind ((slime-interrupt-queued 
@@ -211,6 +211,15 @@ specific functions.")
          (close in)
          (close out))))))
 
+(defun to-fd-stream (stream)
+  (etypecase stream
+    (sys:fd-stream stream)
+    (synonym-stream 
+     (to-fd-stream 
+      (symbol-value (synonym-stream-symbol stream))))
+    (two-way-stream 
+     (to-fd-stream (two-way-stream-input-stream stream)))))
+     
 (defun add-one-shot-handler (stream function)
   (let (handler)
     (setq handler (sys:add-fd-handler (sys:fd-stream-fd stream) :input
@@ -386,8 +395,8 @@ NIL if we aren't compiling from a buffer.")
                       (not (load output-file)))))))))
 
 (defimplementation swank-compile-string (string &key buffer position directory
-                                                debug)
-  (declare (ignore directory debug))
+                                                policy)
+  (declare (ignore directory policy))
   (with-compilation-hooks ()
     (let ((*buffer-name* buffer)
           (*buffer-start-position* position)
@@ -470,16 +479,22 @@ the error-context redundant."
 Return a `location' record, or (:error REASON) on failure."
   (if (null context)
       (note-error-location)
-      (let ((file (c::compiler-error-context-file-name context))
-            (source (c::compiler-error-context-original-source context))
-            (path
-             (reverse (c::compiler-error-context-original-source-path context))))
-        (or (locate-compiler-note file source path)
+      (with-struct (c::compiler-error-context- file-name 
+                                               original-source
+                                               original-source-path) context
+        (or (locate-compiler-note file-name original-source 
+                                  (reverse original-source-path))
             (note-error-location)))))
 
 (defun note-error-location ()
   "Pseudo-location for notes that can't be located."
-  (list :error "No error location available."))
+  (cond (*compile-file-truename*
+         (make-location (list :file (unix-truename *compile-file-truename*))
+                        (list :eof)))
+        (*buffer-name*
+         (make-location (list :buffer *buffer-name*)
+                        (list :position *buffer-start-position*)))
+        (t (list :error "No error location available."))))
 
 (defun locate-compiler-note (file source source-path)
   (cond ((and (eq file :stream) *buffer-name*)

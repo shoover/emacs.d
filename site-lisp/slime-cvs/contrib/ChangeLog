@@ -1,3 +1,139 @@
+2009-01-04  Helmut Eller  <heller@common-lisp.net>
+
+	* slime-repl.el, slime-mrepl.el: Byte-compile the output
+	functions.
+
+2009-01-02  Helmut Eller  <heller@common-lisp.net>
+
+	* slime-mrepl.el: New file.
+
+2009-01-01  Tobias C. Rittweiler  <tcr@freebits.de>
+
+	* slime-autodoc.el: Autodoc is now implemented on top of ElDoc.
+	(Suggested by Madhu.)
+
+2008-12-31  Tobias C. Rittweiler  <tcr@freebits.de>
+
+	* swank-arglists.lisp (format-arglist-for-echo-area): Catch errors
+	and die gracefully.
+
+2008-12-31  Tobias C. Rittweiler  <tcr@freebits.de>
+
+	* swank-sbcl-exts.lisp: Wrap file in a big #+sbcl (PROGN ...), so
+	users can use the `slime-sbcl-exts' contrib in their .emacs
+	nevermind what implementation they actually use.
+	(Reported by Stas Boukarev)
+
+2008-12-31  Helmut Eller  <heller@common-lisp.net>
+
+	* inferior-slime.el (inferior-slime-change-directory): New
+	function.
+	(inferior-slime-init): Hook it in.
+
+2008-12-30  Tobias C. Rittweiler  <tcr@freebits.de>
+
+	* slime-repl.lisp (slime-repl-set-package): Set
+	`slime-buffer-package' to the new package name. Otherwise, a ,!p
+	repl command is not properly taken into account resulting in
+	misbehaviour of completion and arglist display.
+
+2008-12-30  Tobias C. Rittweiler  <tcr@freebits.de>
+
+	* slime-sbcl-exts.el, swank-sbcl-exts.lisp: New contrib.
+
+	This is the place for SBCL specific extensions and customizations
+	that can't go into SBCL's swank-backend.
+
+	At the moment, it contains code to display arglist of instructions,
+	as in `(sb-assem:inst mov |'.
+
+2008-12-30  Tobias C. Rittweiler  <tcr@freebits.de>
+
+	* swank-arglists.lisp (defstruct arglist-dummy): Remove
+	:PRINT-OBJECT which made an arglist dummy look like a normal
+	symbol. This is just confusing. If an ARGLIST-DUMMY appears in an
+	arglist, the relevant code should deal with this explicitly.
+	(with-availability): Renamed to WITH-AVAILABLE-ARGLIST.
+
+	* slime-parse.el (slime-parse-extended-operator-name): Pass the
+	fully qualified symbol (not just the name) to the parser function.
+	(slime-make-extended-operator-parser/look-ahead): Do not take the
+	operator name as first argument if point is located at the
+	operator name.
+
+2008-12-27  Helmut Eller  <heller@common-lisp.net>
+
+	* slime-repl.el (slime-repl-event-hook-function): Handle
+	:new-package events here.
+	(slime-output-buffer): Initialize slime-buffer-package.
+	(slime-repl-connected-hook-function): Initialize slime-lisp-package.
+
+2008-12-27  Helmut Eller  <heller@common-lisp.net>
+
+	* slime-repl.el (slime-repl-quit): Kill the repl buffer before
+	quitting.  Reported by Volkan YAZICI.
+
+2008-12-27  Helmut Eller  <heller@common-lisp.net>
+
+	* slime-asdf.el: Require slime-repl.
+
+2008-12-26  Helmut Eller  <heller@common-lisp.net>
+
+	* slime-repl.el (slime-repl-connected-hook-function): Create a
+	repl thread before creating a repl buffer.
+
+2008-12-25  Helmut Eller  <heller@common-lisp.net>
+
+	* inferior-slime.el (inferior-slime-switch-to-repl-buffer): New
+	function.
+	(inferior-slime-init): Bind it to a selector key.
+
+2008-12-23  Helmut Eller  <heller@common-lisp.net>
+
+	* slime-repl.el (slime-repl-connected-hook-function): Create
+	a repl at startup.  Well, initialize stream redirection.
+
+2008-12-23  Helmut Eller  <heller@common-lisp.net>
+
+	Move i/o related event handlers to slime-repl.el.
+
+	* slime-repl.el (slime-repl-event-hook-function): Handle some
+	events here.
+
+2008-12-23  Helmut Eller  <heller@common-lisp.net>
+
+	* slime-editing-commands.el (slime-editing-commands-init): Bind
+	slime-close-all-parens-in-sexp.
+
+2008-12-23  Helmut Eller  <heller@common-lisp.net>
+
+	* inferior-slime.el (inferior-slime-hook-function): New function.
+	(inferior-slime-init): Automatically enable it in the
+	*inferior-lisp* buffer.
+
+2008-12-23  Helmut Eller  <heller@common-lisp.net>
+
+	* slime-fancy.el: Add slime-repl.
+
+2008-12-09  Helmut Eller  <heller@common-lisp.net>
+
+	* swank-kawa.scm (mif): Avoid assignments because that triggers a
+	bug/regression in the compiler.
+	(getpid): Don't use the -n with echo.  It's not standard and also
+	not needed here.
+
+2008-11-29  Tobias C. Rittweiler  <tcr@freebits.de>
+
+	* slime-package-fu.el (slime-goto-package-source-definition):
+	`(slime-pop-to-location loc 'excursion)' no longer exists; use
+	`(slime-goto-source-location loc)' instead.
+
+2008-11-22  Geoff Wozniak <geoff@wozniak.ca>
+
+	* swank-c-p-c.lisp (parse-completion-arguments): Change the
+	package identifier from the string "KEYWORD" to the
+	form (symbol-name :keyword) for ACL's "modern" mode.
+
 2008-10-31  Nikodemus Siivola <nikodemus@random-state.net>
 
 	* swank-presentation-streams.liso (slime-stream-p): delete
