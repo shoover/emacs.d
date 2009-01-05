@@ -5,3 +5,5 @@ syntax: glob
 new.lic 
 *.gz 
 .git 
+.cvsignore
+CVS

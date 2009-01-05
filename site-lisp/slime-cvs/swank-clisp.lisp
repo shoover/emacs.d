@@ -177,6 +177,7 @@
                         :element-type 'character
                         :external-format external-format))
 
+#-win32
 (defimplementation wait-for-input (streams &optional timeout)
   (assert (member timeout '(nil t)))
   (let ((streams (mapcar (lambda (s) (list* s :input nil)) streams)))
@@ -635,8 +636,8 @@ Execute BODY with NAME's function slot set to FUNCTION."
                          (not (load fasl-file)))))))))
 
 (defimplementation swank-compile-string (string &key buffer position directory
-                                         debug)
-  (declare (ignore directory debug))
+                                         policy)
+  (declare (ignore directory policy))
   (with-compilation-hooks ()
     (let ((*buffer-name* buffer)
           (*buffer-offset* position))

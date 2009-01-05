@@ -30,6 +30,11 @@
   (add-path "emacs/site-lisp/slime-cvs")
   (add-path "emacs/site-lisp/swank-clojure"))
 
+;; Load emacsw32 here instead of site-start.el so it finds my org installation.
+;; You still have to remove it from site-start.el, though, because that happens
+;; before this.
+(require 'emacsw32 nil t)
+
 (defvar my-org-dir "~/action")
 (defvar my-action-org (concat my-org-dir "/action.org"))
  
@@ -167,9 +172,8 @@ scan-error if not."
 
 
 ;; Clojure
-;; Perhaps someday I'll want this to be buffer local, but let's try it
-;; globally for now.
 (defvar clojure-path "c:/users/shawn/clojure/work/")
+(defvar clojure-contrib-path "c:/users/shawn/clojure-contrib-mirror/")
 (defvar class-path-delimiter (if nix ":" ";"))
 (setq inferior-lisp-program
       (let* ((java-path "java")
@@ -179,7 +183,7 @@ scan-error if not."
                                     ;; if you want to have other
                                     ;; things in your classpath.
                                     (list (concat clojure-path "clojure.jar")
-                                          (concat clojure-path "../mirror/clojure-contrib-mirror/clojure-contrib.jar"))
+                                          (concat clojure-contrib-path "clojure-contrib.jar"))
                                     class-path-delimiter)))
         (concat java-path
                 " " java-options
@@ -187,11 +191,9 @@ scan-error if not."
 (require 'clojure-paredit)
 (require 'swank-clojure-autoload)       
 (swank-clojure-config
+ (slime-setup '(slime-repl))
  (setq swank-clojure-jar-path (concat clojure-path "clojure.jar"))
- ;;(setq swank-clojure-extra-classpaths (list "/path/to/extra/classpaths"))
- (add-hook 'slime-connected-hook (lambda ()
-                                   (interactive)
-                                   (slime-redirect-inferior-output))))
+ (setq swank-clojure-extra-classpaths (list (concat clojure-contrib-path "clojure-contrib.jar"))))
 (autoload 'slime "slime" "Load slime for swank-clojure" t)
 
 
@@ -359,8 +361,13 @@ scan-error if not."
 ;; XAML
 (add-to-list 'auto-mode-alist '("\\.xaml$" . nxml-mode))
 
-
-(server-start)
+;; Make sure there's a server. EmacsW32 and Aquamacs normally start it
+;; automatically, but just in case...
+(add-hook 'term-setup-hook
+          (lambda ()
+            (unless (and (boundp 'server-mode) server-mode)
+              (require 'server)
+              (server-start))))
 
 ;; Assumed registry settings (HKLM/Software/GNU/Emacs):
 ;;   Emacs.toolBar: 0
