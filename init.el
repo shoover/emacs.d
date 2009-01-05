@@ -30,6 +30,11 @@
   (add-path "emacs/site-lisp/slime-cvs")
   (add-path "emacs/site-lisp/swank-clojure"))
 
+;; Load emacsw32 here instead of site-start.el so it finds my org installation.
+;; You still have to remove it from site-start.el, though, because that happens
+;; before this.
+(require 'emacsw32 nil t)
+
 (defvar my-org-dir "~/action")
 (defvar my-action-org (concat my-org-dir "/action.org"))
  
