@@ -209,7 +209,15 @@ scan-error if not."
 
 ;; erc
 (setq erc-autojoin-channels-alist '(("freenode.net" "#clojure")))
-
+(defvar my-erc-frame nil "Cache the frame where ERC lives")
+(defun my-erc ()
+  "Starts ERC in a new frame with Georgia font or raises if it's running."
+  (interactive)
+  (unless (frame-live-p my-erc-frame)
+    (setq my-erc-frame (select-frame (make-frame)))
+    (set-frame-font "Georgia-12")
+    (erc))
+  (raise-frame my-erc-frame))
 
 ;; Erlang
 (defun my-erlang ()
