@@ -436,7 +436,10 @@ scan-error if not."
   (declare-function color-theme-calm-forest "~/emacs/color/color-theme-6.6.0/themes/color-theme-library.el" nil)
   (color-theme-calm-forest)
   (global-font-lock-mode 1)
-  (global-hl-line-mode nil))
+  (global-hl-line-mode nil)
+  
+  ;; Lest we get black on black parens
+  (set-face-foreground 'paren-face "green"))
  ((featurep 'aquamacs) nil)
  (t
   (load-file "~/emacs/site-lisp/color-theme-6.6.0/themes/shawn.elc")
