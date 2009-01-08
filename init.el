@@ -11,10 +11,7 @@
                 (eq system-type 'linux)
                 (eq system-type 'darwin)))
 
-(defvar emacs-root (if nix
-                       "~/"
-                     "c:/users/shawn/")
-  "My home directory is the root of my emacs load-path.")
+(defvar emacs-root "~/" "My home directory is the root of my emacs load-path.")
 
 ;; Add elisp directories under ~/emacs to my load path.
 (require 'cl)
@@ -193,7 +190,7 @@ scan-error if not."
 (swank-clojure-config
  (slime-setup '(slime-repl))
  (setq swank-clojure-jar-path (concat clojure-path "clojure.jar"))
- (setq swank-clojure-extra-classpaths (list (concat clojure-contrib-path "clojure-contrib.jar"))))
+ (add-to-list 'swank-clojure-extra-classpaths (concat clojure-contrib-path "clojure-contrib.jar")))
 (autoload 'slime "slime" "Load slime for swank-clojure" t)
 
 
@@ -386,6 +383,8 @@ scan-error if not."
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
  '(ansi-color-for-comint-mode t)
+ '(aquamacs-additional-fontsets nil t)
+ '(aquamacs-customization-version-id 151 t)
  '(c-doc-comment-style (quote set-from-style))
  '(column-number-mode t)
  '(completion-ignored-extensions (quote (".obj" ".pdb" ".svn/" "CVS/" ".o" "~" ".bin" ".bak" ".obj" ".map" ".ico" ".pif" ".lnk" ".a" ".ln" ".blg" ".bbl" ".dll" ".drv" ".vxd" ".386" ".elc" ".lof" ".glo" ".idx" ".lot" ".fmt" ".tfm" ".class" ".fas" ".lib" ".mem" ".x86f" ".sparcf" ".fasl" ".ufsl" ".fsl" ".dxl" ".pfsl" ".dfsl" ".p64fsl" ".d64fsl" ".dx64fsl" ".lo" ".la" ".gmo" ".mo" ".toc" ".aux" ".cp" ".fn" ".ky" ".pg" ".tp" ".vr" ".cps" ".fns" ".kys" ".pgs" ".tps" ".vrs" ".pyc" ".pyo")))
@@ -400,14 +399,20 @@ scan-error if not."
  '(fill-column 78)
  '(global-hl-line-mode t)
  '(indent-tabs-mode nil)
+ '(one-buffer-one-frame-mode nil nil (aquamacs-frame-setup))
  '(org-cycle-include-plain-lists t)
  '(org-tags-column 67)
  '(pr-gs-command "c:\\Program Files\\gs\\gs8.62\\bin\\gswin32c.exe")
  '(pr-gv-command "C:\\Program Files\\Ghostgum\\gsview\\gsview32.exe")
+ '(scroll-conservatively 0)
+ '(scroll-step 0)
  '(show-paren-mode t)
+ '(special-display-regexps (quote (".*SPEEDBAR.*")))
  '(tab-always-indent t)
  '(tab-width 2)
+ '(tool-bar-mode nil)
  '(transient-mark-mode t)
+ '(visual-scroll-margin 0)
  '(w32shell-cygwin-bin "C:\\bin"))
 
 (custom-set-faces
