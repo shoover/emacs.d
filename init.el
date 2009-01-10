@@ -445,6 +445,7 @@ scan-error if not."
   
   ;; Lest we get black on black parens
   (set-face-foreground 'paren-face "green"))
+ ;; Aquamacs just takes over anyway after loading .emacs. Lame.
  ((featurep 'aquamacs) nil)
  (t
   (load-file "~/emacs/site-lisp/color-theme-6.6.0/themes/shawn.elc")
