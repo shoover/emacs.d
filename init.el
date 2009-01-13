@@ -379,6 +379,11 @@ scan-error if not."
               (require 'server)
               (server-start))))
 
+(if (featurep 'aquamacs)
+    (progn
+       (require 'aquamacs-frame-setup)
+       (setq one-buffer-one-frame-mode nil)))
+
 ;; Assumed registry settings (HKLM/Software/GNU/Emacs):
 ;;   Emacs.toolBar: 0
 ;;   Emacs.full
@@ -404,7 +409,6 @@ scan-error if not."
  '(fill-column 78)
  '(global-hl-line-mode t)
  '(indent-tabs-mode nil)
- '(one-buffer-one-frame-mode nil nil (aquamacs-frame-setup))
  '(org-cycle-include-plain-lists t)
  '(org-tags-column 67)
  '(pr-gs-command "c:\\Program Files\\gs\\gs8.62\\bin\\gswin32c.exe")
