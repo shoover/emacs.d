@@ -294,8 +294,13 @@ scan-error if not."
 (add-hook 'org-mode-hook
           (lambda ()
             (turn-on-auto-fill)
+
+            ;; These commands have no binding by default.
             (define-key org-mode-map "\C-ca" 'org-agenda)
             (define-key org-mode-map "\C-cl" 'org-store-link)
+
+            ;; Make links work like chasing definitions in source code.
+            (define-key org-mode-map "\M-." 'org-open-at-point)
 
             (setq org-agenda-files (list my-action-org))
             
