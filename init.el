@@ -188,6 +188,9 @@ scan-error if not."
 (require 'clojure-paredit)
 (require 'swank-clojure-autoload)       
 (swank-clojure-config
+ ;; Provide clojure-indent-function in case we haven't opened a Clojure file
+ ;; yet
+ (require 'clojure-mode)
  (slime-setup '(slime-repl))
  (setq swank-clojure-jar-path (concat clojure-path "clojure.jar"))
  (add-to-list 'swank-clojure-extra-classpaths (concat clojure-contrib-path "clojure-contrib.jar")))
