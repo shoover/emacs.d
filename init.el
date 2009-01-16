@@ -188,6 +188,9 @@ scan-error if not."
 (require 'clojure-paredit)
 (require 'swank-clojure-autoload)       
 (swank-clojure-config
+ ;; Provide clojure-indent-function in case we haven't opened a Clojure file
+ ;; yet
+ (require 'clojure-mode)
  (slime-setup '(slime-repl))
  (setq swank-clojure-jar-path (concat clojure-path "clojure.jar"))
  (add-to-list 'swank-clojure-extra-classpaths (concat clojure-contrib-path "clojure-contrib.jar")))
@@ -291,8 +294,13 @@ scan-error if not."
 (add-hook 'org-mode-hook
           (lambda ()
             (turn-on-auto-fill)
+
+            ;; These commands have no binding by default.
             (define-key org-mode-map "\C-ca" 'org-agenda)
             (define-key org-mode-map "\C-cl" 'org-store-link)
+
+            ;; Make links work like chasing definitions in source code.
+            (define-key org-mode-map "\M-." 'org-open-at-point)
 
             (setq org-agenda-files (list my-action-org))
             
@@ -374,6 +382,11 @@ scan-error if not."
               (require 'server)
               (server-start))))
 
+(if (featurep 'aquamacs)
+    (progn
+       (require 'aquamacs-frame-setup)
+       (setq one-buffer-one-frame-mode nil)))
+
 ;; Assumed registry settings (HKLM/Software/GNU/Emacs):
 ;;   Emacs.toolBar: 0
 ;;   Emacs.full
@@ -399,7 +412,6 @@ scan-error if not."
  '(fill-column 78)
  '(global-hl-line-mode t)
  '(indent-tabs-mode nil)
- '(one-buffer-one-frame-mode nil nil (aquamacs-frame-setup))
  '(org-cycle-include-plain-lists t)
  '(org-tags-column 67)
  '(pr-gs-command "c:\\Program Files\\gs\\gs8.62\\bin\\gswin32c.exe")
