@@ -413,18 +413,18 @@ joined together."))
 
 (defvar slime-repl-mode-map)
 
-(setq slime-repl-mode-map (make-sparse-keymap))
-(set-keymap-parent slime-repl-mode-map lisp-mode-map)
+(let ((map (copy-keymap slime-parent-map)))
+  (set-keymap-parent map lisp-mode-map)
+  (setq slime-repl-mode-map (make-sparse-keymap))
+  (set-keymap-parent slime-repl-mode-map map))
 
-(dolist (spec slime-keys)
-  (destructuring-bind (key command &key inferior prefixed 
-                           &allow-other-keys) spec
-    (when inferior
-      (let ((key (if prefixed (concat slime-prefix-key key) key)))
-        (define-key slime-repl-mode-map key command)))))
+(slime-define-keys slime-prefix-map
+  ("\C-z" 'slime-switch-to-output-buffer)
+  ("\M-p" 'slime-repl-set-package))
 
-(slime-define-keys slime-mode-map
-  ("\C-c\C-z" 'slime-switch-to-output-buffer))
+(slime-define-keys slime-mode-map 
+  ("\C-c~" 'slime-sync-package-and-default-directory)
+  ("\C-c\C-y" 'slime-call-defun))
 
 (slime-define-keys slime-connection-list-mode-map
   ((kbd "RET") 'slime-goto-connection)
@@ -445,24 +445,15 @@ joined together."))
   ("\M-r" 'slime-repl-previous-matching-input)
   ("\M-s" 'slime-repl-next-matching-input)
   ("\C-c\C-c" 'slime-interrupt)
-  ("\C-c\C-b" 'slime-interrupt)
-  ("\C-c:"    'slime-interactive-eval)
-  ("\C-c\C-e" 'slime-interactive-eval)
-  ("\C-cE"     'slime-edit-value)
   ;("\t"   'slime-complete-symbol)
   ("\t"   'slime-indent-and-complete-symbol)
+  ("\M-\t" 'slime-complete-symbol)
   (" "    'slime-space)
-  ("\C-c\C-d" slime-doc-map)
-  ("\C-c\C-w" slime-who-map)
-  ("\C-\M-x" 'slime-eval-defun)
   ("\C-c\C-o" 'slime-repl-clear-output)
   ("\C-c\M-o" 'slime-repl-clear-buffer)
-  ("\C-c\C-t" 'slime-toggle-trace-fdefinition)
   ("\C-c\C-u" 'slime-repl-kill-input)
   ("\C-c\C-n" 'slime-repl-next-prompt)
   ("\C-c\C-p" 'slime-repl-previous-prompt)
-  ("\C-c\C-l" 'slime-load-file)
-  ("\C-c\C-k" 'slime-compile-and-load-file)
   ("\C-c\C-z" 'slime-nop))
 
 (def-slime-selector-method ?r
@@ -822,7 +813,7 @@ earlier in the buffer."
     (delete-region (point-min) slime-repl-prompt-start-mark)
     (delete-region slime-output-start slime-output-end)
     (goto-char slime-repl-input-start-mark)
-    (recenter))
+    (recenter t))
   (run-hooks 'slime-repl-clear-buffer-hook))
 
 (defun slime-repl-clear-output ()

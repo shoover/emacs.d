@@ -261,12 +261,15 @@ condition."
   (handler-bind ((ccl::compiler-warning 'handle-compiler-warning))
     (funcall function)))
 
-(defimplementation swank-compile-file (filename load-p external-format)
+(defimplementation swank-compile-file (input-file output-file
+                                       load-p external-format)
   (declare (ignore external-format))
   (with-compilation-hooks ()
     (let ((*buffer-name* nil)
           (*buffer-offset* nil))
-      (compile-file filename :load load-p))))
+      (compile-file input-file 
+                    :output-file output-file
+                    :load load-p))))
 
 (defimplementation frame-var-value (frame var)
   (block frame-var-value
@@ -368,40 +371,38 @@ condition."
            (mapcan 'who-specializes (ccl::%class-direct-subclasses class)))
    :test 'equal))
 
-(defimplementation swank-compile-string (string &key buffer position directory
+(defimplementation swank-compile-string (string &key buffer position filename
                                          policy)
   (declare (ignore policy))
   (with-compilation-hooks ()
     (let ((*buffer-name* buffer)
           (*buffer-offset* position)
-          (filename (temp-file-name)))
+          (temp-file-name (temp-file-name)))
       (unwind-protect
-           (with-open-file (s filename :direction :output :if-exists :error)
-             (write-string string s))
-        (let ((binary-filename (compile-temp-file
-                                filename directory buffer position)))
-          (delete-file binary-filename)))
-      (delete-file filename))))
+           (progn
+             (with-open-file (s temp-file-name :direction :output 
+                                :if-exists :error)
+               (write-string string s))
+             (let ((binary-filename (compile-temp-file
+                                     temp-file-name filename buffer position)))
+               (delete-file binary-filename)))
+        (delete-file temp-file-name)))))
 
 (defvar *temp-file-map* (make-hash-table :test #'equal)
   "A mapping from tempfile names to Emacs buffer names.")
 
-(defun note-temp-file (filename directory buffer)
-  (cond (directory
-         (format nil "~a/~a" directory buffer))
-        (t
-         (setf (gethash filename *temp-file-map*) buffer)
-         filename)))
-
-(defun compile-temp-file (filename dir buffer offset)
+(defun compile-temp-file (temp-file-name buffer-file-name buffer-name offset)
   (if (fboundp 'ccl::function-source-note)
-      (compile-file filename
+      (compile-file temp-file-name
                     :load t
-                    :compile-file-original-truename (note-temp-file filename 
-                                                                    dir
-                                                                    buffer)
+                    :compile-file-original-truename 
+                    (or buffer-file-name
+                        (progn 
+                          (setf (gethash temp-file-name *temp-file-map*)
+                                buffer-name)
+                          temp-file-name))
                     :compile-file-original-buffer-offset (1- offset))
-      (compile-file filename :load t)))
+      (compile-file temp-file-name :load t)))
 
 ;;; Profiling (alanr: lifted from swank-clisp)
 
@@ -458,6 +459,10 @@ condition."
   (let ((*debugger-hook* hook)
         (*break-in-sldb* t))
     (funcall fun)))
+
+(defimplementation install-debugger-globally (function)
+  (setq *debugger-hook* function)
+  (setq *break-in-sldb* t))
 
 (defun backtrace-context ()
   nil)
@@ -841,10 +846,10 @@ at least the filename containing it."
    :when :around
    :name sldb-break))
 
-(defun break-in-sldb (&optional string &rest args)
+(defun break-in-sldb (x y &rest args)
   (let ((*sldb-stack-top-hint* (or *sldb-stack-top-hint*
                                    (ccl::%get-frame-ptr))))
-    (apply #'cerror "Continue from break" (or string "Break") args)))
+    (apply #'cerror y (if args "Break: ~a" x) args)))
 
 ;;; Utilities
 
@@ -1095,6 +1100,9 @@ out IDs for.")
            (return (car tail)))))
      (when (eq timeout t) (return (values nil t)))
      (ccl:timed-wait-on-semaphore (mailbox.semaphore mbox) 1))))
+
+(defimplementation set-default-initial-binding (var form)
+  (eval `(ccl::def-standard-initial-binding ,var ,form)))
 
 (defimplementation quit-lisp ()
   (ccl::quit))

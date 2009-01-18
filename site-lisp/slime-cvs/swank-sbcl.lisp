@@ -335,6 +335,11 @@
 
 ;;; Utilities
 
+#+#.(swank-backend::sbcl-with-symbol 'function-lambda-list 'sb-introspect)
+(defimplementation arglist (fname)
+  (sb-introspect:function-lambda-list fname))
+
+#-#.(swank-backend::sbcl-with-symbol 'function-lambda-list 'sb-introspect)
 (defimplementation arglist (fname)
   (sb-introspect:function-arglist fname))
 
@@ -480,16 +485,19 @@ compiler state."
 
 (defvar *trap-load-time-warnings* nil)
 
-(defimplementation swank-compile-file (pathname load-p external-format)
+(defimplementation swank-compile-file (input-file output-file 
+                                       load-p external-format)
   (handler-case
       (multiple-value-bind (output-file warnings-p failure-p)
           (with-compilation-hooks ()
-            (compile-file pathname :external-format external-format))
+            (compile-file input-file :output-file output-file
+                          :external-format external-format))
         (values output-file warnings-p
                 (or failure-p
                     (when load-p
                       ;; Cache the latest source file for definition-finding.
-                      (source-cache-get pathname (file-write-date pathname))
+                      (source-cache-get input-file 
+                                        (file-write-date input-file))
                       (not (load output-file))))))
     (sb-c:fatal-compiler-error () nil)))
 
@@ -520,12 +528,12 @@ compiler state."
    (loop for (qual . value) in policy
          do (sb-ext:restrict-compiler-policy qual value)))
 
-(defimplementation swank-compile-string (string &key buffer position directory
-                                                policy)
+(defimplementation swank-compile-string (string &key buffer position filename
+                                         policy)
   (let ((*buffer-name* buffer)
         (*buffer-offset* position)
         (*buffer-substring* string)
-        (filename (temp-file-name))
+        (temp-file-name (temp-file-name))
         (saved-policy (get-compiler-policy '((debug . 0) (speed . 0)))))
     (when policy
       (set-compiler-policy policy))
@@ -535,11 +543,11 @@ compiler state."
              (with-compilation-hooks ()
                (with-compilation-unit
                    (:source-plist (list :emacs-buffer buffer
-                                        :emacs-directory directory
+                                        :emacs-filename filename
                                         :emacs-string string
                                         :emacs-position position))
-                 (funcall cont (compile-file filename))))))
-      (with-open-file (s filename :direction :output :if-exists :error)
+                 (funcall cont (compile-file temp-file-name))))))
+      (with-open-file (s temp-file-name :direction :output :if-exists :error)
         (write-string string s))
       (unwind-protect
            (if *trap-load-time-warnings*
@@ -547,8 +555,8 @@ compiler state."
                (load-it (compile-it #'identity)))
         (ignore-errors
           (set-compiler-policy saved-policy)
-          (delete-file filename)
-          (delete-file (compile-file-pathname filename)))))))
+          (delete-file temp-file-name)
+          (delete-file (compile-file-pathname temp-file-name)))))))
 
 ;;;; Definitions
 
