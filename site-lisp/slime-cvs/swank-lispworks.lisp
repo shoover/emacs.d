@@ -15,12 +15,32 @@
   (import-from :stream *gray-stream-symbols* :swank-backend))
 
 (import-swank-mop-symbols :clos '(:slot-definition-documentation
+                                  :slot-boundp-using-class
+                                  :slot-value-using-class
+                                  :slot-makunbound-using-class
                                   :eql-specializer
                                   :eql-specializer-object
                                   :compute-applicable-methods-using-classes))
 
 (defun swank-mop:slot-definition-documentation (slot)
   (documentation slot t))
+
+(defun swank-mop:slot-boundp-using-class (class object slotd)
+  (clos:slot-boundp-using-class class object
+                                (clos:slot-definition-name slotd)))
+
+(defun swank-mop:slot-value-using-class (class object slotd)
+  (clos:slot-value-using-class class object
+                               (clos:slot-definition-name slotd)))
+
+(defun (setf swank-mop:slot-value-using-class) (value class object slotd)
+  (setf (clos:slot-value-using-class class object
+                                     (clos:slot-definition-name slotd))
+        value))
+
+(defun swank-mop:slot-makunbound-using-class (class object slotd)
+  (clos:slot-makunbound-using-class class object
+                                    (clos:slot-definition-name slotd)))
 
 (defun swank-mop:compute-applicable-methods-using-classes (gf classes)
   (clos::compute-applicable-methods-from-classes gf classes))
@@ -426,9 +446,12 @@ Return NIL if the symbol is unbound."
            (signal-undefined-functions compiler::*unknown-functions* 
                                        ,location))))))
 
-(defimplementation swank-compile-file (filename load-p external-format)
-  (with-swank-compilation-unit (filename)
-    (compile-file filename :load load-p 
+(defimplementation swank-compile-file (input-file output-file
+                                       load-p external-format)
+  (with-swank-compilation-unit (input-file)
+    (compile-file input-file 
+                  :output-file output-file
+                  :load load-p 
                   :external-format external-format)))
 
 (defvar *within-call-with-compilation-hooks* nil
@@ -628,9 +651,9 @@ function names like \(SETF GET)."
 		nil)))
 	   htab))
 
-(defimplementation swank-compile-string (string &key buffer position directory
-                                                policy)
-  (declare (ignore directory policy))
+(defimplementation swank-compile-string (string &key buffer position filename
+                                         policy)
+  (declare (ignore filename policy))
   (assert buffer)
   (assert position)
   (let* ((location (list :emacs-buffer buffer position string))
@@ -753,11 +776,7 @@ function names like \(SETF GET)."
         (t (funcall continuation))))
 
 (defimplementation spawn (fn &key name)
-  (let ((mp:*process-initial-bindings* 
-         (remove (find-package :cl) 
-                 mp:*process-initial-bindings*
-                 :key (lambda (x) (symbol-package (car x))))))
-    (mp:process-run-function name () fn)))
+  (mp:process-run-function name () fn))
 
 (defvar *id-lock* (mp:make-lock))
 (defvar *thread-id-counter* 0)
@@ -834,6 +853,11 @@ function names like \(SETF GET)."
     (mp:with-lock ((mailbox.mutex mbox))
       (setf (mailbox.queue mbox)
             (nconc (mailbox.queue mbox) (list message))))))
+
+(defimplementation set-default-initial-binding (var form)
+  (setq mp:*process-initial-bindings* 
+        (acons var `(eval (quote ,form))
+               mp:*process-initial-bindings* )))
 
 ;;; Some intergration with the lispworks environment
 

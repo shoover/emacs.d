@@ -173,8 +173,8 @@ Backends implement these functions using DEFIMPLEMENTATION."
 (defun warn-unimplemented-interfaces ()
   "Warn the user about unimplemented backend features.
 The portable code calls this function at startup."
-  (warn "These Swank interfaces are unimplemented:~% ~A"
-        (sort (copy-list *unimplemented-interfaces*) #'string<)))
+  (warn "These Swank interfaces are unimplemented:~% ~:<~{~A~^ ~:_~}~:>"
+        (list (sort (copy-list *unimplemented-interfaces*) #'string<))))
 
 (defun import-to-swank-mop (symbol-list)
   (dolist (sym symbol-list)
@@ -370,7 +370,7 @@ This is used to resolve filenames without directory component."
   (declare (ignore ignore))
   `(call-with-compilation-hooks (lambda () (progn ,@body))))
 
-(definterface swank-compile-string (string &key buffer position directory
+(definterface swank-compile-string (string &key buffer position filename
                                            policy)
   "Compile source from STRING.
 During compilation, compiler conditions must be trapped and
@@ -381,19 +381,20 @@ If supplied, BUFFER and POSITION specify the source location in Emacs.
 Additionally, if POSITION is supplied, it must be added to source
 positions reported in compiler conditions.
 
-If DIRECTORY is specified it may be used by certain implementations to
+If FILENAME is specified it may be used by certain implementations to
 rebind *DEFAULT-PATHNAME-DEFAULTS* which may improve the recording of
 source information.
 
-If DEBUG is supplied, and non-NIL, it may be used by certain
+If POLICY is supplied, and non-NIL, it may be used by certain
 implementations to compile with a debug optimization quality of its
 value.
 
 Should return T on successfull compilation, NIL otherwise.
 ")
 
-(definterface swank-compile-file (pathname load-p external-format)
-   "Compile PATHNAME signalling COMPILE-CONDITIONs.
+(definterface swank-compile-file (input-file output-file load-p 
+                                             external-format)
+   "Compile INPUT-FILE signalling COMPILE-CONDITIONs.
 If LOAD-P is true, load the file after compilation.
 EXTERNAL-FORMAT is a value returned by find-external-format or
 :default.
@@ -1035,6 +1036,14 @@ but that thread may hold it more than once."
 
 (definterface receive-if (predicate &optional timeout)
   "Return the first message satisfiying PREDICATE.")
+
+(definterface set-default-initial-binding (var form)
+  "Initialize special variable VAR by default with FORM.
+
+Some implementations initialize certain variables in each newly
+created thread.  This function sets the form which is used to produce
+the initial value."
+  (set var (eval form)))
 
 ;; List of delayed interrupts.  
 ;; This should only have thread-local bindings, so no init form.

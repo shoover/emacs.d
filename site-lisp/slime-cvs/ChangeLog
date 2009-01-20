@@ -1,3 +1,213 @@
+2009-01-17  Tobias C. Rittweiler  <tcr@freebits.de>
+
+	Fix C-u C-c C-c in SLDB.
+
+	* slime.el (sldb-recompile-frame-source): Bind
+	`slime-compilation-policy' at the right place.
+
+2009-01-15  Martin Simmons  <martin@lispworks.com>
+
+	* swank-lispworks.lisp: wrapper functions for swank-mop
+ 	slot-boundp-using-class, slot-value-using-class and
+ 	slot-makunbound-using-class to account for MOP differences.
+
+2009-01-16  Helmut Eller  <heller@common-lisp.net>
+
+	* slime.el (slime-keys): Put C-c C-i and M-* back.
+
+2009-01-16  Helmut Eller  <heller@common-lisp.net>
+
+	* swank.lisp (pprint-eval): Also return the output produced during
+	evaluation.
+
+2009-01-16  Helmut Eller  <heller@common-lisp.net>
+
+	* swank-openmcl.lisp (break-in-sldb): Display the argument.
+
+2009-01-16  Helmut Eller  <heller@common-lisp.net>
+
+	* swank-backend.lisp (warn-unimplemented-interfaces): Print the
+	names with pprint-fill.
+
+2009-01-10  Helmut Eller  <heller@common-lisp.net>
+
+	* swank-openmcl.lisp (install-debugger-globally): Set *break-in-sldb*.
+
+2009-01-10  Tobias C. Rittweiler  <tcr@freebits.de>
+
+	* swank.lisp (do-symbols*): Wrap body in TAGBODY.
+
+2009-01-10  Helmut Eller  <heller@common-lisp.net>
+
+	* slime.el (slime-compile-file-options): New variable.
+	(slime-compile-file): Use it.
+
+2009-01-10  David Reitter <david.reitter@gmail.com>
+
+	* slime.el (slime-space): Declare `slime-space' to
+	`delete-selection-mode' and friends (CUA) so that their behavior
+	is the same as with normal insertion of a space.
+
+2009-01-10  Helmut Eller  <heller@common-lisp.net>
+
+	* swank-backend.lisp (swank-compile-file): Take output-file as
+	additional argument.  Update backends accordingly.
+
+	* swank.lisp (*fasl-directory*): New variable.
+	(fasl-pathname): New function.
+	(compile-file-for-emacs): Use it.
+
+2009-01-10  Helmut Eller  <heller@common-lisp.net>
+
+	* swank-backend.lisp (set-default-initial-binding): New function.
+
+	* swank.lisp (setup-stream-indirection):  Use it
+
+2009-01-09  Helmut Eller  <heller@common-lisp.net>
+
+	* swank-allegro.lisp (swank-compile-string): Don't use the
+	no-longer-existing directory argument.
+
+2009-01-08  Helmut Eller  <heller@common-lisp.net>
+
+	* slime.el: Move the tree widget for compiler notes to contrib/.
+
+2009-01-08  Helmut Eller  <heller@common-lisp.net>
+
+	* swank-backend.lisp (swank-compile-string): Pass the
+	buffer-file-name to Lisp, not only the directory.
+	Update callers accordingly.
+	* slime.el ([test] arglist): Update arglist.
+
+2009-01-08  Helmut Eller  <heller@common-lisp.net>
+
+	* slime.el (slime-popup-restore-data): Renamed from
+	slime-popup-buffer-restore-info.
+	(slime-popup-buffer-saved-fingerprint)
+	(slime-popup-buffer-saved-emacs-snapshot)
+	(slime-popup-buffer-snapshot-unchanged-p)
+	(slime-popup-buffer-restore-snapshot)
+	(slime-xref-quit, slime-xref-retract): Deleted.
+
+2009-01-08  Helmut Eller  <heller@common-lisp.net>
+
+	Remove some customization variables of questionale use.
+
+	* slime.el (slime-when-complete-filename-expand)
+	(slime-space-information-p, slime-display-compilation-output)
+	(sldb-show-location-recenter-arg, slime-recenter-window)
+	(slime-display-buffer-region): Deleted.
+
+2009-01-07  Helmut Eller  <heller@common-lisp.net>
+
+	Just use find-tag-marker-ring as stack for M-.
+
+	* slime.el (slime-push-definition-stack)
+	(slime-pop-find-definition-stack): Do whatever Emacs's standard
+	find-tag commands do.
+
+2009-01-07  Helmut Eller  <heller@common-lisp.net>
+
+	Fix the slime-next-location command.
+
+	* slime.el (slime-xref-last-buffer): New variable.
+	(slime-show-xrefs): Initialize it.
+	(slime-goto-next-xref): Use it.
+	(slime-search-property): New function.
+	(slime-xref-buffer): Delted
+
+2009-01-07  Helmut Eller  <heller@common-lisp.net>
+
+	* swank.lisp (*sldb-pprint-dispatch-table*): Honor *print-escape*
+
+2009-01-07  Helmut Eller  <heller@common-lisp.net>
+
+	* swank-cmucl.lisp (frame-locals, frame-debug-vars): Remove
+	non-valid variables.
+	(debug-var-value): Compute the location from the frame arg.
+
+2009-01-07  Helmut Eller  <heller@common-lisp.net>
+
+	* swank-source-path-parser.lisp (make-source-recorder)
+	(source-path-source-position): Adjust the file-position before
+	entering it in the table.
+
+2009-01-07  Helmut Eller  <heller@common-lisp.net>
+
+	* slime.el (slime-with-xref-buffer): Don't set
+	slime-popup-buffer-quit-function. Use the default.  Don't shrink
+	the window because it may have existed before creating the buffer
+	and we need to restore it.
+	(slime-goto-xref): Just use slime-popup-buffer-quit.
+	(slime-edit-definition-cont): Push definition stack here so that
+	we don't need to do anything special in slime-goto-xref.
+	(slime-display-popup-buffer): Also save the buffer that the popup
+	window was displaying before (if the window is not new).
+	(slime-close-popup-window): Restore the old buffer (if any) of the
+	popup window.
+
+2009-01-07  Helmut Eller  <heller@common-lisp.net>
+
+	* slime.el (slime-show-buffer-position): Use reposition-window.
+
+2009-01-07  Helmut Eller  <heller@common-lisp.net>
+
+	* slime.el (slime-keys): Remove the binding for C-c C-i. M-TAB
+	can also be pressed with M-C-i which is probably not taken
+	by the window manager.  ESC TAB would also work.  Maybe we
+	should reuse C-c C-i for slime-inspect.
+	Move C-c C-y to slime-repl.e.
+	Remove C-c C-f: it's already on C-c C-d f.
+	Remove C-c M-0: slime-restore-window-configuration doesn't exist.
+	Remove M-g: slime-quit doesn't work since ages.
+
+2009-01-05  Helmut Eller  <heller@common-lisp.net>
+
+	Create a compilation-log buffer so that next-error works but
+	don't display the buffer.
+
+	* slime.el (slime-create-compilation-log): New function.
+	(slime-compilation-finished-hook): Use it.
+
+2009-01-05  Helmut Eller  <heller@common-lisp.net>
+
+	Use keymap inheritance to share bindings in various modes.
+
+	* slime.el (slime-parent-map): New keymap.
+	(slime-mode-map, slime-popup-buffer-mode-map, sldb-mode-map)
+	(slime-inspector-mode-map): Use it.
+	(slime-parent-bindings, slime-prefix-bindings): New variables.
+	(slime-prefix-key, slime-define-key): Deleted.
+
+	Update contribs accordinly.
+
+2009-01-05  Helmut Eller  <heller@common-lisp.net>
+
+	* slime.el (slime-with-popup-buffer): New argment: select.
+	If nil (default) buffer will only be displayed but not selected.
+
+2009-01-05  Helmut Eller  <heller@common-lisp.net>
+
+	* slime.el (slime-show-compilation-log): Insert two lines at
+	the beginning.  Emacs 21 seems to skip over those two.
+
+2009-01-05  Tobias C. Rittweiler  <tcr@freebits.de>
+
+	* swank-sbcl.lisp (function-arglist):
+	SB-INTROSPECT:FUNCTION-ARGLIST is deprecated in bleeding edge sbcl.
+
+2009-01-05  Tobias C. Rittweiler  <tcr@freebits.de>
+
+	Do not truncate error messages in SLDB.
+
+	* swank.lisp (*sldb-bitvector-length*): Like *PRINT-LENGTH* for
+	bit-vectors.
+	(*sldb-string-length*): Likewise for strings.
+	(*sldb-pprint-dispatch-table*): Truncate bit-vectors / strings
+	according to the above variables.
+	(*sldb-printer-bindings*): Use the new variables. Bind
+	*PRINT-LINES* to NIL so error messages are not truncated.
+
 2009-01-04  Helmut Eller  <heller@common-lisp.net>
 
 	Make it possible to limit the number of displayed restarts.

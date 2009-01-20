@@ -29,6 +29,7 @@
            ;; These are user-configurable variables:
            #:*communication-style*
            #:*dont-close*
+           #:*fasl-directory*
            #:*log-events*
            #:*log-output*
            #:*use-dedicated-output-stream*
@@ -90,20 +91,67 @@
 (defvar *swank-debug-p* t
   "When true, print extra debugging information.")
 
+;;;;; SLDB customized pprint dispatch table
+;;;
+;;; CLHS 22.1.3.4, and CLHS 22.1.3.6 do not specify *PRINT-LENGTH* to
+;;; affect the printing of strings and bit-vectors.
+;;;
+;;; We use a customized pprint dispatch table to do it for us.
+
+(declaim (special *sldb-string-length*))
+(declaim (special *sldb-bitvector-length*))
+
+(defvar *sldb-pprint-dispatch-table*
+  (let ((initial-table (copy-pprint-dispatch nil))
+        (result-table  (copy-pprint-dispatch nil)))
+    (flet ((sldb-bitvector-pprint (stream bitvector)
+             ;;; Truncate bit-vectors according to *SLDB-BITVECTOR-LENGTH*.
+             (if (or (not *print-array*) (not *print-length*))
+                 (let ((*print-pprint-dispatch* initial-table))
+                   (write bitvector :stream stream))
+                 (loop initially (write-string "#*" stream)
+                       for i from 0 and bit across bitvector do
+                       (when (= i *sldb-bitvector-length*)
+                         (write-string "..." stream)
+                         (loop-finish))
+                       (write bit :stream stream))))
+           (sldb-string-pprint (stream string)
+             ;;; Truncate strings according to *SLDB-STRING-LENGTH*.
+             (cond ((or (not *print-array*) (not *print-length*))
+                    (let ((*print-pprint-dispatch* initial-table))
+                      (write string :stream stream)))
+                   ((not *print-escape*)
+                    (write-string string stream))
+                   (t
+                    (loop initially (write-char #\" stream)
+                          for i from 0 and char across string do
+                          (cond ((= i *sldb-string-length*)
+                                 (write-string "..." stream)
+                                 (loop-finish))
+                                ((char= char #\")
+                                 (write-string "\\\"" stream))
+                                (t (write-char char stream)))
+                          finally (write-char #\" stream))))))
+      (set-pprint-dispatch 'bit-vector #'sldb-bitvector-pprint 0 result-table)
+      (set-pprint-dispatch 'string #'sldb-string-pprint 0 result-table)
+      result-table)))
+
 (defvar *sldb-printer-bindings*
   `((*print-pretty*           . t)
     (*print-level*            . 4)
     (*print-length*           . 10)
     (*print-circle*           . t)
     (*print-readably*         . nil)
-    (*print-pprint-dispatch*  . ,(copy-pprint-dispatch nil))
+    (*print-pprint-dispatch*  . ,*sldb-pprint-dispatch-table*)
     (*print-gensym*           . t)
     (*print-base*             . 10)
     (*print-radix*            . nil)
     (*print-array*            . t)
-    (*print-lines*            . 10)
+    (*print-lines*            . nil)
     (*print-escape*           . t)
-    (*print-right-margin*     . 65))
+    (*print-right-margin*     . 65)
+    (*sldb-bitvector-length*  . 25)
+    (*sldb-string-length*     . 50))
   "A set of printer variables used in the debugger.")
 
 (defvar *backtrace-pprint-dispatch-table*
@@ -206,8 +254,9 @@ Backend code should treat the connection structure as opaque.")
 ;;; Connection structures represent the network connections between
 ;;; Emacs and Lisp. Each has a socket stream, a set of user I/O
 ;;; streams that redirect to Emacs, and optionally a second socket
-;;; used solely to pipe user-output to Emacs (an optimization).
-;;;
+;;; used solely to pipe user-output to Emacs (an optimization).  This
+;;; is also the place where we keep everything that needs to be
+;;; freed/closed/killed when we disconnect.
 
 (defstruct (connection
              (:conc-name connection.)
@@ -472,7 +521,7 @@ The package is deleted before returning."
       (do-symbols (,var ,package ,result-form)
         (unless (gethash ,var ,seen-ht)
           (setf (gethash ,var ,seen-ht) t)
-          ,@body)))))
+          (tagbody ,@body))))))
 
 (defun use-threads-p ()
   (eq (connection.communication-style *emacs-connection*) :spawn))
@@ -1409,7 +1458,9 @@ dynamic binding."
     (proclaim `(special ,current-stream-var))
     (set current-stream-var stream)
     ;; Assign the real binding as a synonym for the current one.
-    (set stream-var (make-synonym-stream current-stream-var))))
+    (let ((stream (make-synonym-stream current-stream-var)))
+      (set stream-var stream)
+      (set-default-initial-binding stream-var `(quote ,stream)))))
 
 (defun prefixed-var (prefix variable-symbol)
   "(PREFIXED-VAR \"FOO\" '*BAR*) => SWANK::*FOO-BAR*"
@@ -2140,8 +2191,13 @@ Used by pprint-eval.")
   
 (defslimefun pprint-eval (string)
   (with-buffer-syntax ()
-    (with-retry-restart (:msg "Retry SLIME evaluation request.")
-      (swank-pprint (multiple-value-list (eval (read-from-string string)))))))
+    (let* ((s (make-string-output-stream))
+           (values 
+            (let ((*standard-output* s)
+                  (*trace-output* s))
+              (multiple-value-list (eval (read-from-string string))))))
+      (cat (get-output-stream-string s)
+           (swank-pprint values)))))
 
 (defslimefun set-package (name)
   "Set *package* to the package named NAME.
@@ -2674,7 +2730,7 @@ The time is measured in seconds."
       (check-type successp boolean)
       (make-compilation-result (reverse notes) successp seconds))))
 
-(defslimefun compile-file-for-emacs (filename load-p)
+(defslimefun compile-file-for-emacs (filename load-p &optional options)
   "Compile FILENAME and, when LOAD-P, load the result.
 Record compiler notes signalled as `compiler-condition's."
   (with-buffer-syntax ()
@@ -2683,13 +2739,29 @@ Record compiler notes signalled as `compiler-condition's."
        (let ((pathname (filename-to-pathname filename))
              (*compile-print* nil) (*compile-verbose* t))
          (multiple-value-bind (output-pathname warnings? failure?)
-             (swank-compile-file pathname load-p
+             (swank-compile-file pathname
+                                 (fasl-pathname pathname options)
+                                 load-p
                                  (or (guess-external-format pathname)
                                      :default))
            (declare (ignore output-pathname warnings?))
            (not failure?)))))))
 
-(defslimefun compile-string-for-emacs (string buffer position directory policy)
+(defvar *fasl-directory* nil
+  "Directory where swank should place fasl files.")
+
+(defun fasl-pathname (input-file options)
+  (cond ((getf options :fasl-directory)
+         (let* ((str (getf options :fasl-directory))
+                (dir (filename-to-pathname str)))
+           (assert (char= (aref str (1- (length str))) #\/))
+           (compile-file-pathname input-file :output-file dir)))
+        (*fasl-directory*
+         (compile-file-pathname input-file :output-file *fasl-directory*))
+        (t
+         (compile-file-pathname input-file))))
+
+(defslimefun compile-string-for-emacs (string buffer position filename policy)
   "Compile STRING (exerpted from BUFFER at POSITION).
 Record compiler notes signalled as `compiler-condition's."
   (with-buffer-syntax ()
@@ -2699,13 +2771,13 @@ Record compiler notes signalled as `compiler-condition's."
          (swank-compile-string string
                                :buffer buffer
                                :position position 
-                               :directory directory
+                               :filename filename
                                :policy policy))))))
 
 (defslimefun compile-multiple-strings-for-emacs (strings policy)
   "Compile STRINGS (exerpted from BUFFER at POSITION).
 Record compiler notes signalled as `compiler-condition's."
-  (loop for (string buffer package position directory) in strings collect
+  (loop for (string buffer package position filename) in strings collect
         (collect-notes
          (lambda ()
            (with-buffer-syntax (package)
@@ -2713,7 +2785,7 @@ Record compiler notes signalled as `compiler-condition's."
                (swank-compile-string string
                                      :buffer buffer
                                      :position position 
-                                     :directory directory
+                                     :filename filename
                                      :policy policy)))))))
 
 (defun file-newer-p (new-file old-file)

@@ -379,24 +379,26 @@ NIL if we aren't compiling from a buffer.")
                    (c::warning        #'handle-notification-condition))
       (funcall function))))
 
-(defimplementation swank-compile-file (filename load-p external-format)
+(defimplementation swank-compile-file (input-file output-file
+                                       load-p external-format)
   (declare (ignore external-format))
-  (clear-xref-info filename)
+  (clear-xref-info input-file)
   (with-compilation-hooks ()
     (let ((*buffer-name* nil)
           (ext:*ignore-extra-close-parentheses* nil))
       (multiple-value-bind (output-file warnings-p failure-p)
-          (compile-file filename)
+          (compile-file input-file :output-file output-file)
         (values output-file warnings-p
                 (or failure-p
                     (when load-p
                       ;; Cache the latest source file for definition-finding.
-                      (source-cache-get filename (file-write-date filename))
+                      (source-cache-get input-file 
+                                        (file-write-date input-file))
                       (not (load output-file)))))))))
 
-(defimplementation swank-compile-string (string &key buffer position directory
-                                                policy)
-  (declare (ignore directory policy))
+(defimplementation swank-compile-string (string &key buffer position filename
+                                         policy)
+  (declare (ignore filename policy))
   (with-compilation-hooks ()
     (let ((*buffer-name* buffer)
           (*buffer-start-position* position)
@@ -1541,27 +1543,30 @@ A utility for debugging DEBUG-FUNCTION-ARGLIST."
 
 (defun frame-debug-vars (frame)
   "Return a vector of debug-variables in frame."
-  (di::debug-function-debug-variables (di:frame-debug-function frame)))
+  (let ((loc (di:frame-code-location frame)))
+    (remove-if
+     (lambda (v)
+       (not (eq (di:debug-variable-validity v loc) :valid)))
+     (di::debug-function-debug-variables (di:frame-debug-function frame)))))
 
-(defun debug-var-value (var frame location)
-  (let ((validity (di:debug-variable-validity var location)))
+(defun debug-var-value (var frame)
+  (let* ((loc (di:frame-code-location frame))
+         (validity (di:debug-variable-validity var loc)))
     (ecase validity
       (:valid (di:debug-variable-value var frame))
       ((:invalid :unknown) (make-symbol (string validity))))))
 
 (defimplementation frame-locals (index)
-  (let* ((frame (nth-frame index))
-	 (loc (di:frame-code-location frame))
-	 (vars (frame-debug-vars frame)))
-    (loop for v across vars collect
-          (list :name (di:debug-variable-symbol v)
-                :id (di:debug-variable-id v)
-                :value (debug-var-value v frame loc)))))
+  (let ((frame (nth-frame index)))
+    (loop for v across (frame-debug-vars frame)
+          collect (list :name (di:debug-variable-symbol v)
+                        :id (di:debug-variable-id v)
+                        :value (debug-var-value v frame)))))
 
 (defimplementation frame-var-value (frame var)
   (let* ((frame (nth-frame frame))
          (dvar (aref (frame-debug-vars frame) var)))
-    (debug-var-value dvar frame (di:frame-code-location frame))))
+    (debug-var-value dvar frame)))
 
 (defimplementation frame-catch-tags (index)
   (mapcar #'car (di:frame-catches (nth-frame index))))
