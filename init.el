@@ -143,6 +143,7 @@ scan-error if not."
 (global-set-key [f1] 'toggle-selective-display)
 
 (global-set-key [C-tab] 'next-buffer)
+(global-set-key [f5] 'revert-buffer)
 (global-set-key [f6] 'kill-this-buffer)
 
 ;; Rebind C-M-\. The default indent-region just isn't very useful for me.
@@ -385,7 +386,9 @@ scan-error if not."
 (if (featurep 'aquamacs)
     (progn
        (require 'aquamacs-frame-setup)
-       (setq one-buffer-one-frame-mode nil)))
+       (setq one-buffer-one-frame-mode nil)
+       (setq mac-command-modifier (quote meta))
+       (setq mac-option-modifier (quote alt))))
 
 ;; Assumed registry settings (HKLM/Software/GNU/Emacs):
 ;;   Emacs.toolBar: 0
