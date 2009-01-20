@@ -301,6 +301,7 @@ scan-error if not."
 
             ;; Make links work like chasing definitions in source code.
             (define-key org-mode-map "\M-." 'org-open-at-point)
+            (define-key org-mode-map "\M-," 'org-mark-ring-goto)
 
             (setq org-agenda-files (list my-action-org))
             
