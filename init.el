@@ -194,7 +194,8 @@ scan-error if not."
  (require 'clojure-mode)
  (slime-setup '(slime-repl))
  (setq swank-clojure-jar-path (concat clojure-path "clojure.jar"))
- (add-to-list 'swank-clojure-extra-classpaths (concat clojure-contrib-path "clojure-contrib.jar")))
+ (add-to-list 'swank-clojure-extra-classpaths
+              (concat clojure-contrib-path "clojure-contrib.jar")))
 (autoload 'slime "slime" "Load slime for swank-clojure" t)
 
 
