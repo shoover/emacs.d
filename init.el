@@ -195,7 +195,7 @@ scan-error if not."
  (slime-setup '(slime-repl))
  (setq swank-clojure-jar-path (concat clojure-path "clojure.jar"))
  (add-to-list 'swank-clojure-extra-classpaths
-              (concat clojure-contrib-path "src")))
+              (concat clojure-contrib-path "src"))
  (setq swank-clojure-extra-vm-args
        (list "-Xdebug"
              "-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8888")))
@@ -465,8 +465,11 @@ scan-error if not."
   
   ;; Lest we get black on black parens
   (set-face-foreground 'paren-face "green"))
+
  ;; Aquamacs just takes over anyway after loading .emacs. Lame.
- ((featurep 'aquamacs) nil)
+ ;; Or maybe it's better with v1.6. Comment out for now.
+ ;;((featurep 'aquamacs) nil)
+
  (t
   (load-file "~/emacs/site-lisp/color-theme-6.6.0/themes/shawn.elc")
   (color-theme-shawn)))
