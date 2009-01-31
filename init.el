@@ -194,7 +194,8 @@ scan-error if not."
  (require 'clojure-mode)
  (slime-setup '(slime-repl))
  (setq swank-clojure-jar-path (concat clojure-path "clojure.jar"))
- (add-to-list 'swank-clojure-extra-classpaths (concat clojure-contrib-path "clojure-contrib.jar"))
+ (add-to-list 'swank-clojure-extra-classpaths
+              (concat clojure-contrib-path "src")))
  (setq swank-clojure-extra-vm-args
        (list "-Xdebug"
              "-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8888")))
@@ -305,6 +306,7 @@ scan-error if not."
 
             ;; Make links work like chasing definitions in source code.
             (define-key org-mode-map "\M-." 'org-open-at-point)
+            (define-key org-mode-map "\M-," 'org-mark-ring-goto)
 
             (setq org-agenda-files (list my-action-org))
             
