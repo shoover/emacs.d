@@ -196,6 +196,9 @@ scan-error if not."
  (setq swank-clojure-jar-path (concat clojure-path "clojure.jar"))
  (add-to-list 'swank-clojure-extra-classpaths
               (concat clojure-contrib-path "src"))
+
+ ;; Allow debugger to attach. To connect to listening debugger, remove
+ ;; server=y.
  (setq swank-clojure-extra-vm-args
        (list "-Xdebug"
              "-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8888")))
