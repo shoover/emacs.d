@@ -211,15 +211,32 @@ scan-error if not."
 
 ;; erc
 (setq erc-autojoin-channels-alist '(("freenode.net" "#clojure")))
-(defvar my-erc-frame nil "Cache the frame where ERC lives")
+(defvar my-erc-frame nil "Cache the frame where ERC lives to raise later")
+(defvar my-erc-buffer nil "Cache the buffer ERC to see if it's alive later")
 (defun my-erc ()
-  "Starts ERC in a new frame with Georgia font or raises if it's running."
+  "Starts ERC in a new frame with Georgia font. If ERC is
+running, raises the most recently updated ERC buffer."
   (interactive)
+
+  ;; Make a frame if the one isn't there
   (unless (frame-live-p my-erc-frame)
     (setq my-erc-frame (select-frame (make-frame)))
     (set-frame-font "Georgia-12")
-    (erc))
-  (raise-frame my-erc-frame))
+    ;; Widen a bit to correct timestamp display at right edge.
+    (set-frame-width my-erc-frame (+ (frame-width my-erc-frame) 2)))
+
+  ;; Open ERC if the buffer is dead
+  (unless (buffer-live-p my-erc-buffer)
+    (select-frame my-erc-frame)
+    (setq my-erc-buffer (erc)))
+
+  (raise-frame (select-frame my-erc-frame))
+  (switch-to-buffer my-erc-buffer))
+
+;; Update my-erc-buffer so my-erc always displays the most recently updated
+;; erc buffer.
+(add-hook 'erc-insert-post-hook
+          (lambda () (setq my-erc-buffer (current-buffer))))
 
 ;; Erlang
 (defun my-erlang ()
