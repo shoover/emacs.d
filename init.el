@@ -56,12 +56,12 @@
 
 ;;; Functions
 
-(defun emacs ()
+(defun init ()
   "Find my init file"
   (interactive)
   (find-file "~/emacs/init.el"))
 
-(defun gtd ()
+(defun action ()
   "Find my org-mode list"
   (interactive)
   (find-file my-action-org))
