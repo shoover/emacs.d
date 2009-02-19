@@ -66,6 +66,16 @@
   (interactive)
   (find-file my-action-org))
 
+(defun next-slide ()
+  "org-mode slideware, jumps to next subtree with automatic
+narrowing and widening."
+  (interactive)
+  (outline-up-heading 1)
+  (widen)
+  (outline-forward-same-level 1)
+  (show-subtree)
+  (org-narrow-to-subtree))
+
 (defun indent-buffer ()
   "Indent the entire buffer. Seems like emacs should have this."
   (interactive)
