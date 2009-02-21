@@ -227,9 +227,10 @@ running, raises the most recently updated ERC buffer."
   ;; Make a frame if the one isn't there
   (unless (frame-live-p my-erc-frame)
     (setq my-erc-frame (select-frame (make-frame)))
-    (set-frame-font "Georgia-12")
-    ;; Widen a bit to correct timestamp display at right edge.
-    (set-frame-width my-erc-frame (+ (frame-width my-erc-frame) 2)))
+    (unless nix
+      (set-frame-font "Georgia-12")
+      ;; Widen a bit to correct timestamp display at right edge.
+      (set-frame-width my-erc-frame (+ (frame-width my-erc-frame) 2))))
 
   ;; Open ERC if the buffer is dead
   (unless (buffer-live-p my-erc-buffer)
@@ -408,12 +409,12 @@ running, raises the most recently updated ERC buffer."
               (require 'server)
               (server-start))))
 
-(if (featurep 'aquamacs)
-    (progn
-       (require 'aquamacs-frame-setup)
-       (setq one-buffer-one-frame-mode nil)
-       (setq mac-command-modifier (quote meta))
-       (setq mac-option-modifier (quote alt))))
+(when (featurep 'aquamacs)
+  (require 'aquamacs-frame-setup)
+  (setq one-buffer-one-frame-mode nil)
+  (setq mac-command-modifier (quote meta))
+  (setq mac-option-modifier (quote alt))
+  (define-key osx-key-mode-map `[(control z)] 'iconify-or-deiconify-frame))
 
 ;; Assumed registry settings (HKLM/Software/GNU/Emacs):
 ;;   Emacs.toolBar: 0
