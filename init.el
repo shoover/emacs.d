@@ -106,6 +106,8 @@ narrowing and widening."
   (set-selective-display (if selective-display nil 1)))
 
 ;; paredit keyboard tweaks--from Bill Clementson
+(require 'paredit)
+(defun lisp-enable-paredit-hook () (paredit-mode 1))
 (defun check-region-parens ()
   "Check if parentheses in the region are balanced. Signals a
 scan-error if not."
@@ -196,12 +198,10 @@ scan-error if not."
         (concat java-path
                 " " java-options
                 " -cp " class-path " clojure.lang.Repl")))
-(require 'clojure-paredit)
+(require 'clojure-mode)
+(add-hook 'clojure-mode-hook 'lisp-enable-paredit-hook)
 (require 'swank-clojure-autoload)       
 (swank-clojure-config
- ;; Provide clojure-indent-function in case we haven't opened a Clojure file
- ;; yet
- (require 'clojure-mode)
  (slime-setup '(slime-repl))
  (setq swank-clojure-jar-path (concat clojure-path "clojure.jar"))
  (add-to-list 'swank-clojure-extra-classpaths
