@@ -1,4 +1,3 @@
-
 ;;; slime.el --- Superior Lisp Interaction Mode for Emacs
 ;;
 ;;;; License
@@ -83,15 +82,21 @@ The default value is automatically computed from the location of the
 Emacs Lisp package."))
 
 (defvar slime-lisp-modes '(lisp-mode))
+(defvar slime-setup-contribs nil)
 
 (defun slime-setup (&optional contribs)
   "Setup Emacs so that lisp-mode buffers always use SLIME.
 CONTRIBS is a list of contrib packages to load."
   (when (member 'lisp-mode slime-lisp-modes)
     (add-hook 'lisp-mode-hook 'slime-lisp-mode-hook))
-  (when contribs
+  (setq slime-setup-contribs contribs)
+  (slime-setup-contribs))
+
+(defun slime-setup-contribs ()
+  "Load and initialize contribs."
+  (when slime-setup-contribs
     (add-to-list 'load-path (expand-file-name "contrib" slime-path))
-    (dolist (c contribs)
+    (dolist (c slime-setup-contribs)
       (require c)
       (let ((init (intern (format "%s-init" c))))
         (when (fboundp init)
@@ -727,6 +732,9 @@ corresponding values in the CDR of VALUE."
   "Like `message' but with special support for multi-line messages.
 Single-line messages use the echo area."
   (apply slime-message-function format args))
+
+(defun slime-display-warning (message &rest args)
+  (display-warning 'slime (apply #'format message args)))
 
 (when (or (featurep 'xemacs))
   (setq slime-message-function 'slime-format-display-message))
@@ -2472,12 +2480,16 @@ Debugged requests are ignored."
        (defvar ,tab)
        (setq ,tab (make-hash-table :size 10)))))
 
+(put 'slime-indulge-pretty-colors 'slime-define-channel-type t)
+
 (defmacro slime-define-channel-method (type method args &rest body)
   `(puthash ',method
             (lambda (self . ,args) . ,body)
             ,(slime-channel-method-table-name type)))
 
 (put 'slime-define-channel-method 'lisp-indent-function 3)
+(put 'slime-indulge-pretty-colors 'slime-define-channel-method t)
+
 
 (defun slime-send-to-remote-channel (channel-id msg)
   (slime-dispatch-event `(:emacs-channel-send ,channel-id ,msg)))
@@ -2904,7 +2916,7 @@ Each newlines and following indentation is replaced by a single space."
                (save-excursion
                  (slime-goto-source-location location)
                  (list (or (buffer-file-name) (buffer-name))
-                       (slime-line-number-at-pos)
+                       (line-number-at-pos)
                        (1+ (current-column)))))
            (format "%s:%d:%d: " (or filename "") line col)))
         (t "")))
@@ -3006,14 +3018,21 @@ Return nil if there's no useful source location."
         ((:error _) _ nil)                 ; do nothing
         ((:location file pos _hints)
          (cond ((eq (car file) ':source-form) nil)
-               (t
-                (destructure-case pos
-                  ((:position pos &optional alignp)
-                   (if (eq (slime-note.severity note) :read-error)
-                       (values pos (1+ pos))
-                     (slime-choose-overlay-for-sexp location)))
-                  (t 
-                   (slime-choose-overlay-for-sexp location))))))))))
+               ((eq (slime-note.severity note) :read-error)
+                (slime-choose-overlay-for-read-error location))
+               (t 
+                (slime-choose-overlay-for-sexp location))))))))
+
+(defun slime-choose-overlay-for-read-error (location)
+  (let ((pos (slime-location-offset location)))
+    (save-excursion
+      (goto-char pos)
+      (let ((symbol (slime-symbol-at-point)))
+        (if symbol
+            ;; package not found, &c.
+            (values (slime-symbol-start-pos) (slime-symbol-end-pos))
+            ;; comma not inside backquote, unmatched right parenthesis, &c.
+            (values pos (1+ pos)))))))
           
 (defun slime-choose-overlay-for-sexp (location)
   (slime-goto-source-location location)
@@ -3811,11 +3830,11 @@ alist but ignores CDRs."
 
 (defun make-slime-buffer-location (buffer-name position &optional hints)
   `(:location (:buffer ,buffer-name) (:position ,position)
-              ,(if hints `(:hints ,hints) `(:hints))))
+              ,(when hints `(:hints ,hints))))
 
 (defun make-slime-file-location (file-name position &optional hints)
   `(:location (:file ,file-name) (:position ,position)
-              ,(if hints `(:hints ,hints) `(:hints))))
+              ,(when hints `(:hints ,hints))))
 
 ;;; The hooks are tried in order until one succeeds, otherwise the
 ;;; default implementation involving `slime-find-definitions-function'
@@ -4091,9 +4110,12 @@ inserted in the current buffer."
                                        (slime-current-package))))
 
 (defun slime-show-description (string package)
-  (slime-with-popup-buffer ("*SLIME Description*" package)
-    (princ string)
-    (goto-char (point-min))))
+  ;; So we can have one description buffer open per connection. Useful
+  ;; for comparing the output of DISASSEMBLE across implementations.
+  (let ((bufname (format "*SLIME Description <%s>*" (slime-connection-name))))
+    (slime-with-popup-buffer (bufname package t)
+      (princ string)
+      (goto-char (point-min)))))
 
 (defun slime-last-expression ()
   (buffer-substring-no-properties
@@ -4697,10 +4719,12 @@ The most important commands:
 
 ;;;;; XREF results buffer and window management
 
-(defmacro* slime-with-xref-buffer ((xref-type symbol &optional package emacs-snapshot)  
+(defmacro* slime-with-xref-buffer ((xref-type symbol &optional package 
+                                              emacs-snapshot)
                                    &body body)
   "Execute BODY in a xref buffer, then show that buffer."
-  `(let ((xref-buffer-name% (format "*XREF[%s: %s]*" ,xref-type ,symbol)))
+  `(let ((xref-buffer-name% (format "*slime xref[%s: %s]*" 
+                                    ,xref-type ,symbol)))
      (slime-with-popup-buffer (xref-buffer-name% ,package t t ,emacs-snapshot)
        (slime-xref-mode)
        (slime-set-truncate-lines)
@@ -6307,7 +6331,7 @@ position of point in the current buffer."
   ;; narrowed the buffer.
   (save-restriction
     (widen)
-    (cons (slime-line-number-at-pos)
+    (cons (line-number-at-pos)
           (current-column))))
 
 (defun slime-inspector-operate-on-point ()
@@ -6346,13 +6370,6 @@ that value.
            (slime-inspector-operate-on-point))
           (t
            (error "No clickable part here")))))
-
-;;(defun slime-inspector-copy-down (number)
-;;  "Evaluate the slot at point via the REPL (to set `*')."
-;;  (interactive (list (or (get-text-property (point) 'slime-part-number)
-;;                         (error "No part at point"))))
-;;  (slime-repl-send-string (format "%s" `(swank:inspector-nth-part ,number)))
-;;  (slime-repl))
 
 (defun slime-inspector-pop ()
   (interactive)
@@ -6523,7 +6540,6 @@ If ARG is negative, move forwards."
 
 (slime-define-keys slime-inspector-mode-map
   ([return] 'slime-inspector-operate-on-point)
-  ((kbd "M-RET") 'slime-inspector-copy-down)
   ("\C-m"   'slime-inspector-operate-on-point)
   ([mouse-2] 'slime-inspector-operate-on-click)
   ("l" 'slime-inspector-pop)
@@ -6655,6 +6671,8 @@ Only considers buffers that are not already visible."
 
 ;;;; Font Lock
 
+;;; Specially fontify forms suppressed by a reader conditional.
+
 (defcustom slime-highlight-suppressed-forms t
   "Display forms disabled by reader conditionals as comments."
   :type '(choice (const :tag "Enable" t) (const :tag "Disable" nil))
@@ -6668,30 +6686,163 @@ Only considers buffers that are not already visible."
   "Face for compiler notes while selected."
   :group 'slime-mode-faces)
 
+(defun slime-search-suppressed-forms-internal (limit)
+  (when (re-search-forward "^\\([^;\n]*?[ \t(]\\)?#[-+]" limit t)
+    (let* ((start (- (point) 2))
+           (char (char-before))
+           (e (read (current-buffer)))
+           (val (slime-eval-feature-conditional e)))
+      (when (<= (point) limit)
+        (if (or (and (eq char ?+) (not val))
+                (and (eq char ?-) val))
+            (progn
+              (forward-sexp) (backward-sexp)
+              (slime-forward-sexp)
+              ;; There was an `ignore-errors' form around all this
+              ;; because the following assertion was triggered
+              ;; regularly (resulting in the "non-deterministic"
+              ;; behaviour mentioned in the comment further below.)
+              ;; With extending the region properly, this assertion
+              ;; would truly mean a bug now.
+              (assert (<= (point) limit))
+              (let ((md (match-data)))
+                (fill md nil)
+                (setf (first md) start)
+                (setf (second md) (point))
+                (set-match-data md)
+                t))
+            (slime-search-suppressed-forms-internal limit))))))
+
 (defun slime-search-suppressed-forms (limit)
   "Find reader conditionalized forms where the test is false."
   (when (and slime-highlight-suppressed-forms
-             (slime-connected-p)
-	     (re-search-forward "^\\([^;\n]*?[ \t(]\\)?#[-+]" limit t))
-    (ignore-errors
-      (let* ((start (- (point) 2))
-             (char (char-before))
-             (e (read (current-buffer)))
-             (val (slime-eval-feature-conditional e)))
-        (when (<= (point) limit)
-          (if (or (and (eq char ?+) (not val))
-                  (and (eq char ?-) val))
-              (progn 
-                (forward-sexp) (backward-sexp)
-                (slime-forward-sexp)
-                (assert (<= (point) limit))
-                (let ((md (match-data)))
-                  (fill md nil)
-                  (setf (first md) start)
-                  (setf (second md) (point))
-                  (set-match-data md)
-                  t))
-            (slime-search-suppressed-forms limit)))))))
+             (slime-connected-p))
+    (condition-case condition
+        (slime-search-suppressed-forms-internal limit)
+      (invalid-read-syntax nil)         ; ignore e.g. #+#.foo
+      (error 
+       (slime-display-warning
+        "%S:%d:%d (pt=%d).
+Caught error during fontification while searching for forms that
+are suppressed by reader-conditionals. The error was: %S.
+
+This is a bug in Slime itself. Please report this to the
+mailinglist slime-devel@common-lisp.net and include your Emacs
+version, the guilty Lisp source file, and the header of this
+message.
+"
+        (buffer-name)
+        (line-number-at-pos)
+        (current-column)
+        (point)
+        condition)))))
+
+(defun slime-region-for-extended-tlf-at-point ()
+  "Like `slime-region-for-tlf-at-point' except we take
+preceding reader conditionals into account."
+  (destructuring-bind (start end) (slime-region-for-tlf-at-point)
+    (save-excursion
+      (goto-char start)
+      ;; At this point we want to watch out for a possibly preceding
+      ;; reader conditional..
+      (save-match-data 
+        (search-backward-regexp slime-reader-conditionals-regexp
+                                ;; We restrict the search to the
+                                ;; beginning of the /next/ defun.
+                                (save-excursion 
+                                  (beginning-of-defun) (point))
+                                t)
+        ;; We actually need to restrict the search to the end of the
+        ;; next defun, but we can't easily determine that end.
+        ;; (`forward-sexp' after the `beginning-of-defun' won't work for
+        ;; a conditionalized form at the top of a file.)
+        ;;
+        ;; As a result, we may be slipped into another defun here, so we
+        ;; have to check against that:
+        (if (zerop (nth 0 (slime-current-parser-state)))
+            (list (point) end)
+            (list start   end))))))
+
+(make-variable-buffer-local
+ (defvar slime-font-lock-region (cons -1 -1)
+   "These are the values of `font-lock-beg' and `font-lock-end' of
+the last font-lock extend-region phase."))
+
+(defun slime-font-lock-region-changed-p (font-lock-beg font-lock-end)
+  "Did `font-lock-beg', `font-lock-end' change since last extending phase?"
+  (destructuring-bind (old-beg . old-end) slime-font-lock-region
+     (or (/= old-beg font-lock-beg) 
+         (/= old-end font-lock-end))))
+
+;;; We'll push this onto `font-lock-extend-region-functions'. In past,
+;;; we didn't do so which made our reader-conditional font-lock magic
+;;; pretty unreliable (it wouldn't highlight all suppressed forms, and
+;;; worked quite non-deterministic in general.)
+;;;
+;;; Cf. _Elisp Manual_, 23.6.10 Multiline Font Lock Constructs.
+;;;
+;;; We make sure that `font-lock-beg' and `font-lock-end' always point
+;;; to the beginning or end of a toplevel form. So we never miss a
+;;; reader-conditional, or point in mid of one.
+(defun slime-extend-region-for-font-lock ()
+  (when (and slime-highlight-suppressed-forms (slime-connected-p))
+    (when (slime-font-lock-region-changed-p font-lock-beg font-lock-end)
+      ;; We're in a new extending phase, so reinitialize the values.
+      (setq slime-font-lock-region (cons -1 -1)))
+    (let (changedp)
+      (multiple-value-setq (changedp font-lock-beg font-lock-end)
+        (slime-compute-region-for-font-lock font-lock-beg font-lock-end))
+      (when changedp
+        ;; Guard against infinite loops:
+        (when (not (slime-font-lock-region-changed-p font-lock-beg font-lock-end))
+          (slime-extend-region-warn-infinite-loop)
+          (setq changedp nil))
+        ;; Update values. (N.B. cannot be done prior.)
+        (setq slime-font-lock-region (cons font-lock-beg font-lock-end)))
+      changedp)))
+
+(defun slime-compute-region-for-font-lock (beg end)
+  (let ((changedp nil))
+    (goto-char beg)
+    (when (plusp (nth 0 (slime-current-parser-state)))
+      ;; N.B. take initial reader-conditional into account, otherwise
+      ;; fontification wouldn't know the whole function definition may
+      ;; be suppressed. 
+      (setq beg (first (slime-region-for-extended-tlf-at-point)))
+      (setq changedp t))
+    (goto-char end)
+    (when (plusp (nth 0 (slime-current-parser-state)))
+      (setq end (second (slime-region-for-tlf-at-point)))
+      (setq changedp t))
+    (values changedp beg end)))
+
+(defun slime-extend-region-warn-infinite-loop ()
+  (slime-display-warning
+   "%S:%d:%d (pt=%d).
+Prevented infinite loop during fontification. This is a bug in Slime itself.
+Please report this to the mailinglist slime-devel@common-lisp.net and include
+your Emacs version, the guilty Lisp source file, and the header of this 
+message."
+   (buffer-name)
+   (line-number-at-pos)
+   (current-column)
+   (point)))
+
+;;; FIXME: This is supposed to be the value for
+;;; `font-lock-mark-block-function' (so M-o M-o will DTRT), but I
+;;; couldn't so far figure out how to customize that variable.
+;;; (N.B. `font-lock-defaults' may (in fact does) contain an explicit
+;;; binding of that variable.)
+(defun slime-mark-defun-for-font-lock ()
+  "Almost `mark-defun' but this function sets point to a possibly
+preceding reader-conditional so slime's reader-conditional aware
+font-lock magic has a chance to run."
+  (destructuring-bind (start end) 
+      (slime-region-for-extended-tlf-at-point)
+    (goto-char end)
+    (push-mark)
+    (goto-char start)))
+
 
 (defun slime-activate-font-lock-magic ()
   (if (featurep 'xemacs)
@@ -6703,7 +6854,13 @@ Only considers buffers that are not already visible."
           (set sym (append (symbol-value sym) pattern))))
     (font-lock-add-keywords
      'lisp-mode
-     `((slime-search-suppressed-forms 0 ,''slime-reader-conditional-face t)))))
+     `((slime-search-suppressed-forms 0 ,''slime-reader-conditional-face t)))
+
+    (add-hook 'lisp-mode-hook 
+              #'(lambda () 
+                  (add-hook 'font-lock-extend-region-functions
+                            'slime-extend-region-for-font-lock t t)))
+    ))
 
 (when slime-highlight-suppressed-forms
   (slime-activate-font-lock-magic))
@@ -6730,8 +6887,8 @@ is setup, unless the user already set one explicitly."
       ;; Does the symbol have an indentation value that we set?
       (when (equal (get symbol 'common-lisp-indent-function)
                    (get symbol 'slime-indent))
-        (put symbol 'slime-indent indent)
-        (put symbol 'common-lisp-indent-function indent))
+        (put symbol 'common-lisp-indent-function indent)
+        (put symbol 'slime-indent indent))
       (run-hook-with-args 'slime-indentation-update-hooks symbol indent))))
 
 
@@ -7809,9 +7966,9 @@ the buffer's undo-list."
     '((("(defmacro qwertz (&body body) `(list :qwertz ',body))"
         "(defmacro yxcv (&body body) `(list :yxcv (qwertz ,@body)))")
        "(yxcv :A :B :C)"
-       "(LIST :YXCV (QWERTZ :A :B :C))"
-       "(QWERTZ"
-       "(LIST :YXCV (LIST :QWERTZ '(:A :B :C)))"))
+       "(list :yxcv (qwertz :a :b :c))"
+       "(qwertz"
+       "(list :yxcv (list :qwertz '(:a :b :c)))"))
   (slime-check-top-level)
   (setq slime-buffer-package ":swank")
   (with-temp-buffer
@@ -7823,23 +7980,63 @@ the buffer's undo-list."
     (goto-char (point-min))
     (slime-execute-as-command 'slime-macroexpand-1)
     (slime-wait-condition "Macroexpansion buffer visible" 
-                          #'(lambda () (slime-buffer-visible-p "*SLIME Macroexpansion*"))
+                          (lambda () 
+                            (slime-buffer-visible-p "*SLIME Macroexpansion*"))
                           5)
     (with-current-buffer (get-buffer "*SLIME Macroexpansion*")
       (slime-test-expect "Initial macroexpansion is correct"
-                         expansion1 (buffer-string))
+                         expansion1 
+                         (downcase (buffer-string)))
       (search-forward search-str)
       (backward-up-list)
       (slime-execute-as-command 'slime-macroexpand-1-inplace)
       (slime-sync-to-top-level 3)
       (slime-test-expect "In-place macroexpansion is correct"
-                         expansion2 (buffer-string))
+                         expansion2 
+                         (downcase (buffer-string)))
       (slime-execute-as-command 'slime-macroexpand-undo)
       (slime-test-expect "Expansion after undo is correct"
                          expansion1
-                         (buffer-string))
-      ))
+                         (downcase (buffer-string)))))
     (setq slime-buffer-package ":cl-user"))
+
+(def-slime-test indentation (buffer-content point-markers)
+        "Check indentation update to work correctly."
+    '(("
+\(in-package :swank)
+
+\(defmacro with-lolipop (&body body)
+  `(progn ,@body))
+
+\(defmacro lolipop (&body body)
+  `(progn ,@body))
+
+\(with-lolipop
+  1
+  2
+  42)
+
+\(lolipop
+  1
+  2
+  23)
+"
+       ("23" "42")))
+  (with-temp-buffer
+    (lisp-mode)
+    (slime-mode 1)
+    (insert buffer-content)
+    (slime-compile-region (point-min) (point-max))
+    (slime-sync-to-top-level 3)
+    (slime-update-indentation)
+    (slime-sync-to-top-level 3)
+    (dolist (marker point-markers)
+      (search-backward marker)
+      (beginning-of-defun)
+      (indent-sexp))
+    (slime-test-expect "Correct buffer content"
+                       buffer-content
+                       (substring-no-properties (buffer-string)))))
 
 (def-slime-test break
     (times exp)
@@ -7888,9 +8085,9 @@ on *DEBUGGER-HOOK*."
    (prin1-to-string `(defun cl-user::quux ()
                        (block outta
                          (let ((*debugger-hook*
-                                #'(lambda (c hook)
-                                    (declare (ignore c hook))
-                                    (return-from outta 42))))
+                                (lambda (c hook)
+                                  (declare (ignore c hook))
+                                  (return-from outta 42))))
                            (error "FOO")))))
    0)
   (slime-sync-to-top-level 2)
@@ -8139,13 +8336,34 @@ within. This includes nested comments (#| ... |#)."
          (slime-region-for-defun-at-point)))
 
 (defun slime-region-for-defun-at-point ()
-  "Return the start and end position of the toplevel form at point."
+  "Return the start and end position of defun at point."
   (save-excursion
     (save-match-data
       (end-of-defun)
       (let ((end (point)))
         (beginning-of-defun)
         (list (point) end)))))
+
+;;; This may coincide with `slime-region-for-defun-at-point' but this
+;;; function really tries to find out the toplevel form not just a
+;;; form that begins at the 0th column. It's not guaranteed to work
+;;; reliably, though, as it relies on Emacs' parser state which is
+;;; context-sensitive. Works quite good when the buffer is processed
+;;; from top to bottom (e.g. during fontification.)
+(defun slime-region-for-tlf-at-point ()
+  "Return the start and end position of the toplevel form at point."
+  (save-excursion
+    (save-match-data
+      ;; Position us at the beginning of the current defun.
+      (end-of-defun) 
+      (beginning-of-defun)
+      (while (not (zerop (nth 0 (slime-current-parser-state))))
+        ;; We go upwards, not downwards, to hopefully give the parser
+        ;; state enough context to be accurate.
+        (beginning-of-defun))
+      (let ((start (point)))
+        (end-of-defun)
+        (list start (point))))))
 
 (defun slime-exit-vertical-bars ()
   "Move out from within vertical bars (|foo|) to the leading bar."
@@ -8270,19 +8488,35 @@ The result is unspecified if there isn't a symbol under the point."
 (when (featurep 'xemacs)
   (require 'overlay))
 
+(defun slime-emacs-21-p ()
+  (and (not (featurep 'xemacs))
+       (= emacs-major-version 21)))
+
 (if (and (featurep 'emacs) (>= emacs-major-version 22))
-    ;;;  N.B. The 2nd, and 6th return value cannot be relied upon.
-    (defun slime-current-parser-state ()
+    ;;  N.B. The 2nd, and 6th return value cannot be relied upon.
+    (defsubst slime-current-parser-state ()
       ;; `syntax-ppss' does not save match data as it invokes
       ;; `beginning-of-defun' implicitly which does not save match
       ;; data. This issue has been reported to the Emacs maintainer on
       ;; Feb27.
       (save-match-data (syntax-ppss)))
-    (defun slime-current-parser-state ()
+    (defsubst slime-current-parser-state ()
       (let ((original-pos (point)))
         (save-excursion
           (beginning-of-defun)
           (parse-partial-sexp (point) original-pos)))))
+
+;;; `getf', `get', `symbol-plist' do not work on malformed plists
+;;; on Emacs21. On later versions they do.
+(when (slime-emacs-21-p)
+  ;; Perhaps we should rather introduce a new `slime-getf' than
+  ;; redefining. But what about (setf getf)? (A redefinition is not
+  ;; necessary, except for consistency.)
+  (defun getf (plist property &optional default)
+    (loop for (prop . val) on plist 
+          when (eq prop property) return (car val)
+          finally (return default))))
+
 
 (defun slime-split-string (string &optional separators omit-nulls)
   "This is like `split-string' in Emacs22, but also works in 21."
@@ -8326,12 +8560,6 @@ will return \"\"."
 (put 'slime-DEFMACRO-if-undefined 'lisp-indent-function 2)
 (put 'slime-indulge-pretty-colors 'slime-DEFMACRO-if-undefined t)
 
-(defmacro slime-defmacro-if-undefined (name &rest rest)
-  `(unless (fboundp ',name)
-     (defmacro ,name ,@rest)))
-
-(put 'slime-defmacro-if-undefined 'lisp-indent-function 2)
-
 
 (defvar slime-accept-process-output-supports-floats 
   (ignore-errors (accept-process-output nil 0.0) t))
@@ -8373,12 +8601,13 @@ for (somewhat) better multiframe support."
       (apply #'run-mode-hooks hooks)
     (apply #'run-hooks hooks)))
 
-(defun slime-line-number-at-pos ()
-  (cond ((fboundp 'line-number-at-pos)
-         (line-number-at-pos))  ; Emacs 22
-        ((fboundp 'line-number)
-         (line-number))         ; XEmacs
-        (t (1+ (count-lines 1 (point-at-bol))))))
+(if (featurep 'xemacs)
+  (slime-DEFUN-if-undefined line-number-at-pos (&optional pos)
+     (line-number pos))
+  (slime-DEFUN-if-undefined line-number-at-pos (&optional pos)
+     (save-excursion
+       (when pos (goto-char pos))
+       (1+ (count-lines 1 (point-at-bol))))))
 
 (defun slime-local-variable-p (var &optional buffer)
   (local-variable-p var (or buffer (current-buffer)))) ; XEmacs
@@ -8477,7 +8706,7 @@ Unless optional argument INPLACE is non-nil, return a new string."
       (if (eq (aref newstr i) fromchar)
 	  (aset newstr i tochar)))
     newstr))
-
+                          
 (slime-DEFUN-if-undefined count-screen-lines 
   (&optional beg end count-final-newline window)
   (unless beg
@@ -8605,6 +8834,11 @@ If they are not, position point at the first syntax error found."
 (slime-DEFUN-if-undefined set-process-coding-system 
     (process &optional decoding encoding))
 
+(slime-DEFUN-if-undefined display-warning  
+                          (type message &optional level buffer-name)
+  (slime-display-message (apply #'format (concat "Warning (%s): " message) type args)
+                         "*Warnings*"))
+
 (unless (boundp 'temporary-file-directory)
   (defvar temporary-file-directory
     (file-name-as-directory
@@ -8636,9 +8870,6 @@ If they are not, position point at the first syntax error found."
      (select-window ,window)
      ,@body))
 
-(defun slime-emacs-21-p ()
-  (and (not (featurep 'xemacs))
-       (= emacs-major-version 21)))
 
 (when (featurep 'xemacs)
   (add-hook 'sldb-hook 'sldb-xemacs-emulate-point-entered-hook))
@@ -8700,7 +8931,17 @@ If they are not, position point at the first syntax error found."
           slime-tree-insert
           slime-symbol-constituent-at
           slime-beginning-of-symbol
-          slime-end-of-symbol)))
+          slime-end-of-symbol
+          ;; Used implicitly during fontification:
+          slime-current-parser-state
+          slime-forward-sexp
+          slime-forward-cruft
+          slime-forward-any-comment
+          slime-region-for-tlf-at-point
+          slime-region-for-extended-tlf-at-point
+          slime-extend-region-for-font-lock
+          slime-search-suppressed-forms
+          )))
 
 (provide 'slime)
 (run-hooks 'slime-load-hook)

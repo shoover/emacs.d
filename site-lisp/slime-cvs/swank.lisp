@@ -29,7 +29,7 @@
            ;; These are user-configurable variables:
            #:*communication-style*
            #:*dont-close*
-           #:*fasl-directory*
+           #:*fasl-pathname-function*
            #:*log-events*
            #:*log-output*
            #:*use-dedicated-output-stream*
@@ -1330,16 +1330,18 @@ The processing is done in the extent of the toplevel restart."
 
 (defun simple-serve-requests (connection)
   (unwind-protect 
-       (call-with-user-break-handler
-        (lambda () 
-          (invoke-or-queue-interrupt #'dispatch-interrupt-event))
-        (lambda ()
-          (with-simple-restart (close-connection "Close SLIME connection")
-            ;;(handle-requests connection)
-            (let* ((stdin (real-input-stream *standard-input*))
-                   (*standard-input* (make-repl-input-stream connection 
-                                                             stdin)))
-              (simple-repl)))))
+       (with-connection (connection)
+         (call-with-user-break-handler
+          (lambda () 
+            (invoke-or-queue-interrupt #'dispatch-interrupt-event))
+          (lambda ()
+            (with-simple-restart (close-connection "Close SLIME connection")
+              ;;(handle-requests connection)
+              (let* ((stdin (real-input-stream *standard-input*))
+                     (*standard-input* (make-repl-input-stream connection 
+                                                               stdin)))
+                (with-swank-error-handler (connection)
+                  (simple-repl)))))))
     (close-connection connection nil (safe-backtrace))))
 
 (defun simple-repl ()
@@ -1360,18 +1362,24 @@ The processing is done in the extent of the toplevel restart."
 (defun make-repl-input-stream (connection stdin)
   (make-input-stream
    (lambda ()
+     (log-event "pull-input: ~a ~a ~a~%"
+                (connection.socket-io connection)
+                (if (open-stream-p (connection.socket-io connection))
+                    :socket-open :socket-closed)
+                (if (open-stream-p stdin) 
+                    :stdin-open :stdin-closed))
      (loop
-      (with-connection (connection)
-        (let* ((socket (connection.socket-io connection))
-               (inputs (list socket stdin))
-               (ready (wait-for-input inputs)))
-          (cond ((eq ready :interrupt)
-                 (check-slime-interrupts))
-                ((member socket ready)
-                 (handle-requests connection t))
-                ((member stdin ready)
-                 (return (read-non-blocking stdin)))
-                (t (assert (null ready))))))))))
+      
+      (let* ((socket (connection.socket-io connection))
+             (inputs (list socket stdin))
+             (ready (wait-for-input inputs)))
+        (cond ((eq ready :interrupt)
+               (check-slime-interrupts))
+              ((member socket ready)
+               (handle-requests connection t))
+              ((member stdin ready)
+               (return (read-non-blocking stdin)))
+              (t (assert (null ready)))))))))
 
 (defun read-non-blocking (stream)
   (with-output-to-string (str)
@@ -1775,16 +1783,15 @@ NIL if streams are not globally redirected.")
   (send-to-emacs object))
 
 (defun encode-message (message stream)
-  (let* ((string (prin1-to-string-for-emacs message))
-         (length (length string)))
-    (assert (<= length #xffffff))
-    (log-event "WRITE: ~A~%" string)
-    (let ((*print-pretty* nil))
-      (format stream "~6,'0x" length))
-    (write-string string stream)
-    ;;(terpri stream)
-    (finish-output stream)))
-
+  (handler-bind ((error (lambda (c) (error (make-swank-error c)))))
+    (let* ((string (prin1-to-string-for-emacs message))
+           (length (length string))) 
+      (log-event "WRITE: ~A~%" string)
+      (let ((*print-pretty* nil))
+        (format stream "~6,'0x" length))
+      (write-string string stream)
+      (finish-output stream))))
+  
 (defun prin1-to-string-for-emacs (object)
   (with-standard-io-syntax
     (let ((*print-case* :downcase)
@@ -1860,6 +1867,13 @@ converted to lower case."
 	     (destructure-case value
 	       ((:ok value) value)
 	       ((:abort) (abort))))))))
+
+;;; FIXME: This should not use EVAL-IN-EMACS but get its own events.
+(defun read-from-minibuffer-in-emacs (prompt &optional initial-value)
+  (eval-in-emacs
+   `(condition-case c
+        (slime-read-from-minibuffer ,prompt ,initial-value)
+      (quit nil))))
 
 (defvar *swank-wire-protocol-version* nil
   "The version of the swank/slime communication protocol.")
@@ -2758,17 +2772,17 @@ Record compiler notes signalled as `compiler-condition's."
            (declare (ignore output-pathname warnings?))
            (not failure?)))))))
 
-(defvar *fasl-directory* nil
-  "Directory where swank should place fasl files.")
+(defvar *fasl-pathname-function* nil
+  "In non-nil, use this function to compute the name for fasl-files.")
 
 (defun fasl-pathname (input-file options)
-  (cond ((getf options :fasl-directory)
+  (cond (*fasl-pathname-function*
+         (funcall *fasl-pathname-function* input-file options))
+        ((getf options :fasl-directory)
          (let* ((str (getf options :fasl-directory))
                 (dir (filename-to-pathname str)))
            (assert (char= (aref str (1- (length str))) #\/))
            (compile-file-pathname input-file :output-file dir)))
-        (*fasl-directory*
-         (compile-file-pathname input-file :output-file *fasl-directory*))
         (t
          (compile-file-pathname input-file))))
 
@@ -3205,6 +3219,7 @@ DSPEC is a string and LOCATION a source location. NAME is a string."
   (verbose *inspector-verbose*)
   (parts (make-array 10 :adjustable t :fill-pointer 0))
   (actions (make-array 10 :adjustable t :fill-pointer 0))
+  metadata-plist
   content
   next previous)
 
@@ -3221,15 +3236,22 @@ DSPEC is a string and LOCATION a source location. NAME is a string."
       (reset-inspector)
       (inspect-object (eval (read-from-string string))))))
 
+(defun ensure-istate-metadata (o indicator default)
+  (with-struct (istate. object metadata-plist) *istate*
+    (assert (eq object o))
+    (let ((data (getf metadata-plist indicator default)))
+      (setf (getf metadata-plist indicator) data)
+      data)))
+
 (defun inspect-object (o)
-  (let ((previous *istate*)
-        (content (emacs-inspect/printer-bindings o)))
-    (unless (find o *inspector-history*)
-      (vector-push-extend o *inspector-history*))
-    (setq *istate* (make-inspector-state :object o :previous previous 
-                                         :content content))
-    (if previous (setf (istate.next previous) *istate*))
-    (istate>elisp *istate*)))
+  ;; Set *ISTATE* first so EMACS-INSPECT can possibly look at it.
+  (setq *istate* (make-inspector-state :object o :previous *istate*))
+  (setf (istate.content *istate*) (emacs-inspect/printer-bindings o))
+  (unless (find o *inspector-history*)
+    (vector-push-extend o *inspector-history*))
+  (let ((previous (istate.previous *istate*)))
+    (if previous (setf (istate.next previous) *istate*)))
+  (istate>elisp *istate*))
 
 (defun emacs-inspect/printer-bindings (object)
   (let ((*print-lines* 1) (*print-right-margin* 75)

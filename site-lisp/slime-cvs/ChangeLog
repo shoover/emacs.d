@@ -1,3 +1,228 @@
+2009-05-08  Tobias C. Rittweiler  <tcr@freebits.de>
+
+	* slime.el (slime-search-suppressed-forms-internal): Not properly
+	factored out by earlier changeset.
+
+2009-05-08  Tobias C. Rittweiler  <tcr@freebits.de>
+
+	* swank.lisp (read-from-minibuffer-in-emacs): New.
+	([struct] istate): Add METADATA-PLIST slot.
+	(ensure-istate-metadata): New. To attach arbitrary metadata to an
+	inspector page.
+	(inspect-object): Adapted so methods on EMACS-INSPECT can look at
+	*ISTATE*.
+
+2009-05-08  Tobias C. Rittweiler  <tcr@freebits.de>
+
+	#+#.foo confused the recent fontification changes. Fix that.
+
+	* slime.el (slime-search-suppressed-forms-internal): New. Split
+	from `slime-search-suppressed-forms'.
+	(slime-search-suppressed-forms): Catch `invalid-read-syntax'
+	errors.
+
+2009-05-01  Tobias C. Rittweiler  <tcr@freebits.de>
+
+	* slime.el (slime-line-number-at-pos): Replaced with
+	`line-number-at-pos', and add that to the portability layer.
+	(display-warning): Add to the portability layer.
+	(slime-display-warning): New.
+
+	* slime.el: Implement a guard against infinite loops during
+	fontification. We detect and prevent those. If we detect one, we
+	emit a big warning to the user.
+
+	(slime-font-lock-region): New variable.
+	(slime-font-lock-region-changed-p): New helper.
+	(slime-extend-region-warn-infinite-loop): New helper.
+	(slime-compute-region-for-font-lock): Extracted from
+	`slime-extend-region-for-font-lock'.
+	(slime-extend-region-for-font-lock): Use it; add the guard.
+
+2009-04-30  Tobias C. Rittweiler  <tcr@freebits.de>
+
+	* swank-abcl.lisp: Really commit Vodonosov's patch from
+	2009-03-09.
+
+2009-04-30  Tobias C. Rittweiler  <tcr@freebits.de>
+
+	* swank-backend.lisp ([default] declaration-arglist): Add
+	arglist of DECLARATION declaration.
+
+	* swank-openmcl.lisp ([eql 'optimize] declaration-arglist):
+	Implement it for CCL.
+	(describe-symbol-for-emacs): Add :TYPE.
+	(describe-definition): Add :TYPE.
+
+	Adapted from patch by Stas Boukarev.
+
+2009-04-29  Tobias C. Rittweiler  <tcr@freebits.de>
+
+	* slime.el (slime-extend-region-for-font-lock): (nth 0
+	<parser-state>) may return negative numbers.
+
+2009-04-29  Tobias C. Rittweiler  <tcr@freebits.de>
+
+	* slime.el: Fix infinite loop during fontification introduced
+	by yesterday's changeset.
+
+	(slime-region-for-tlf-at-point): New. Like
+	`slime-region-for-defun-at-point' but tries harder to get the
+	toplevel form right.
+	(slime-region-for-extended-tlf-at-point): Previously
+	`slime-region-for-extended-defun-at-point'.
+	(slime-extend-region-for-font-lock): Use it.
+	(slime-mark-defun-for-font-lock): Ditto.
+
+2009-04-28  Tobias C. Rittweiler  <tcr@freebits.de>
+
+	* slime.el: Fix fontification of suppressed (by reader
+	conditionals) forms. That is make it reliably and totally work.
+
+	(slime-region-for-extended-defun-at-point): New. Like
+	`slime-region-for-defun-at-point' but takes preceding reader
+	conditionals into account.
+	(slime-extend-region-for-font-lock): New. Make sure that
+	fontification operates on regions spanning a whole toplevel form
+	only. So we never operate within the context of a reader
+	conditional and we never miss any of those.
+	(slime-search-suppressed-forms): Remove ignore-errors; not needed
+	anymore now as we extend the region for fontification.
+	(slime-mark-defun-for-font-lock): New.
+	(slime-activate-font-lock-magic): Push
+	`slime-extend-region-for-font-lock' onto
+	`font-lock-extend-region-functions'.
+
+2009-04-25  Tobias C. Rittweiler  <tcr@freebits.de>
+
+	* slime.el (slime-show-description): Put the connection name into
+	the buffer name for description buffers. So we can have multiple
+	description buffers open, one per connection.
+
+	Useful for comparing the output of DISASSEMBLE across
+	implementations.
+
+2009-04-21  Tobias C. Rittweiler  <tcr@freebits.de>
+
+	* slime.el (slime-handle-indentation-update): Revert change from
+	2009-03-09; that was a thinko.
+	([test] indentation): Some basic test case for correct indentation.
+
+2009-04-03  Tobias C. Rittweiler  <tcr@freebits.de>
+
+	* swank-sbcl.lisp (swank-compile-file): Return T for the FAILURE-P
+	return value in case of a FATAL-COMPILER-ERROR.
+
+	Reported by Philipp M. Schäfer
+
+2009-04-03  Tobias C. Rittweiler  <tcr@freebits.de>
+
+	* slime.el (slime-inspector-mode-map): Remove binding for
+	M-RET. (It'll be added by the slime-repl contrib.)
+	(slime-inspector-copy-down): Removed.
+
+2009-03-27  Helmut Eller  <heller@common-lisp.net>
+
+	* swank.lisp (encode-message): Handle errors during write, e.g.
+	closed sockets.
+
+2009-03-27  Helmut Eller  <heller@common-lisp.net>
+
+	* slime.el (slime-setup-contribs): Moved over from
+	slime-autoloads.el
+
+2009-03-27  Helmut Eller  <heller@common-lisp.net>
+	* swank-openmcl.lisp (toggle-trace): Replace ccl::%trace with
+	ccl:trace-function.
+	(kill-thread): Use an implementation that doesn't raise a
+	serious-conditions.
+
+2009-03-27  Helmut Eller  <heller@common-lisp.net>
+
+	* slime.el ([test] macroexpand): Fix more case issues.
+
+2009-03-25  Helmut Eller  <heller@common-lisp.net>
+
+	* slime.el ([test] macroexpand): Ignore case.
+
+2009-03-09  Tobias C. Rittweiler  <tcr@freebits.de>
+
+	* slime.el (slime-define-channel-type): Indulge in pretty colors.
+	(slime-define-channel-method): You, too!
+
+	(slime-handle-indentation-update): Always put an indentation
+	update on 'slime-indent; for slime-indentation-fu.
+
+2009-03-09  Anton Vodonosov <avodonosov@yandex.ru>
+
+	Use correct encoding and eol conventions for socket streams.
+
+	* swank-abcl.lisp (accept-connection): Honor external-format
+	argument.
+	(*external-format-to-coding-system*, find-external-format): New.
+
+2009-03-09  Helmut Eller  <heller@common-lisp.net>
+
+	* slime.el (slime-with-xref-buffer): Use buffer-names like
+	"*slime xref...*" so that slime-kill-all-buffers can pick
+	it up easily.
+
+2009-03-09  Helmut Eller  <heller@common-lisp.net>
+
+	* hyperspec.el (common-lisp-hyperspec-lookup-reader-macro): Use
+	case-insensitive completion.
+	(hyperspec-lookup-reader-macro): New alias.
+	Suggested by Stas Boukarev.
+
+2009-03-09  Helmut Eller  <heller@common-lisp.net>
+
+	Make fasl-pathname fully customizable not only the direcrory part.
+
+	* swank.lisp (*fasl-pathname-function*): New variable.
+	(*fasl-directory*): Deleted.
+
+2009-03-08  Tobias C. Rittweiler  <tcr@freebits.de>
+
+	* slime.el (slime-choose-overlay-for-read-error): Extracted and
+	extended from `slime-choose-overlay-region'. Differentiate between
+	symbol-related reader-errors (package not found &c) and
+	character-related reader-errors.
+	(slime-choose-overlay-region): Use it.
+
+2009-03-08  Tobias C. Rittweiler  <tcr@freebits.de>
+
+	* slime.el (make-slime-buffer-location, make-slime-file-location):
+	Do not default to (:hints), but to nil, as expected in the
+	slime-side source-location machinery.
+
+2009-03-08  Tobias C. Rittweiler  <tcr@freebits.de>
+
+	* slime.el (slime-choose-overlay-region): Special case :read-error
+	notes regardless of position kind.
+
+	* swank-sbcl.lisp (signal-compiler-condition): Return :READ-ERROR
+	as severity for reader-errors.
+	(compiler-note-location): Fix off-by-one when compiling from
+	buffer.
+
+2009-03-08  Tobias C. Rittweiler  <tcr@freebits.de>
+
+	* swank-sbcl.lisp (compiling-from-buffer-p),
+	(compiling-from-file-p)
+	(compiling-from-generated-code-p): New helpers; extracted from
+	LOCATE-COMPILER-NOTE.
+	(locate-compiler-note): Use them.
+	(compiler-note-location): Use them, too, to handle reader-errors
+	when compiling from file. This completes 2009-02-27.
+
+	Reported by Christian Lynbech.
+
+2009-03-07  Tobias C. Rittweiler  <tcr@freebits.de>
+
+	* slime.el ([portability] getf): Redefine `getf' on Emacs21 to
+	work on malformed plists like it does on later Emacsen. This made
+	the `find-local-definitions' test case fail on Emacs21.
+
 2009-03-04  Tobias C. Rittweiler  <tcr@freebits.de>
 
 	* slime.el (slime-check-fancy-symbol-name): Use
