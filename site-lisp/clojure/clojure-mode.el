@@ -317,7 +317,7 @@ elements of a def* forms."
       (,(concat
          "(\\(?:clojure/\\)?" 
          (regexp-opt
-          '("let" "do"
+          '("let" "letfn" "do"
             "cond" "condp"
             "for" "loop" "recur"
             "when" "when-not" "when-let" "when-first"
@@ -532,6 +532,7 @@ check for contextual indenting."
   (if 1)
   (if-not 1)
   (let 1)
+  (letfn 1)
   (loop 1)
   (struct-map 1)
   (assoc 1)

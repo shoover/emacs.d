@@ -458,6 +458,9 @@ joined together."))
   ("\C-c\C-p" 'slime-repl-previous-prompt)
   ("\C-c\C-z" 'slime-nop))
 
+(slime-define-keys slime-inspector-mode-map
+  ((kbd "M-RET") 'slime-inspector-copy-down-to-repl))
+
 (def-slime-selector-method ?r
   "SLIME Read-Eval-Print-Loop."
   (slime-output-buffer))
@@ -1417,6 +1420,14 @@ expansion will be added to the REPL's history.)"
             (t
              (error "Not in a function definition")))))))
 
+(defun slime-inspector-copy-down-to-repl (number)
+   "Evaluate the inspector slot at point via the REPL (to set `*')."
+   (interactive (list (or (get-text-property (point) 'slime-part-number)
+                          (error "No part at point"))))
+   (slime-repl-send-string (format "%s" `(swank:inspector-nth-part ,number)))
+   (slime-repl))
+
+
 (defun slime-set-default-directory (directory)
   "Make DIRECTORY become Lisp's current directory."
   (interactive (list (read-directory-name "Directory: " nil nil t)))
@@ -1515,6 +1526,9 @@ expansion will be added to the REPL's history.)"
      (assert thread)
      (slime-repl-read-string thread tag)
      t)
+    ((:read-aborted thread tag)
+     (slime-repl-abort-read thread tag)
+     t)
     ((:open-dedicated-output-stream port)
      (slime-open-stream-to-lisp port)
      t)
@@ -1531,6 +1545,10 @@ expansion will be added to the REPL's history.)"
 (defun slime-repl-init ()
   (add-hook 'slime-event-hooks 'slime-repl-event-hook-function)
   (add-hook 'slime-connected-hook 'slime-repl-connected-hook-function))
+
+(defun slime-repl-remove-hooks ()
+  (remove-hook 'slime-event-hooks 'slime-repl-event-hook-function)
+  (remove-hook 'slime-connected-hook 'slime-repl-connected-hook-function))
 
 (def-slime-test package-updating
     (package-name nicknames)
@@ -1781,25 +1799,25 @@ SWANK> [*foo]"))
   (with-canonicalized-slime-repl-buffer
     (insert "(read-char)")
     (call-interactively 'slime-repl-return)
-    (slime-wait-condition "reading" #'slime-reading-p 5))
-  (slime-interrupt)
-  (slime-wait-condition "Debugger visible" 
-                        (lambda () 
-                          (and (slime-sldb-level= 1)
-                               (get-buffer-window (sldb-get-default-buffer))))
-                        5)
-  (with-current-buffer (sldb-get-default-buffer)
-    (sldb-continue))
-  (slime-wait-condition "reading" #'slime-reading-p 5)
-  (with-current-buffer (slime-output-buffer)
-    (insert "X")
-    (call-interactively 'slime-repl-return)
-    (slime-sync-to-top-level 5)
-    (slime-test-expect "Buffer contains result" 
-                       "SWANK> (read-char)
+    (slime-wait-condition "reading" #'slime-reading-p 5)
+    (slime-interrupt)
+    (slime-wait-condition "Debugger visible" 
+                          (lambda () 
+                            (and (slime-sldb-level= 1)
+                                 (get-buffer-window (sldb-get-default-buffer))))
+                          5)
+    (with-current-buffer (sldb-get-default-buffer)
+      (sldb-continue))
+    (slime-wait-condition "reading" #'slime-reading-p 5)
+    (with-current-buffer (slime-output-buffer)
+      (insert "X")
+      (call-interactively 'slime-repl-return)
+      (slime-sync-to-top-level 5)
+      (slime-test-expect "Buffer contains result" 
+                         "SWANK> (read-char)
 X
 #\\X
-SWANK> " (buffer-string))))
+SWANK> " (buffer-string)))))
 
 (let ((byte-compile-warnings '()))
   (mapc #'byte-compile
