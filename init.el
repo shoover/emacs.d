@@ -214,6 +214,42 @@ scan-error if not."
              "-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8888")))
 (autoload 'slime "slime" "Load slime for swank-clojure" t)
 
+(defun slime-project (path)
+  "Setup classpaths for a clojure project and starts a new SLIME session.
+
+Kills existing SLIME session, if any.
+
+From Phil Hagelberg and changed for my setup:
+  - Removed ido-read-directory-name--wasn't working for me
+  - Commented locate-dominating-file--didn't work on aquamacs 22
+  - Get clojure and contrib from clojure-path and clojure-contrib-path
+    instead of target/classes, since I'm not bothering to unjar them
+  - Added debug options
+"
+  (interactive (list
+                (read-directory-name
+                 "Project root: ")))
+                 ;(locate-dominating-file default-directory "src"))))
+  (when (get-buffer "*inferior-lisp*")
+    (kill-buffer "*inferior-lisp*"))
+  (setq swank-clojure-binary nil
+        swank-clojure-jar-path (concat clojure-path "clojure.jar")
+        swank-clojure-extra-classpaths
+        (cons (concat clojure-contrib-path "src")
+              (mapcar (lambda (d) (expand-file-name d path))
+                      '("src/" "target/classes/" "test/")))
+        swank-clojure-extra-vm-args
+        (list (format "-Dclojure.compile.path=%s"
+                      (expand-file-name "target/classes/" path))
+              "-Xdebug"
+              "-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8888")
+        slime-lisp-implementations
+        (cons `(clojure ,(swank-clojure-cmd) :init swank-clojure-init)
+              (remove-if #'(lambda (x) (eq (car x) 'clojure))
+                         slime-lisp-implementations)))
+  (save-window-excursion
+    (slime)))
+
 
 ;; CMake
 (autoload 'cmake-mode "cmake-mode" "Edit CMake definitions" t)
