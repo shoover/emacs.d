@@ -19,12 +19,12 @@
                    (add-to-list 'load-path
                                 (concat emacs-root p))))
   (add-path "emacs/lisp")
-  (add-path "emacs/site-lisp") ;; elisp stuff I find on the 'net
-  (add-path "emacs/site-lisp/clojure")
+  (add-path "emacs/site-lisp")
+  (add-path "emacs/site-lisp/clojure-mode")
   (add-path "emacs/site-lisp/color-theme-6.6.0") ;; my color preferences
   (add-path "emacs/site-lisp/org/lisp")
   (add-path "emacs/site-lisp/remember-2.0")
-  (add-path "emacs/site-lisp/slime-cvs")
+  (add-path "emacs/site-lisp/slime")
   (add-path "emacs/site-lisp/swank-clojure"))
 
 ;; Load emacsw32 here instead of site-start.el so it finds my org installation.
