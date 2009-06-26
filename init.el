@@ -66,6 +66,16 @@
   (interactive)
   (find-file my-action-org))
 
+(defun next-slide ()
+  "org-mode slideware, jumps to next subtree with automatic
+narrowing and widening."
+  (interactive)
+  (outline-up-heading 1)
+  (widen)
+  (outline-forward-same-level 1)
+  (show-subtree)
+  (org-narrow-to-subtree))
+
 (defun indent-buffer ()
   "Indent the entire buffer. Seems like emacs should have this."
   (interactive)
@@ -96,6 +106,8 @@
   (set-selective-display (if selective-display nil 1)))
 
 ;; paredit keyboard tweaks--from Bill Clementson
+(require 'paredit)
+(defun lisp-enable-paredit-hook () (paredit-mode 1))
 (defun check-region-parens ()
   "Check if parentheses in the region are balanced. Signals a
 scan-error if not."
@@ -186,12 +198,10 @@ scan-error if not."
         (concat java-path
                 " " java-options
                 " -cp " class-path " clojure.lang.Repl")))
-(require 'clojure-paredit)
+(require 'clojure-mode)
+(add-hook 'clojure-mode-hook 'lisp-enable-paredit-hook)
 (require 'swank-clojure-autoload)       
 (swank-clojure-config
- ;; Provide clojure-indent-function in case we haven't opened a Clojure file
- ;; yet
- (require 'clojure-mode)
  (slime-setup '(slime-repl))
  (setq swank-clojure-jar-path (concat clojure-path "clojure.jar"))
  (add-to-list 'swank-clojure-extra-classpaths

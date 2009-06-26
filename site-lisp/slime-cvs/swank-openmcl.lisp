@@ -219,6 +219,12 @@
 (defimplementation function-name (function)
   (ccl:function-name function))
 
+(defmethod declaration-arglist ((decl-identifier (eql 'optimize)))
+  (let ((flags (ccl:declaration-information decl-identifier)))
+    (if flags
+        `(&any ,flags)
+        (call-next-method))))
+
 ;;; Compilation
 
 (defvar *buffer-offset* nil)
@@ -270,21 +276,6 @@ condition."
       (compile-file input-file 
                     :output-file output-file
                     :load load-p))))
-
-(defimplementation frame-var-value (frame var)
-  (block frame-var-value
-    (map-backtrace  
-     #'(lambda(frame-number p context lfun pc)
-         (when (= frame frame-number)
-           (return-from frame-var-value 
-             (multiple-value-bind (total vsp parent-vsp)
-                 (ccl::count-values-in-frame p context)
-               (loop for count below total
-                     with varcount = -1
-                     for (value nil name) = (multiple-value-list (ccl::nth-value-in-frame p count context lfun pc vsp parent-vsp))
-                     when name do (incf varcount)
-                     until (= varcount var)
-                     finally (return value)))))))))
 
 (defun xref-locations (relation name &optional (inverse nil))
   (flet ((function-source-location (entry)
@@ -529,6 +520,21 @@ condition."
     (format stream "(~S~{ ~S~})"
             (or (ccl::function-name lfun) lfun)
             (frame-arguments p context lfun pc))))
+
+(defimplementation frame-var-value (frame var)
+  (block frame-var-value
+    (map-backtrace  
+     #'(lambda(frame-number p context lfun pc)
+         (when (= frame frame-number)
+           (return-from frame-var-value 
+             (multiple-value-bind (total vsp parent-vsp)
+                 (ccl::count-values-in-frame p context)
+               (loop for count below total
+                     with varcount = -1
+                     for (value nil name) = (multiple-value-list (ccl::nth-value-in-frame p count context lfun pc vsp parent-vsp))
+                     when name do (incf varcount)
+                     until (= varcount var)
+                     finally (return value)))))))))
 
 (defimplementation frame-locals (index)
   (block frame-locals
@@ -871,6 +877,9 @@ at least the filename containing it."
                                         `(setf ,symbol))))
                (when (fboundp setf-function-name)
                  (doc 'function setf-function-name))))
+      (maybe-push
+       :type (when (ccl:type-specifier-p symbol)
+               (doc 'type)))
       result)))
 
 (defimplementation describe-definition (symbol namespace)
@@ -882,23 +891,21 @@ at least the filename containing it."
     (:setf
      (describe (ccl::setf-function-spec-name `(setf ,symbol))))
     (:class
-     (describe (find-class symbol)))))
+     (describe (find-class symbol)))
+    (:type
+     (describe (or (find-class symbol nil) symbol)))))
 
 (defimplementation toggle-trace (spec)
   "We currently ignore just about everything."
   (ecase (car spec)
-    (setf
-     (ccl::%trace spec))
-    (:defmethod
-     (ccl::%trace (second spec)))
-    (:defgeneric
-     (ccl::%trace (second spec)))
-    (:call
-     (toggle-trace (third spec)))
-    ;; mb: FIXME: shouldn't we warn that we're not doing anything for
-    ;; these two?
-    (:labels nil)
-    (:flet nil))
+    (setf 
+     (ccl:trace-function spec))
+    ((:defgeneric)
+     (ccl:trace-function (second spec)))
+    ((:defmethod)
+     (destructuring-bind (name qualifiers specializers) (cdr spec)
+       (ccl:trace-function 
+        (find-method (fdefinition name) qualifiers specializers)))))
   t)
 
 ;;; XREF
@@ -924,6 +931,10 @@ at least the filename containing it."
 	   (numberp (symbol-value s))
 	   (< (symbol-value s) 255))
       (setf (gethash (symbol-value s) *value2tag*) s)))
+
+#+#.(swank-backend::with-symbol 'macroexpand-all 'ccl)
+(defimplementation macroexpand-all (form)
+  (ccl:macroexpand-all form))
 
 ;;;; Inspection
 
@@ -1017,8 +1028,12 @@ out IDs for.")
   (semaphore (ccl:make-semaphore))
   (queue '() :type list))
 
-(defimplementation spawn (fn &key name)
-  (ccl:process-run-function (or name "Anonymous (Swank)") fn))
+(defimplementation spawn (fun &key name)
+  (ccl:process-run-function 
+   (or name "Anonymous (Swank)")
+   (lambda ()
+     (handler-bind ((ccl:process-reset (lambda (c) c nil)))
+       (funcall fun)))))
 
 (defimplementation thread-id (thread)
   (ccl::process-serial-number thread))
@@ -1045,11 +1060,12 @@ out IDs for.")
 (defimplementation all-threads ()
   (ccl:all-processes))
 
-;; our thread-alive-p implementation will not work well if we don't
-;; wait.  join-process should have a timeout argument.
 (defimplementation kill-thread (thread)
-  (ccl:process-kill thread)
-  (ccl:join-process thread))
+  (and (ccl:process-interrupt thread
+                              (lambda () 
+                                (ccl::maybe-finish-process-kill 
+                                 ccl:*current-process* :kill)))
+       (setf (ccl::process-kill-issued thread) t)))
 
 (defimplementation thread-alive-p (thread)
   (not (ccl::process-exhausted-p thread)))
