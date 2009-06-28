@@ -247,6 +247,7 @@ From Phil Hagelberg and changed for my setup:
         (cons `(clojure ,(swank-clojure-cmd) :init swank-clojure-init)
               (remove-if #'(lambda (x) (eq (car x) 'clojure))
                          slime-lisp-implementations)))
+  (cd path)
   (save-window-excursion
     (slime)))
 
