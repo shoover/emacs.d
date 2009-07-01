@@ -461,7 +461,10 @@ running, raises the most recently updated ERC buffer."
   (setq one-buffer-one-frame-mode nil)
   (setq mac-command-modifier (quote meta))
   (setq mac-option-modifier (quote alt))
-  (define-key osx-key-mode-map `[(control z)] 'iconify-or-deiconify-frame))
+  (define-key osx-key-mode-map `[(control z)] 'iconify-or-deiconify-frame)
+  ; Removed this from custom, it was breaking emacsw32 init.
+  ;'(tabbar-mode nil nil (tabbar))
+  )
 
 ;; Assumed registry settings (HKLM/Software/GNU/Emacs):
 ;;   Emacs.toolBar: 0
@@ -498,7 +501,6 @@ running, raises the most recently updated ERC buffer."
  '(special-display-regexps (quote (".*SPEEDBAR.*")))
  '(tab-always-indent t)
  '(tab-width 2)
- '(tabbar-mode nil nil (tabbar))
  '(tool-bar-mode nil)
  '(transient-mark-mode t)
  '(visual-scroll-margin 0)
