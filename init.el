@@ -241,6 +241,7 @@ From Phil Hagelberg and changed for my setup:
         swank-clojure-extra-vm-args
         (list (format "-Dclojure.compile.path=%s"
                       (expand-file-name "target/classes/" path))
+              "-server"
               "-Xdebug"
               "-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8888")
         slime-lisp-implementations
@@ -377,7 +378,9 @@ running, raises the most recently updated ERC buffer."
             (define-key org-mode-map "\M-," 'org-mark-ring-goto)
 
             (setq org-agenda-files (list my-action-org))
-            
+            (setq org-agenda-custom-commands
+                  '(("A" "30 day agenda" agenda "" ((org-agenda-ndays 30)))))
+
             ;; Variables used to save remember notes
             (setq org-directory my-org-dir)
             (setq org-default-notes-file my-action-org)
