@@ -34,6 +34,7 @@
 
 (defvar my-org-dir "~/action")
 (defvar my-action-org (concat my-org-dir "/action.org"))
+(defvar my-work-org (concat my-org-dir "/work.org"))
  
 ;; Tab defaults
 (setq-default indent-tabs-mode nil)
@@ -183,7 +184,7 @@ scan-error if not."
 
 ;; Clojure
 (defvar clojure-path "c:/users/shawn/clojure/work/")
-(defvar clojure-contrib-path "c:/users/shawn/clojure-contrib-mirror/")
+(defvar clojure-contrib-path "c:/users/shawn/clojure-contrib/")
 (defvar class-path-delimiter (if nix ":" ";"))
 (setq inferior-lisp-program
       (let* ((java-path "java")
@@ -377,7 +378,8 @@ running, raises the most recently updated ERC buffer."
             (define-key org-mode-map "\M-." 'org-open-at-point)
             (define-key org-mode-map "\M-," 'org-mark-ring-goto)
 
-            (setq org-agenda-files (list my-action-org))
+            (setq org-agenda-files (list my-action-org
+                                         my-work-org))
             (setq org-agenda-custom-commands
                   '(("A" "30 day agenda" agenda "" ((org-agenda-ndays 30)))))
 
@@ -517,6 +519,7 @@ running, raises the most recently updated ERC buffer."
  '(mode-line ((t (:background "wheat" :foreground "black" :inverse-video t :box (:line-width 1 :color "wheat")))))
  '(mode-line-highlight ((t (:inherit highlight :background "black" :foreground "wheat" :inverse-video nil))))
  '(mode-line-inactive ((default (:inherit mode-line)) (((class color) (min-colors 88) (background dark)) (:background "grey30" :foreground "grey50" :box (:line-width -1 :color "grey40") :weight light))))
+ '(org-todo ((t (:foreground "gray" :weight bold))))
  '(tooltip ((t (:inherit variable-pitch :background "systeminfowindow" :foreground "black")))))
 
 
