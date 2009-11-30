@@ -166,8 +166,15 @@ scan-error if not."
 (windmove-default-keybindings)
 
 ;; Buffer switching
-(require 'iswitchb)
-(iswitchb-mode 1)
+;;(require 'iswitchb)
+;;(iswitchb-mode 1)
+;; Or everything else switching
+(ido-mode 1)
+
+;; Unique buffer names
+(require 'uniquify) 
+(setq uniquify-buffer-name-style 'post-forward
+      uniquify-separator ":")
 
 ;; C
 (add-hook 'c-mode-hook
@@ -206,7 +213,7 @@ scan-error if not."
  (slime-setup '(slime-repl))
  (setq swank-clojure-jar-path (concat clojure-path "clojure.jar"))
  (add-to-list 'swank-clojure-extra-classpaths
-              (concat clojure-contrib-path "src"))
+              (concat clojure-contrib-path "clojure-contrib.jar"))
 
  ;; Allow debugger to attach. To connect to listening debugger, remove
  ;; server=y.
@@ -236,13 +243,13 @@ From Phil Hagelberg and changed for my setup:
   (setq swank-clojure-binary nil
         swank-clojure-jar-path (concat clojure-path "clojure.jar")
         swank-clojure-extra-classpaths
-        (cons (concat clojure-contrib-path "src")
+        (cons (concat clojure-contrib-path "clojure-contrib.jar")
               (mapcar (lambda (d) (expand-file-name d path))
                       '("src/" "target/classes/" "test/")))
         swank-clojure-extra-vm-args
         (list (format "-Dclojure.compile.path=%s"
                       (expand-file-name "target/classes/" path))
-              "-server"
+              ;"-server"
               "-Xdebug"
               "-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8888")
         slime-lisp-implementations
@@ -508,6 +515,7 @@ running, raises the most recently updated ERC buffer."
  '(tab-width 2)
  '(tool-bar-mode nil)
  '(transient-mark-mode t)
+ '(user-full-name "Shawn Hoover")
  '(visual-scroll-margin 0)
  '(w32shell-cygwin-bin "C:\\bin"))
 
