@@ -500,10 +500,10 @@ running, raises the most recently updated ERC buffer."
 ;;   Emacs.toolBar: 0
 ;;   Emacs.full
 (custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
+  ;; custom-set-variables was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
  '(ansi-color-for-comint-mode t)
  '(aquamacs-additional-fontsets nil t)
  '(aquamacs-customization-version-id 172 t)
@@ -528,6 +528,8 @@ running, raises the most recently updated ERC buffer."
  '(pr-gv-command "C:\\Program Files\\Ghostgum\\gsview\\gsview32.exe")
  '(scroll-conservatively 0)
  '(scroll-step 0)
+ '(show-paren-mode t)
+ '(show-paren-style (quote mixed))
  '(special-display-regexps (quote (".*SPEEDBAR.*")))
  '(tab-always-indent t)
  '(tab-width 2)
@@ -538,14 +540,15 @@ running, raises the most recently updated ERC buffer."
  '(w32shell-cygwin-bin "C:\\bin"))
 
 (custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
+  ;; custom-set-faces was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
  '(mode-line ((t (:background "wheat" :foreground "black" :inverse-video t :box (:line-width 1 :color "wheat")))))
  '(mode-line-highlight ((t (:inherit highlight :background "black" :foreground "wheat" :inverse-video nil))))
  '(mode-line-inactive ((default (:inherit mode-line)) (((class color) (min-colors 88) (background dark)) (:background "grey30" :foreground "grey50" :box (:line-width -1 :color "grey40") :weight light))))
  '(org-todo ((t (:foreground "gray" :weight bold))))
+ '(show-paren-match ((((class color) (background dark)) (:background "gray10"))))
  '(tooltip ((t (:inherit variable-pitch :background "systeminfowindow" :foreground "black")))))
 
 
