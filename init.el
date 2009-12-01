@@ -45,9 +45,6 @@
 
 (setq inhibit-splash-screen t)
 
-;; Subtle face for parens in lisp modes
-(require 'parenface)
-
 ;; Allow bullet lists starting with - to delimit paragraphs for use with
 ;; fill-paragraph. fill-individual-paragraphs accomplishes what I want, but it
 ;; requires that you have an active region.
@@ -539,18 +536,10 @@ running, raises the most recently updated ERC buffer."
  '(visual-scroll-margin 0)
  '(w32shell-cygwin-bin "C:\\bin"))
 
-(custom-set-faces
-  ;; custom-set-faces was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
- '(mode-line ((t (:background "wheat" :foreground "black" :inverse-video t :box (:line-width 1 :color "wheat")))))
- '(mode-line-highlight ((t (:inherit highlight :background "black" :foreground "wheat" :inverse-video nil))))
- '(mode-line-inactive ((default (:inherit mode-line)) (((class color) (min-colors 88) (background dark)) (:background "grey30" :foreground "grey50" :box (:line-width -1 :color "grey40") :weight light))))
- '(org-todo ((t (:foreground "gray" :weight bold))))
- '(show-paren-match ((((class color) (background dark)) (:background "gray10"))))
- '(tooltip ((t (:inherit variable-pitch :background "systeminfowindow" :foreground "black")))))
+;;; Faces
 
+;; Subtle face for parens in lisp modes
+(require 'parenface)
 
 ;; Pretty black background color theme.
 ;; Call this after all the other useless color settings so none of its
@@ -568,7 +557,6 @@ running, raises the most recently updated ERC buffer."
   (color-theme-calm-forest)
   (global-font-lock-mode 1)
   (global-hl-line-mode nil)
-  
   ;; Lest we get black on black parens
   (set-face-foreground 'paren-face "green"))
 
@@ -577,7 +565,10 @@ running, raises the most recently updated ERC buffer."
  ;;((featurep 'aquamacs) nil)
 
  (t
-  (load-file "~/emacs/site-lisp/color-theme-6.6.0/themes/shawn.elc")
-  (color-theme-shawn)))
+  (load "~/emacs/site-lisp/color-theme-6.6.0/themes/shawn")
+  (color-theme-shawn)
+  ;(load "~/emacs/site-lisp/color-theme-6.6.0/themes/zenburn")
+  ;(zenburn)
+  ))
 
 (cd emacs-root)
