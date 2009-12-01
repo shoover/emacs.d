@@ -1,4 +1,4 @@
-;;; zenburn.el --- just some alien fruit salad to keep you in the zone
+;;; zenburn-shawn.el --- zenburn framework with a color-theme-billw feel
 ;; Copyright (C) 2003, 2004, 2005, 2006  Daniel Brockman
 ;; Copyright (C) 2009  Adrian C., Bastien Guerry
 
@@ -189,12 +189,12 @@ static char *gnus-pointer[] = {
                   clauses)))))))
 
 ;;;###autoload
-(defun color-theme-zenburn ()
+(defun color-theme-zenburn-shawn ()
   "Just some alien fruit salad to keep you in the zone."
   (interactive)
   (color-theme-install
    (append
-    (list 'color-theme-zenburn
+    (list 'color-theme-zenburn-shawn
           `((background-color . ,zenburn-bg)
             (background-mode . dark)
             (border-color . ,zenburn-bg)
@@ -1166,9 +1166,9 @@ static char *gnus-pointer[] = {
        widget-single-line-field-face))
     )))
 
-(defalias 'zenburn #'color-theme-zenburn)
+(defalias 'zenburn-shawn #'color-theme-zenburn-shawn)
 
-(provide 'zenburn)
+(provide 'zenburn-shawn)
 
 ;; Local Variables:
 ;; time-stamp-format: "%:y-%02m-%02d %02H:%02M"
