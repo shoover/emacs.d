@@ -55,8 +55,8 @@
 (require 'color-theme)
 
 (defvar zenburn-fg "#dcdccc")
-(defvar zenburn-bg "#3f3f3f")
-(defvar zenburn-bg+1 "#4f4f4f")
+(defvar zenburn-bg "gray11") ;(defvar zenburn-bg "#3f3f3f")
+(defvar zenburn-bg+1 "gray20") ;(defvar zenburn-bg+1 "#4f4f4f")
 (defvar zenburn-bg+2 "#5f5f5f")
 (defvar zenburn-red+1 "#dca3a3")
 (defvar zenburn-red "#cc9393")
@@ -82,6 +82,7 @@
 (defvar zenburn-blue-3 "#5c888b")
 (defvar zenburn-blue-4 "#4c7073")
 (defvar zenburn-magenta "#dc8cc3")
+(defvar zenburn-gold "gold")
 
 (eval-after-load 'term
   '(setq ansi-term-color-vector
@@ -223,8 +224,10 @@ static char *gnus-pointer[] = {
      `(zenburn-background-1 ((t (:background ,zenburn-bg+1))))
      `(zenburn-background-2 ((t (:background ,zenburn-bg+2))))
 
-     `(zenburn-primary-1 ((t (:foreground ,zenburn-yellow :weight bold))))
+     ;`(zenburn-primary-1 ((t (:foreground ,zenburn-yellow :weight bold))))
+     `(zenburn-primary-1 ((t (:foreground ,zenburn-blue :weight bold))))
      `(zenburn-primary-2 ((t (:foreground ,zenburn-orange :weight bold))))
+     
      '(zenburn-primary-3 ((t (:foreground "#dfdfbf" :weight bold))))
      '(zenburn-primary-4 ((t (:foreground "#dca3a3" :weight bold))))
      '(zenburn-primary-5 ((t (:foreground "#94bff3" :weight bold))))
@@ -253,21 +256,22 @@ static char *gnus-pointer[] = {
      `(zenburn-blue-2 ((t (:foreground ,zenburn-blue-2))))
      `(zenburn-blue-3 ((t (:foreground ,zenburn-blue-3))))
      `(zenburn-blue-4 ((t (:foreground ,zenburn-blue-4))))
+     `(zenburn-gold ((t (:foreground ,zenburn-gold))))
 
      '(zenburn-title ((t (:inherit variable-pitch :weight bold))))
 
      '(font-lock-builtin
        ((t (:inherit zenburn-blue))))
      '(font-lock-comment
-       ((t (:inherit zenburn-green))))
+       ((t (:inherit zenburn-gold)))) ;((t (:inherit zenburn-green))))
      '(font-lock-comment-delimiter
        ((t (:inherit zenburn-lowlight-2))))
      '(font-lock-constant
        ((t (:inherit zenburn-primary-4))))
      '(font-lock-doc
-       ((t (:inherit zenburn-green+1))))
+       ((t (:inherit zenburn-gold)))) ;((t (:inherit zenburn-green+1))))
      `(font-lock-function-name
-       ((t (:foreground ,zenburn-yellow))))
+       ((t (:bold t :foreground "mediumspringgreen")))) ;((t (:foreground ,zenburn-yellow))))
      '(font-lock-keyword
        ((t (:inherit zenburn-primary-1))))
      '(font-lock-negation-char
@@ -275,7 +279,7 @@ static char *gnus-pointer[] = {
      '(font-lock-preprocessor
        ((t (:inherit zenburn-blue))))
      '(font-lock-string
-       ((t (:inherit zenburn-red))))
+       ((t (:inherit zenburn-orange)))) ;((t (:inherit zenburn-red))))
      '(font-lock-type
        ((t (:inherit zenburn-primary-3))))
      `(font-lock-variable-name
@@ -382,10 +386,16 @@ static char *gnus-pointer[] = {
      `(secondary-selection ((t (:foreground ,zenburn-fg :background "#506070"))))
 
      '(trailing-whitespace ((t (:inherit font-lock-warning))))
-     '(highlight ((t (:underline t))))
+     '(highlight ((t (:inhert zenburn-background-1)))) ;(highlight ((t (:underline t))))
+     '(highline-face ((t (:inherit highlight))))
+
      '(paren ((t (:inherit zenburn-lowlight-1))))
      '(show-paren-mismatch ((t (:inherit font-lock-warning))))
      '(show-paren-match ((t (:inherit font-lock-keyword))))
+     ;; old shawn
+     ;'(show-paren-match ((((class color) (background dark)) (:background "gray10"))))
+     ;'(show-paren-match-face ((t (:background "deepskyblue4"))))
+     ;'(show-paren-mismatch-face ((t (:foreground "white" :background "red"))))
      '(match ((t (:weight bold))))
 
      `(cursor ((t (:background ,zenburn-fg :foreground ,zenburn-bg))))

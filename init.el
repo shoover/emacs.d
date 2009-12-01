@@ -565,8 +565,8 @@ running, raises the most recently updated ERC buffer."
  ;;((featurep 'aquamacs) nil)
 
  (t
-  (load "~/emacs/site-lisp/color-theme-6.6.0/themes/shawn")
-  (color-theme-shawn)
+  (load "~/emacs/site-lisp/color-theme-6.6.0/themes/zenburn-shawn")
+  (zenburn-shawn)
   ;(load "~/emacs/site-lisp/color-theme-6.6.0/themes/zenburn")
   ;(zenburn)
   ))
