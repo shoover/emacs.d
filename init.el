@@ -31,7 +31,8 @@
 
 (defvar my-org-dir "~/action")
 (defvar my-action-org (concat my-org-dir "/action.org"))
- 
+(defvar my-work-org (concat my-org-dir "/work.org"))
+
 ;; Tab defaults
 (setq-default indent-tabs-mode nil)
 (setq default-tab-width 2)
@@ -40,9 +41,6 @@
 (fset 'yes-or-no-p 'y-or-n-p)
 
 (setq inhibit-splash-screen t)
-
-;; Subtle face for parens in lisp modes
-(require 'parenface)
 
 ;; Allow bullet lists starting with - to delimit paragraphs for use with
 ;; fill-paragraph. fill-individual-paragraphs accomplishes what I want, but it
@@ -111,16 +109,16 @@ scan-error if not."
   (interactive)
   (save-restriction
     (save-excursion
-    (let ((deactivate-mark nil))
-      (condition-case c
-          (progn
-            (narrow-to-region (region-beginning) (region-end))
-            (goto-char (point-min))
-            (while (/= 0 (- (point)
-                            (forward-list))))
-            t)
-        (scan-error (signal 'scan-error
-                            '("Region parentheses not balanced"))))))))
+      (let ((deactivate-mark nil))
+        (condition-case c
+            (progn
+              (narrow-to-region (region-beginning) (region-end))
+              (goto-char (point-min))
+              (while (/= 0 (- (point)
+                              (forward-list))))
+              t)
+          (scan-error (signal 'scan-error
+                              '("Region parentheses not balanced"))))))))
 
 (defun paredit-backward-maybe-delete-region ()
   (interactive)
@@ -161,9 +159,63 @@ scan-error if not."
 ;; Shift+(left|right|up|down) to get to a window quicker than with C-x o
 (windmove-default-keybindings)
 
+;; Line killing goodness from emacs-fu
+(defadvice kill-ring-save (before slick-copy activate compile)
+  "When called interactively with no active region, copy a single
+line instead."
+  (interactive
+   (if mark-active
+       (list (region-beginning) (region-end))
+     (message "Copied line")
+     (list (line-beginning-position) (line-beginning-position 2)))))
+
+(defadvice kill-region (before slick-cut activate compile)
+  "When called interactively with no active region, kill a single
+line instead."
+  (interactive
+   (if mark-active
+       (list (region-beginning) (region-end))
+     (list (line-beginning-position) (line-beginning-position 2)))))
+
 ;; Buffer switching
-(require 'iswitchb)
-(iswitchb-mode 1)
+;;(require 'iswitchb)
+;;(iswitchb-mode 1)
+;; Or everything else switching
+(ido-mode 1)
+
+;; Unique buffer names
+(require 'uniquify) 
+(setq uniquify-buffer-name-style 'post-forward
+      uniquify-separator ":")
+
+;; Originally from stevey, adapted to support moving to a new directory.
+(defun rename-file-and-buffer (new-name)
+  "Renames both current buffer and file it's visiting to NEW-NAME."
+  (interactive
+   (progn
+     (if (not (buffer-file-name))
+         (error "Buffer '%s' is not visiting a file!" (buffer-name)))
+     (list (read-file-name (format "Rename %s to: " (file-name-nondirectory
+                                                     (buffer-file-name)))))))
+  (if (equal new-name "")
+      (error "Aborted rename"))
+  (setq new-name (if (file-directory-p new-name)
+                     (expand-file-name (file-name-nondirectory
+                                        (buffer-file-name))
+                                       new-name)
+                   (expand-file-name new-name)))
+  ;; If the file isn't saved yet, skip the file rename, but still update the
+  ;; buffer name and visited file.
+  (if (file-exists-p (buffer-file-name))
+      (rename-file (buffer-file-name) new-name 1))
+  (let ((was-modified (buffer-modified-p)))
+    ;; This also renames the buffer, and works with uniquify
+    (set-visited-file-name new-name)
+    (if was-modified
+        (save-buffer)
+      ;; Clear buffer-modified flag caused by set-visited-file-name
+      (set-buffer-modified-p nil))
+  (message "Renamed to %s." new-name)))
 
 ;; C
 (add-hook 'c-mode-hook
@@ -308,8 +360,11 @@ running, raises the most recently updated ERC buffer."
             (define-key org-mode-map "\M-." 'org-open-at-point)
             (define-key org-mode-map "\M-," 'org-mark-ring-goto)
 
-            (setq org-agenda-files (list my-action-org))
-            
+            (setq org-agenda-files (list my-action-org
+                                         my-work-org))
+            (setq org-agenda-custom-commands
+                  '(("A" "30 day agenda" agenda "" ((org-agenda-ndays 30)))))
+
             ;; Variables used to save remember notes
             (setq org-directory my-org-dir)
             (setq org-default-notes-file my-action-org)
@@ -393,7 +448,10 @@ running, raises the most recently updated ERC buffer."
   (setq one-buffer-one-frame-mode nil)
   (setq mac-command-modifier (quote meta))
   (setq mac-option-modifier (quote alt))
-  (define-key osx-key-mode-map `[(control z)] 'iconify-or-deiconify-frame))
+  (define-key osx-key-mode-map `[(control z)] 'iconify-or-deiconify-frame)
+                                        ; Removed this from custom, it was breaking emacsw32 init.
+                                        ;'(tabbar-mode nil nil (tabbar))
+  )
 
 ;; Assumed registry settings (HKLM/Software/GNU/Emacs):
 ;;   Emacs.toolBar: 0
@@ -427,25 +485,21 @@ running, raises the most recently updated ERC buffer."
  '(pr-gv-command "C:\\Program Files\\Ghostgum\\gsview\\gsview32.exe")
  '(scroll-conservatively 0)
  '(scroll-step 0)
+ '(show-paren-mode t)
+ '(show-paren-style (quote mixed))
  '(special-display-regexps (quote (".*SPEEDBAR.*")))
  '(tab-always-indent t)
  '(tab-width 2)
- '(tabbar-mode nil nil (tabbar))
  '(tool-bar-mode nil)
  '(transient-mark-mode t)
+ '(user-full-name "Shawn Hoover")
  '(visual-scroll-margin 0)
  '(w32shell-cygwin-bin "C:\\bin"))
 
-(custom-set-faces
-  ;; custom-set-faces was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
- '(mode-line ((t (:background "wheat" :foreground "black" :inverse-video t :box (:line-width 1 :color "wheat")))))
- '(mode-line-highlight ((t (:inherit highlight :background "black" :foreground "wheat" :inverse-video nil))))
- '(mode-line-inactive ((default (:inherit mode-line)) (((class color) (min-colors 88) (background dark)) (:background "grey30" :foreground "grey50" :box (:line-width -1 :color "grey40") :weight light))))
- '(tooltip ((t (:inherit variable-pitch :background "systeminfowindow" :foreground "black")))))
+;;; Faces
 
+;; Subtle face for parens in lisp modes
+(require 'parenface)
 
 ;; Pretty black background color theme.
 ;; Call this after all the other useless color settings so none of its
@@ -463,7 +517,6 @@ running, raises the most recently updated ERC buffer."
   (color-theme-calm-forest)
   (global-font-lock-mode 1)
   (global-hl-line-mode nil)
-  
   ;; Lest we get black on black parens
   (set-face-foreground 'paren-face "green"))
 
@@ -472,7 +525,10 @@ running, raises the most recently updated ERC buffer."
  ;;((featurep 'aquamacs) nil)
 
  (t
-  (load-file "~/emacs/site-lisp/color-theme-6.6.0/themes/shawn.elc")
-  (color-theme-shawn)))
+  (load "~/emacs/site-lisp/color-theme-6.6.0/themes/zenburn-shawn")
+  (zenburn-shawn)
+  ;(load "~/emacs/site-lisp/color-theme-6.6.0/themes/zenburn")
+  ;(zenburn)
+  ))
 
 (cd emacs-root)

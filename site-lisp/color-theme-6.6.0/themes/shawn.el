@@ -8,8 +8,9 @@
 ;; load this one file and get everything I need without loading all the
 ;; others. Function color-theme-initialize at any time should load them
 ;; all if I want to play with them.
-(defun color-theme-billw ()
-  "Cornsilk on black.
+(defun color-theme-shawn ()
+  "Based on billw. Adds a different face to comments.
+Cornsilk on black.
 Includes info, diary, font-lock, eshell, sgml, message, gnus,
 widget, custom, latex, ediff."
   (interactive)
@@ -20,25 +21,36 @@ widget, custom, latex, ediff."
     (set-face-background 'hl-line "gray20")
     (set-face-foreground 'hl-line nil))
   (color-theme-install
-   '(color-theme-billw
+   '(color-theme-shawn
      ((foreground-color . "cornsilk")
-      (background-color . "black")
+      (background-color . "gray9")
       (mouse-color . "black")
       (cursor-color . "white")
       (border-color . "black")
       (background-mode . dark))
      (default ((t (nil))))
-     (modeline ((t (:foreground "black" :background "wheat"))))
-     (modeline-buffer-id ((t (:foreground "black" :background "wheat"))))
-     (modeline-mousable ((t (:foreground "black" :background "wheat"))))
-     (modeline-mousable-minor-mode ((t (:foreground "black" :background "wheat"))))
-     (highlight ((t (:foreground "wheat" :background "darkslategray"))))
+     ;(modeline ((t (:foreground "black" :background "wheat"))))
+     ;(modeline-buffer-id ((t (:foreground "black" :background "wheat"))))
+     ;(modeline-mousable ((t (:foreground "black" :background "wheat"))))
+     ;(modeline-mousable-minor-mode ((t (:foreground "black" :background "wheat"))))
+     (mode-line ((t (:foreground "#acbc90" :background "#1e2320"
+                                 :box (:color "#1e2320" :line-width 2)))))
+     (mode-line-inactive ((t (:background "#2e3330" :foreground "#88b090"
+                              :box (:color "#2e3330" :line-width 2)))))
+     ;`(minibuffer-prompt ((t (:foreground ,zenburn-yellow))))
+     (minibuffer-prompt ((t (:foreground "#f0dfaf"))))
+     (highlight ((t (:background "gray20"))))
      (bold ((t (:bold t))))
      (italic ((t (:italic t))))
      (bold-italic ((t (:bold t :italic t))))
      (region ((t (:background "dimgray"))))
      (secondary-selection ((t (:background "deepskyblue4"))))
      (underline ((t (:underline t))))
+     (tooltip ((t (:inherit variable-pitch :background "systeminfowindow"
+                            :foreground "black"))))
+     (show-paren-match ((((class color) (background dark))
+                         (:background "gray10"))))
+     (org-todo ((t (:foreground "gray" :weight bold))))
      (info-node ((t (:foreground "yellow" :bold t :italic t))))
      (info-menu-5 ((t (:underline t))))
      (info-xref ((t (:foreground "yellow" :bold t))))
@@ -48,6 +60,7 @@ widget, custom, latex, ediff."
      (show-paren-match-face ((t (:background "deepskyblue4"))))
      (show-paren-mismatch-face ((t (:foreground "white" :background "red"))))
      (font-lock-comment-face ((t (:foreground "gold"))))
+     (font-lock-doc-face ((t (:foreground "gold"))))
      (font-lock-string-face ((t (:foreground "orange"))))
      (font-lock-keyword-face ((t (:foreground "cyan1"))))
      (font-lock-builtin-face ((t (:foreground "LightSteelBlue"))))
@@ -58,7 +71,7 @@ widget, custom, latex, ediff."
      (font-lock-warning-face ((t (:italic t :Foreground "gold" :bold t))))
      (blank-space-face ((t (:background "LightGray"))))
      (blank-tab-face ((t (:foreground "black" :background "cornsilk"))))
-     (highline-face ((t (:background "gray35"))))
+     (highline-face ((t (:foreground nil :background "gray35"))))
      (eshell-ls-directory-face ((t (:foreground "green" :bold t))))
      (eshell-ls-symlink-face ((t (:foreground "Cyan" :bold t))))
      (eshell-ls-executable-face ((t (:foreground "orange" :bold t))))
@@ -197,13 +210,3 @@ widget, custom, latex, ediff."
      (gnus-cite-face-10 ((t (:foreground "medium purple"))))
      (gnus-cite-face-11 ((t (:foreground "turquoise")))))))
 
-(defun color-theme-shawn ()
-  "Based on billw. Adds a different face to comments."
-  (interactive)
-  (color-theme-billw)
-  (let ((color-theme-is-cumulative t))
-    (color-theme-install
-     '(color-theme-shawn
-       nil
-       nil
-       (font-lock-doc-face ((t (:background "black" :foreground "gold"))))))))
