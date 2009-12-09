@@ -20,12 +20,9 @@
                                 (concat emacs-root p))))
   (add-path "emacs/lisp")
   (add-path "emacs/site-lisp")
-  (add-path "emacs/site-lisp/clojure-mode")
   (add-path "emacs/site-lisp/color-theme-6.6.0") ;; my color preferences
   (add-path "emacs/site-lisp/org/lisp")
-  (add-path "emacs/site-lisp/remember-2.0")
-  (add-path "emacs/site-lisp/slime")
-  (add-path "emacs/site-lisp/swank-clojure"))
+  (add-path "emacs/site-lisp/remember-2.0"))
 
 ;; Load emacsw32 here instead of site-start.el so it finds my org installation.
 ;; You still have to remove it from site-start.el, though, because that happens
@@ -180,77 +177,8 @@ scan-error if not."
 (autoload 'csharp-mode "csharp-mode" "Edit C# files")
 (add-to-list 'auto-mode-alist '("\\.cs$" . csharp-mode))
 
-
 ;; Clojure
-(defvar clojure-path "c:/users/shawn/clojure/work/")
-(defvar clojure-contrib-path "c:/users/shawn/clojure-contrib-mirror/")
-(defvar class-path-delimiter (if nix ":" ";"))
-(setq inferior-lisp-program
-      (let* ((java-path "java")
-             (java-options "")
-             (class-path (mapconcat (lambda (s) s)
-                                    ;; Add other paths to this list
-                                    ;; if you want to have other
-                                    ;; things in your classpath.
-                                    (list (concat clojure-path "clojure.jar")
-                                          (concat clojure-contrib-path "clojure-contrib.jar"))
-                                    class-path-delimiter)))
-        (concat java-path
-                " " java-options
-                " -cp " class-path " clojure.lang.Repl")))
-(require 'clojure-mode)
 (add-hook 'clojure-mode-hook 'lisp-enable-paredit-hook)
-(require 'swank-clojure-autoload)       
-(swank-clojure-config
- (slime-setup '(slime-repl))
- (setq swank-clojure-jar-path (concat clojure-path "clojure.jar"))
- (add-to-list 'swank-clojure-extra-classpaths
-              (concat clojure-contrib-path "src"))
-
- ;; Allow debugger to attach. To connect to listening debugger, remove
- ;; server=y.
- (setq swank-clojure-extra-vm-args
-       (list "-Xdebug"
-             "-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8888")))
-(autoload 'slime "slime" "Load slime for swank-clojure" t)
-
-(defun slime-project (path)
-  "Setup classpaths for a clojure project and starts a new SLIME session.
-
-Kills existing SLIME session, if any.
-
-From Phil Hagelberg and changed for my setup:
-  - Removed ido-read-directory-name--wasn't working for me
-  - Commented locate-dominating-file--didn't work on aquamacs 22
-  - Get clojure and contrib from clojure-path and clojure-contrib-path
-    instead of target/classes, since I'm not bothering to unjar them
-  - Added debug options
-"
-  (interactive (list
-                (read-directory-name
-                 "Project root: ")))
-                 ;(locate-dominating-file default-directory "src"))))
-  (when (get-buffer "*inferior-lisp*")
-    (kill-buffer "*inferior-lisp*"))
-  (setq swank-clojure-binary nil
-        swank-clojure-jar-path (concat clojure-path "clojure.jar")
-        swank-clojure-extra-classpaths
-        (cons (concat clojure-contrib-path "src")
-              (mapcar (lambda (d) (expand-file-name d path))
-                      '("src/" "target/classes/" "test/")))
-        swank-clojure-extra-vm-args
-        (list (format "-Dclojure.compile.path=%s"
-                      (expand-file-name "target/classes/" path))
-              "-Xdebug"
-              "-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8888")
-        slime-lisp-implementations
-        (cons `(clojure ,(swank-clojure-cmd) :init swank-clojure-init)
-              (remove-if #'(lambda (x) (eq (car x) 'clojure))
-                         slime-lisp-implementations)))
-  (cd path)
-  (save-window-excursion
-    (slime)))
-
 
 ;; CMake
 (autoload 'cmake-mode "cmake-mode" "Edit CMake definitions" t)
@@ -261,6 +189,10 @@ From Phil Hagelberg and changed for my setup:
 (add-hook 'dired-mode-hook
           (lambda () (require 'dired-sort-map)))
 
+;; elisp
+(add-hook 'emacs-lisp-mode-hook
+          (lambda ()
+            (define-key emacs-lisp-mode-map "\C-c\C-k" 'eval-buffer)))
 
 ;; erc
 (setq erc-autojoin-channels-alist '(("freenode.net" "#clojure")))
