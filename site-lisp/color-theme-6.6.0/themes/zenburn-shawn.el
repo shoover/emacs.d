@@ -237,7 +237,9 @@ static char *gnus-pointer[] = {
      '(zenburn-highlight-alerting
        ((t (:foreground "#e37170" :background "#332323"))))
      '(zenburn-highlight-subtle
-       ((t (:background "#464646"))))
+       ((t (:inherit zenburn-background-1)))
+       ;;((t (:background "#464646")))
+       )
 
      '(zenburn-lowlight-1 ((t (:foreground "#606060"))))
      '(zenburn-lowlight-2 ((t (:foreground "#708070"))))
@@ -372,7 +374,7 @@ static char *gnus-pointer[] = {
        ((t (:inherit fancy-widget-single-line-field))))
 
      `(border ((t (:background ,zenburn-bg))))
-     '(fringe ((t (:inherit zenburn-highlight-subtle))))
+     '(fringe ((t (:background "#1e2320")))); (:inherit zenburn-highlight-subtle))))
      '(header-line ((t (:inherit zenburn-highlight-damp
                         :box (:color "#2e3330" :line-width 2)))))
      '(mode-line ((t (:foreground "#acbc90" :background "gray8" ;"#1e2320"
@@ -386,8 +388,9 @@ static char *gnus-pointer[] = {
      `(secondary-selection ((t (:foreground ,zenburn-fg :background "#506070"))))
 
      '(trailing-whitespace ((t (:inherit font-lock-warning))))
-     '(highlight ((t (:inherit zenburn-background-1)))) ;(highlight ((t (:underline t))))
+     '(highlight ((t (:inherit zenburn-highlight-subtle)))) ;zenburn-background-1)))) ;(highlight ((t (:underline t))))
      '(highline-face ((t (:inherit highlight))))
+     '(hl-line ((t (:inherit highlight)))) ; aquamacs uses this
 
      '(paren ((t (:inherit zenburn-lowlight-1))))
      '(show-paren-mismatch ((t (:inherit font-lock-warning))))
