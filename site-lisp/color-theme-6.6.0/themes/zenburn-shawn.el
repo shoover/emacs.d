@@ -64,7 +64,7 @@
 (defvar zenburn-red-2 "#ac7373")
 (defvar zenburn-red-3 "#9c6363")
 (defvar zenburn-red-4 "#8c5353")
-(defvar zenburn-orange "#dfaf8f")
+(defvar zenburn-orange "orange4") ;(defvar zenburn-orange "#dfaf8f")
 (defvar zenburn-yellow "#f0dfaf")
 (defvar zenburn-yellow-1 "#e0cf9f")
 (defvar zenburn-yellow-2 "#d0bf8f")
@@ -82,7 +82,7 @@
 (defvar zenburn-blue-3 "#5c888b")
 (defvar zenburn-blue-4 "#4c7073")
 (defvar zenburn-magenta "#dc8cc3")
-(defvar zenburn-gold "gold")
+(defvar zenburn-gold "dark khaki")
 
 (eval-after-load 'term
   '(setq ansi-term-color-vector
@@ -263,13 +263,13 @@ static char *gnus-pointer[] = {
      '(font-lock-builtin
        ((t (:inherit zenburn-blue))))
      '(font-lock-comment
-       ((t (:inherit zenburn-gold)))) ;((t (:inherit zenburn-green))))
+       ((t (:inherit zenburn-yellow)))) ;((t (:inherit zenburn-green))))
      '(font-lock-comment-delimiter
        ((t (:inherit zenburn-lowlight-2))))
      '(font-lock-constant
        ((t (:inherit zenburn-primary-4))))
      '(font-lock-doc
-       ((t (:inherit zenburn-gold)))) ;((t (:inherit zenburn-green+1))))
+       ((t (:inherit zenburn-yellow)))) ;((t (:inherit zenburn-green+1))))
      `(font-lock-function-name
        ((t (:bold t :foreground "mediumspringgreen")))) ;((t (:foreground ,zenburn-yellow))))
      '(font-lock-keyword
@@ -279,7 +279,7 @@ static char *gnus-pointer[] = {
      '(font-lock-preprocessor
        ((t (:inherit zenburn-blue))))
      '(font-lock-string
-       ((t (:inherit zenburn-orange)))) ;((t (:inherit zenburn-red))))
+       ((t (:inherit zenburn-gold)))) ;((t (:inherit zenburn-red))))
      '(font-lock-type
        ((t (:inherit zenburn-primary-3))))
      `(font-lock-variable-name

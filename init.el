@@ -146,7 +146,6 @@ scan-error if not."
      (define-key paredit-mode-map (kbd ";")   'self-insert-command)))
 
 ;;; Custom keybindings
-(global-set-key "\C-x\C-m" 'execute-extended-command)
 (global-set-key "\M-s"     'isearch-forward-regexp)
 (global-set-key "\M-r"     'isearch-backward-regexp)
 
@@ -391,6 +390,9 @@ running, raises the most recently updated ERC buffer."
 ;; org-mode
 (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
 (require 'org)
+(defun my-org-todo-done ()
+  (interactive)
+  (org-todo 'done))
 (setq org-publish-project-alist
       `(("workorg"
          :base-directory ,my-org-dir
@@ -428,6 +430,8 @@ running, raises the most recently updated ERC buffer."
             ;; Make links work like chasing definitions in source code.
             (define-key org-mode-map "\M-." 'org-open-at-point)
             (define-key org-mode-map "\M-," 'org-mark-ring-goto)
+
+            (define-key org-mode-map "\C-cd" 'my-org-todo-done)
 
             (setq org-agenda-files (list my-action-org
                                          my-work-org))
@@ -534,6 +538,7 @@ running, raises the most recently updated ERC buffer."
  '(aquamacs-additional-fontsets nil t)
  '(aquamacs-customization-version-id 172 t)
  '(c-doc-comment-style (quote set-from-style))
+ '(column-number-mode t)
  '(completion-ignored-extensions (quote (".obj" ".pdb" ".svn/" "CVS/" ".o" "~" ".bin" ".bak" ".obj" ".map" ".ico" ".pif" ".lnk" ".a" ".ln" ".blg" ".bbl" ".dll" ".drv" ".vxd" ".386" ".elc" ".lof" ".glo" ".idx" ".lot" ".fmt" ".tfm" ".class" ".fas" ".lib" ".mem" ".x86f" ".sparcf" ".fasl" ".ufsl" ".fsl" ".dxl" ".pfsl" ".dfsl" ".p64fsl" ".d64fsl" ".dx64fsl" ".lo" ".la" ".gmo" ".mo" ".toc" ".aux" ".cp" ".fn" ".ky" ".pg" ".tp" ".vr" ".cps" ".fns" ".kys" ".pgs" ".tps" ".vrs" ".pyc" ".pyo")))
  '(default-frame-alist (quote ((tool-bar-lines . 0) (background-mode . dark) (border-color . "black") (cursor-color . "white") (mouse-color . "black") (background-color . "black") (foreground-color . "cornsilk") (menu-bar-lines . 1) (cursor-type . box) (vertical-scroll-bars . right) (left-fringe . 1) (right-fringe) (fringe))))
  '(erc-fill-function (quote erc-fill-static))
@@ -601,3 +606,9 @@ running, raises the most recently updated ERC buffer."
   ))
 
 (cd emacs-root)
+(custom-set-faces
+  ;; custom-set-faces was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+ )
