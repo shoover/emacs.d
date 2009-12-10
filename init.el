@@ -57,9 +57,14 @@
   (find-file "~/emacs/init.el"))
 
 (defun action ()
-  "Find my org-mode list"
+  "Find my org-mode file"
   (interactive)
   (find-file my-action-org))
+
+(defun work ()
+  "Find my work org-mode file"
+  (interactive)
+  (find-file my-work-org))
 
 (defun next-slide ()
   "org-mode slideware, jumps to next subtree with automatic
