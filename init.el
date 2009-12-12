@@ -441,12 +441,7 @@ running, raises the most recently updated ERC buffer."
 (setq mac-command-modifier (quote meta))
 (setq mac-option-modifier (quote alt))
 (when (featurep 'aquamacs)
-  (require 'aquamacs-frame-setup)
-  (setq one-buffer-one-frame-mode nil)
-  (define-key osx-key-mode-map `[(control z)] 'iconify-or-deiconify-frame)
-                                        ; Removed this from custom, it was breaking emacsw32 init.
-  '(tabbar-mode nil nil (tabbar))
-  )
+  (define-key osx-key-mode-map `[(control z)] 'iconify-or-deiconify-frame))
 
 ;; Assumed registry settings (HKLM/Software/GNU/Emacs):
 ;;   Emacs.toolBar: 0
@@ -461,7 +456,7 @@ running, raises the most recently updated ERC buffer."
  '(aquamacs-customization-version-id 190 t)
  '(c-doc-comment-style (quote set-from-style))
  '(completion-ignored-extensions (quote (".obj" ".pdb" ".svn/" "CVS/" ".o" "~" ".bin" ".bak" ".obj" ".map" ".ico" ".pif" ".lnk" ".a" ".ln" ".blg" ".bbl" ".dll" ".drv" ".vxd" ".386" ".elc" ".lof" ".glo" ".idx" ".lot" ".fmt" ".tfm" ".class" ".fas" ".lib" ".mem" ".x86f" ".sparcf" ".fasl" ".ufsl" ".fsl" ".dxl" ".pfsl" ".dfsl" ".p64fsl" ".d64fsl" ".dx64fsl" ".lo" ".la" ".gmo" ".mo" ".toc" ".aux" ".cp" ".fn" ".ky" ".pg" ".tp" ".vr" ".cps" ".fns" ".kys" ".pgs" ".tps" ".vrs" ".pyc" ".pyo")))
- '(default-frame-alist (quote ((scroll-bar-background . "#5f5f5f") (cursor-color . "#dcdccc") (menu-bar-lines . 1) (cursor-type . box) (vertical-scroll-bars . right) (left-fringe . 1) (right-fringe) (fringe) (tool-bar-lines . 0) (background-color . "gray11") (background-mode . dark) (border-color . "gray11") (foreground-color . "#dcdccc") (mouse-color . "#dcdccc"))))
+ '(default-frame-alist (quote ((scroll-bar-background . "#5f5f5f") (cursor-color . "#dcdccc") (menu-bar-lines . 1) (cursor-type . box) (vertical-scroll-bars . right) (left-fringe . 1) (right-fringe) (fringe) (background-color . "gray11") (background-mode . dark) (border-color . "gray11") (foreground-color . "#dcdccc") (mouse-color . "#dcdccc"))))
  '(erc-fill-function (quote erc-fill-static))
  '(erc-fill-variable-maximum-indentation 5)
  '(erc-hide-list (quote ("JOIN" "PART" "QUIT")))
@@ -472,7 +467,9 @@ running, raises the most recently updated ERC buffer."
  '(erc-user-full-name "Shawn Hoover")
  '(fill-column 78)
  '(global-hl-line-mode t)
+ '(ido-create-new-buffer (quote always))
  '(indent-tabs-mode nil)
+ '(one-buffer-one-frame-mode nil)
  '(org-cycle-include-plain-lists t)
  '(org-tags-column 67)
  '(pr-gs-command "c:\\Program Files\\gs\\gs8.62\\bin\\gswin32c.exe")
@@ -484,13 +481,21 @@ running, raises the most recently updated ERC buffer."
  '(special-display-regexps (quote (".*SPEEDBAR.*")))
  '(tab-always-indent t)
  '(tab-width 2)
+ '(tabbar-mode nil)
  '(tool-bar-mode nil)
  '(transient-mark-mode t)
  '(user-full-name "Shawn Hoover")
  '(visual-scroll-margin 0)
- '(w32shell-cygwin-bin "C:\\bin"))
+ '(w32shell-cygwin-bin "C:\\bin")
+ '(x-select-enable-clipboard t))
 
 ;;; Faces
+(custom-set-faces
+  ;; custom-set-faces was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+ )
 
 ;; Subtle face for parens in lisp modes
 (require 'parenface)
@@ -513,11 +518,6 @@ running, raises the most recently updated ERC buffer."
   (global-hl-line-mode nil)
   ;; Lest we get black on black parens
   (set-face-foreground 'paren-face "green"))
-
- ;; Aquamacs just takes over anyway after loading .emacs. Lame.
- ;; Or maybe it's better with v1.6. Comment out for now.
- ;;((featurep 'aquamacs) nil)
-
  (t
   (load "~/emacs/site-lisp/color-theme-6.6.0/themes/zenburn-shawn")
   (zenburn-shawn)
@@ -526,9 +526,3 @@ running, raises the most recently updated ERC buffer."
   ))
 
 (cd emacs-root)
-(custom-set-faces
-  ;; custom-set-faces was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
- )
