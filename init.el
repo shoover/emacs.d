@@ -405,17 +405,11 @@ running, raises the most recently updated ERC buffer."
 (add-to-list 'auto-mode-alist '("SConscript" . python-mode))
 
 ;; Ruby
-(autoload 'ruby-mode "ruby-mode" "Edit Ruby source" t)
-(add-to-list 'auto-mode-alist '("\\.rb$" . ruby-mode))
+;; .rb is set up by elpa
 (add-to-list 'auto-mode-alist '("\\.t$"  . ruby-mode))
-(add-to-list 'auto-mode-alist '("Rakefile"  . ruby-mode))
+(add-to-list 'auto-mode-alist '("Rakefile$"  . ruby-mode))
 (add-to-list 'auto-mode-alist '("\\.rake$"  . ruby-mode))
 (add-to-list 'auto-mode-alist '("\\.rxml$"  . ruby-mode))
-(add-to-list 'interpreter-mode-alist '("ruby" . ruby-mode))
-(autoload 'run-ruby "inf-ruby" "Inferior Ruby process" t)
-(autoload 'inf-ruby-keys "inf-ruby" "Local key defs for inf-ruby")
-(add-hook 'ruby-mode-hook
-          (lambda () (inf-ruby-keys)))
 
 ;; Subversion
 (require 'psvn)
@@ -443,14 +437,15 @@ running, raises the most recently updated ERC buffer."
               (require 'server)
               (server-start))))
 
+;; OS X-specific setup
+(setq mac-command-modifier (quote meta))
+(setq mac-option-modifier (quote alt))
 (when (featurep 'aquamacs)
   (require 'aquamacs-frame-setup)
   (setq one-buffer-one-frame-mode nil)
-  (setq mac-command-modifier (quote meta))
-  (setq mac-option-modifier (quote alt))
   (define-key osx-key-mode-map `[(control z)] 'iconify-or-deiconify-frame)
                                         ; Removed this from custom, it was breaking emacsw32 init.
-                                        ;'(tabbar-mode nil nil (tabbar))
+  '(tabbar-mode nil nil (tabbar))
   )
 
 ;; Assumed registry settings (HKLM/Software/GNU/Emacs):
@@ -463,10 +458,10 @@ running, raises the most recently updated ERC buffer."
   ;; If there is more than one, they won't work right.
  '(ansi-color-for-comint-mode t)
  '(aquamacs-additional-fontsets nil t)
- '(aquamacs-customization-version-id 172 t)
+ '(aquamacs-customization-version-id 190 t)
  '(c-doc-comment-style (quote set-from-style))
  '(completion-ignored-extensions (quote (".obj" ".pdb" ".svn/" "CVS/" ".o" "~" ".bin" ".bak" ".obj" ".map" ".ico" ".pif" ".lnk" ".a" ".ln" ".blg" ".bbl" ".dll" ".drv" ".vxd" ".386" ".elc" ".lof" ".glo" ".idx" ".lot" ".fmt" ".tfm" ".class" ".fas" ".lib" ".mem" ".x86f" ".sparcf" ".fasl" ".ufsl" ".fsl" ".dxl" ".pfsl" ".dfsl" ".p64fsl" ".d64fsl" ".dx64fsl" ".lo" ".la" ".gmo" ".mo" ".toc" ".aux" ".cp" ".fn" ".ky" ".pg" ".tp" ".vr" ".cps" ".fns" ".kys" ".pgs" ".tps" ".vrs" ".pyc" ".pyo")))
- '(default-frame-alist (quote ((tool-bar-lines . 0) (background-mode . dark) (border-color . "black") (cursor-color . "white") (mouse-color . "black") (background-color . "black") (foreground-color . "cornsilk") (menu-bar-lines . 1) (cursor-type . box) (vertical-scroll-bars . right) (left-fringe . 1) (right-fringe) (fringe))))
+ '(default-frame-alist (quote ((scroll-bar-background . "#5f5f5f") (cursor-color . "#dcdccc") (menu-bar-lines . 1) (cursor-type . box) (vertical-scroll-bars . right) (left-fringe . 1) (right-fringe) (fringe) (tool-bar-lines . 0) (background-color . "gray11") (background-mode . dark) (border-color . "gray11") (foreground-color . "#dcdccc") (mouse-color . "#dcdccc"))))
  '(erc-fill-function (quote erc-fill-static))
  '(erc-fill-variable-maximum-indentation 5)
  '(erc-hide-list (quote ("JOIN" "PART" "QUIT")))
@@ -478,7 +473,6 @@ running, raises the most recently updated ERC buffer."
  '(fill-column 78)
  '(global-hl-line-mode t)
  '(indent-tabs-mode nil)
- '(mac-option-modifier (quote alt))
  '(org-cycle-include-plain-lists t)
  '(org-tags-column 67)
  '(pr-gs-command "c:\\Program Files\\gs\\gs8.62\\bin\\gswin32c.exe")
@@ -532,3 +526,9 @@ running, raises the most recently updated ERC buffer."
   ))
 
 (cd emacs-root)
+(custom-set-faces
+  ;; custom-set-faces was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+ )
