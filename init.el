@@ -37,10 +37,17 @@
 (setq-default indent-tabs-mode nil)
 (setq default-tab-width 2)
 
+;; Whitespace mode was much less subtle in 22 and used other variables
+(when (>= emacs-major-version 23)
+  (setq whitespace-modes '(c-mode clojure-mode emacs-lisp-mode ruby-mode)
+        whitespace-style '(tabs trailing lines-tail space-before-tab empty
+                                space-after-tab))
+  (global-whitespace-mode 1))
+
 ;; Allow "y or n" instead of "yes or no"
 (fset 'yes-or-no-p 'y-or-n-p)
-
 (setq inhibit-splash-screen t)
+(setq ring-bell-function (lambda () (message "")))
 
 ;; Allow bullet lists starting with - to delimit paragraphs for use with
 ;; fill-paragraph. fill-individual-paragraphs accomplishes what I want, but it
@@ -138,9 +145,11 @@ scan-error if not."
 
 (eval-after-load 'paredit
   '(progn
-     (define-key paredit-mode-map (kbd "<delete>") 'paredit-forward-maybe-delete-region)
-     (define-key paredit-mode-map (kbd "DEL") 'paredit-backward-maybe-delete-region)
-     (define-key paredit-mode-map (kbd ";")   'self-insert-command)))
+     (define-key paredit-mode-map (kbd "<delete>")
+       'paredit-forward-maybe-delete-region)
+     (define-key paredit-mode-map (kbd "DEL")
+       'paredit-backward-maybe-delete-region)
+     (define-key paredit-mode-map (kbd ";") 'self-insert-command)))
 
 ;;; Custom keybindings
 (global-set-key "\C-x\C-m" 'execute-extended-command)
@@ -184,7 +193,7 @@ line instead."
 (ido-mode 1)
 
 ;; Unique buffer names
-(require 'uniquify) 
+(require 'uniquify)
 (setq uniquify-buffer-name-style 'post-forward
       uniquify-separator ":")
 
@@ -441,6 +450,7 @@ running, raises the most recently updated ERC buffer."
 (setq mac-command-modifier (quote meta))
 (setq mac-option-modifier (quote alt))
 (when (featurep 'aquamacs)
+  (tabbar-mode -1)
   (define-key osx-key-mode-map `[(control z)] 'iconify-or-deiconify-frame))
 
 ;; Assumed registry settings (HKLM/Software/GNU/Emacs):
@@ -455,8 +465,9 @@ running, raises the most recently updated ERC buffer."
  '(aquamacs-additional-fontsets nil t)
  '(aquamacs-customization-version-id 190 t)
  '(c-doc-comment-style (quote set-from-style))
+ '(column-number-mode t)
  '(completion-ignored-extensions (quote (".obj" ".pdb" ".svn/" "CVS/" ".o" "~" ".bin" ".bak" ".obj" ".map" ".ico" ".pif" ".lnk" ".a" ".ln" ".blg" ".bbl" ".dll" ".drv" ".vxd" ".386" ".elc" ".lof" ".glo" ".idx" ".lot" ".fmt" ".tfm" ".class" ".fas" ".lib" ".mem" ".x86f" ".sparcf" ".fasl" ".ufsl" ".fsl" ".dxl" ".pfsl" ".dfsl" ".p64fsl" ".d64fsl" ".dx64fsl" ".lo" ".la" ".gmo" ".mo" ".toc" ".aux" ".cp" ".fn" ".ky" ".pg" ".tp" ".vr" ".cps" ".fns" ".kys" ".pgs" ".tps" ".vrs" ".pyc" ".pyo")))
- '(default-frame-alist (quote ((scroll-bar-background . "#5f5f5f") (cursor-color . "#dcdccc") (menu-bar-lines . 1) (cursor-type . box) (vertical-scroll-bars . right) (left-fringe . 1) (right-fringe) (fringe) (background-color . "gray11") (background-mode . dark) (border-color . "gray11") (foreground-color . "#dcdccc") (mouse-color . "#dcdccc"))))
+ '(default-frame-alist (quote ((tool-bar-lines . 0) (fringe) (right-fringe) (left-fringe . 1) (vertical-scroll-bars . right) (cursor-type . box) (menu-bar-lines . 1) (cursor-color . "#dcdccc") (scroll-bar-background . "#5f5f5f") (background-color . "gray11") (background-mode . dark) (border-color . "gray11") (foreground-color . "#dcdccc") (mouse-color . "#dcdccc"))))
  '(erc-fill-function (quote erc-fill-static))
  '(erc-fill-variable-maximum-indentation 5)
  '(erc-hide-list (quote ("JOIN" "PART" "QUIT")))
@@ -469,20 +480,15 @@ running, raises the most recently updated ERC buffer."
  '(global-hl-line-mode t)
  '(ido-create-new-buffer (quote always))
  '(indent-tabs-mode nil)
- '(one-buffer-one-frame-mode nil)
+ '(ns-alternate-modifier (quote alt))
  '(org-cycle-include-plain-lists t)
  '(org-tags-column 67)
- '(pr-gs-command "c:\\Program Files\\gs\\gs8.62\\bin\\gswin32c.exe")
- '(pr-gv-command "C:\\Program Files\\Ghostgum\\gsview\\gsview32.exe")
  '(scroll-conservatively 0)
  '(scroll-step 0)
- '(show-paren-mode t)
  '(show-paren-style (quote mixed))
  '(special-display-regexps (quote (".*SPEEDBAR.*")))
  '(tab-always-indent t)
  '(tab-width 2)
- '(tabbar-mode nil)
- '(tool-bar-mode nil)
  '(transient-mark-mode t)
  '(user-full-name "Shawn Hoover")
  '(visual-scroll-margin 0)
@@ -512,7 +518,8 @@ running, raises the most recently updated ERC buffer."
 (cond
  ((< emacs-major-version 22)
   (color-theme-initialize)
-  (declare-function color-theme-calm-forest "~/emacs/color/color-theme-6.6.0/themes/color-theme-library.el" nil)
+  (declare-function color-theme-calm-forest
+                    "~/emacs/color/color-theme-6.6.0/themes/color-theme-library.el" nil)
   (color-theme-calm-forest)
   (global-font-lock-mode 1)
   (global-hl-line-mode nil)
