@@ -39,7 +39,7 @@
 
 ;; Whitespace mode was much less subtle in 22 and used other variables
 (when (>= emacs-major-version 23)
-  (setq whitespace-modes '(c-mode clojure-mode emacs-lisp-mode ruby-mode)
+  (setq whitespace-global-modes '(c-mode clojure-mode emacs-lisp-mode ruby-mode)
         whitespace-style '(tabs trailing lines-tail space-before-tab empty
                                 space-after-tab))
   (global-whitespace-mode 1))
@@ -490,6 +490,7 @@ running, raises the most recently updated ERC buffer."
  '(org-tags-column 67)
  '(scroll-conservatively 0)
  '(scroll-step 0)
+ '(show-paren-mode t)
  '(show-paren-style (quote mixed))
  '(special-display-regexps (quote (".*SPEEDBAR.*")))
  '(tab-always-indent t)
