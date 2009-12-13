@@ -44,6 +44,13 @@
                                 space-after-tab))
   (global-whitespace-mode 1))
 
+;; cleanup, from http://github.com/dysinger/emacs.d/blob/master/init.el
+(defun cleanup-whitespace ()
+  (interactive)
+  (untabify (point-min) (point-max))
+  (indent-region (point-min) (point-max))
+  (delete-trailing-whitespace))
+
 ;; Allow "y or n" instead of "yes or no"
 (fset 'yes-or-no-p 'y-or-n-p)
 (setq inhibit-splash-screen t)
@@ -164,6 +171,7 @@ scan-error if not."
 
 ;; Rebind C-M-\. The default indent-region just isn't very useful for me.
 (global-set-key "\C-\M-\\" 'my-indent-region)
+(global-set-key (kbd "C-c /") 'comment-or-uncomment-region)
 
 ;; Shift+(left|right|up|down) to get to a window quicker than with C-x o
 (windmove-default-keybindings)
@@ -186,10 +194,7 @@ line instead."
        (list (region-beginning) (region-end))
      (list (line-beginning-position) (line-beginning-position 2)))))
 
-;; Buffer switching
-;;(require 'iswitchb)
-;;(iswitchb-mode 1)
-;; Or everything else switching
+;; Fancy buffer and everything else switching
 (ido-mode 1)
 
 ;; Unique buffer names
