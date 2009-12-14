@@ -37,16 +37,25 @@
 (setq-default indent-tabs-mode nil)
 (setq default-tab-width 2)
 
-;; Scroll when cursor nears the edge, move up to a proportion of the screen
+;; Scroll when the cursor nears the edge, move up to a proportion of the screen
 (setq scroll-margin 2
       scroll-preserve-screen-position t)
 (setq-default scroll-down-aggressively 0.25
               scroll-up-aggressively 0.25)
 
+(blink-cursor-mode 1)
+
+;; Whitespace mode was much less subtle in 22 and used other variables
+(when (>= emacs-major-version 23)
+  (setq whitespace-global-modes '(c-mode clojure-mode emacs-lisp-mode ruby-mode)
+        whitespace-style '(tabs trailing lines-tail space-before-tab empty
+                                space-after-tab))
+  (global-whitespace-mode 1))
+
 ;; Allow "y or n" instead of "yes or no"
 (fset 'yes-or-no-p 'y-or-n-p)
-
 (setq inhibit-splash-screen t)
+(setq ring-bell-function (lambda () (message "")))
 
 ;; Allow bullet lists starting with - to delimit paragraphs for use with
 ;; fill-paragraph. fill-individual-paragraphs accomplishes what I want, but it
@@ -63,12 +72,12 @@
   (find-file "~/emacs/init.el"))
 
 (defun action ()
-  "Find my org-mode file"
+  "Find my org file"
   (interactive)
   (find-file my-action-org))
 
 (defun work ()
-  "Find my work org-mode file"
+  "Find my work org file"
   (interactive)
   (find-file my-work-org))
 
@@ -94,6 +103,13 @@ narrowing and widening."
     (if mark-active
         (indent-region (region-beginning) (region-end))
       (indent-buffer))))
+
+;; cleanup, from Tim Dysinger
+(defun cleanup-whitespace ()
+  (interactive)
+  (untabify (point-min) (point-max))
+  (indent-region (point-min) (point-max))
+  (delete-trailing-whitespace))
 
 (defun count-chars-region (beginning end)
   "Displays a message with the number of characters in the region."
@@ -149,9 +165,11 @@ scan-error if not."
 
 (eval-after-load 'paredit
   '(progn
-     (define-key paredit-mode-map (kbd "<delete>") 'paredit-forward-maybe-delete-region)
-     (define-key paredit-mode-map (kbd "DEL") 'paredit-backward-maybe-delete-region)
-     (define-key paredit-mode-map (kbd ";")   'self-insert-command)))
+     (define-key paredit-mode-map (kbd "<delete>")
+       'paredit-forward-maybe-delete-region)
+     (define-key paredit-mode-map (kbd "DEL")
+       'paredit-backward-maybe-delete-region)
+     (define-key paredit-mode-map (kbd ";") 'self-insert-command)))
 
 ;;; Custom keybindings
 (global-set-key "\M-s"     'isearch-forward-regexp)
@@ -187,14 +205,11 @@ line instead."
        (list (region-beginning) (region-end))
      (list (line-beginning-position) (line-beginning-position 2)))))
 
-;; Buffer switching
-;;(require 'iswitchb)
-;;(iswitchb-mode 1)
-;; Or everything else switching
+;; Fancy buffer and everything else switching
 (ido-mode 1)
 
 ;; Unique buffer names
-(require 'uniquify) 
+(require 'uniquify)
 (setq uniquify-buffer-name-style 'post-forward
       uniquify-separator ":")
 
@@ -420,17 +435,11 @@ running, raises the most recently updated ERC buffer."
 (add-to-list 'auto-mode-alist '("SConscript" . python-mode))
 
 ;; Ruby
-(autoload 'ruby-mode "ruby-mode" "Edit Ruby source" t)
-(add-to-list 'auto-mode-alist '("\\.rb$" . ruby-mode))
+;; .rb is set up by elpa
 (add-to-list 'auto-mode-alist '("\\.t$"  . ruby-mode))
-(add-to-list 'auto-mode-alist '("Rakefile"  . ruby-mode))
+(add-to-list 'auto-mode-alist '("Rakefile$"  . ruby-mode))
 (add-to-list 'auto-mode-alist '("\\.rake$"  . ruby-mode))
 (add-to-list 'auto-mode-alist '("\\.rxml$"  . ruby-mode))
-(add-to-list 'interpreter-mode-alist '("ruby" . ruby-mode))
-(autoload 'run-ruby "inf-ruby" "Inferior Ruby process" t)
-(autoload 'inf-ruby-keys "inf-ruby" "Local key defs for inf-ruby")
-(add-hook 'ruby-mode-hook
-          (lambda () (inf-ruby-keys)))
 
 ;; Subversion
 (require 'psvn)
@@ -458,15 +467,12 @@ running, raises the most recently updated ERC buffer."
               (require 'server)
               (server-start))))
 
+;; OS X-specific setup
+(setq mac-command-modifier (quote meta))
+(setq mac-option-modifier (quote alt))
 (when (featurep 'aquamacs)
-  (require 'aquamacs-frame-setup)
-  (setq one-buffer-one-frame-mode nil)
-  (setq mac-command-modifier (quote meta))
-  (setq mac-option-modifier (quote alt))
-  (define-key osx-key-mode-map `[(control z)] 'iconify-or-deiconify-frame)
-                                        ; Removed this from custom, it was breaking emacsw32 init.
-                                        ;'(tabbar-mode nil nil (tabbar))
-  )
+  (tabbar-mode -1)
+  (define-key osx-key-mode-map `[(control z)] 'iconify-or-deiconify-frame))
 
 ;; Assumed registry settings (HKLM/Software/GNU/Emacs):
 ;;   Emacs.toolBar: 0
@@ -478,11 +484,11 @@ running, raises the most recently updated ERC buffer."
  ;; If there is more than one, they won't work right.
  '(ansi-color-for-comint-mode t)
  '(aquamacs-additional-fontsets nil t)
- '(aquamacs-customization-version-id 172 t)
+ '(aquamacs-customization-version-id 190 t)
  '(c-doc-comment-style (quote set-from-style))
  '(column-number-mode t)
  '(completion-ignored-extensions (quote (".obj" ".pdb" ".svn/" "CVS/" ".o" "~" ".bin" ".bak" ".obj" ".map" ".ico" ".pif" ".lnk" ".a" ".ln" ".blg" ".bbl" ".dll" ".drv" ".vxd" ".386" ".elc" ".lof" ".glo" ".idx" ".lot" ".fmt" ".tfm" ".class" ".fas" ".lib" ".mem" ".x86f" ".sparcf" ".fasl" ".ufsl" ".fsl" ".dxl" ".pfsl" ".dfsl" ".p64fsl" ".d64fsl" ".dx64fsl" ".lo" ".la" ".gmo" ".mo" ".toc" ".aux" ".cp" ".fn" ".ky" ".pg" ".tp" ".vr" ".cps" ".fns" ".kys" ".pgs" ".tps" ".vrs" ".pyc" ".pyo")))
- '(default-frame-alist (quote ((tool-bar-lines . 0) (background-mode . dark) (border-color . "black") (cursor-color . "white") (mouse-color . "black") (background-color . "black") (foreground-color . "cornsilk") (menu-bar-lines . 1) (cursor-type . box) (vertical-scroll-bars . right) (left-fringe . 1) (right-fringe) (fringe))))
+ '(default-frame-alist (quote ((tool-bar-lines . 0) (fringe) (right-fringe) (left-fringe . 1) (vertical-scroll-bars . right) (menu-bar-lines . 1) (cursor-color . "#dcdccc") (scroll-bar-background . "#5f5f5f") (background-color . "gray11") (background-mode . dark) (border-color . "gray11") (foreground-color . "#dcdccc") (mouse-color . "#dcdccc"))))
  '(erc-fill-function (quote erc-fill-static))
  '(erc-fill-variable-maximum-indentation 5)
  '(erc-hide-list (quote ("JOIN" "PART" "QUIT")))
@@ -493,8 +499,9 @@ running, raises the most recently updated ERC buffer."
  '(erc-user-full-name "Shawn Hoover")
  '(fill-column 78)
  '(global-hl-line-mode t)
+ '(ido-create-new-buffer (quote always))
  '(indent-tabs-mode nil)
- '(mac-option-modifier (quote alt))
+ '(ns-alternate-modifier (quote alt))
  '(org-cycle-include-plain-lists t)
  '(org-tags-column 67)
  '(show-paren-mode t)
@@ -502,13 +509,19 @@ running, raises the most recently updated ERC buffer."
  '(special-display-regexps (quote (".*SPEEDBAR.*")))
  '(tab-always-indent t)
  '(tab-width 2)
- '(tool-bar-mode nil)
  '(transient-mark-mode t)
  '(user-full-name "Shawn Hoover")
  '(visual-scroll-margin 0)
- '(w32shell-cygwin-bin "C:\\bin"))
+ '(w32shell-cygwin-bin "C:\\bin")
+ '(x-select-enable-clipboard t))
 
 ;;; Faces
+(custom-set-faces
+  ;; custom-set-faces was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+ )
 
 ;; Subtle face for parens in lisp modes
 (require 'parenface)
@@ -525,17 +538,13 @@ running, raises the most recently updated ERC buffer."
 (cond
  ((< emacs-major-version 22)
   (color-theme-initialize)
-  (declare-function color-theme-calm-forest "~/emacs/color/color-theme-6.6.0/themes/color-theme-library.el" nil)
+  (declare-function color-theme-calm-forest
+                    "~/emacs/color/color-theme-6.6.0/themes/color-theme-library.el" nil)
   (color-theme-calm-forest)
   (global-font-lock-mode 1)
   (global-hl-line-mode nil)
   ;; Lest we get black on black parens
   (set-face-foreground 'paren-face "green"))
-
- ;; Aquamacs just takes over anyway after loading .emacs. Lame.
- ;; Or maybe it's better with v1.6. Comment out for now.
- ;;((featurep 'aquamacs) nil)
-
  (t
   (load "~/emacs/site-lisp/color-theme-6.6.0/themes/zenburn-shawn")
   (zenburn-shawn)
