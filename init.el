@@ -37,6 +37,12 @@
 (setq-default indent-tabs-mode nil)
 (setq default-tab-width 2)
 
+;; Scroll when cursor nears the edge, move up to a proportion of the screen
+(setq scroll-margin 2
+      scroll-preserve-screen-position t)
+(setq-default scroll-down-aggressively 0.25
+              scroll-up-aggressively 0.25)
+
 ;; Allow "y or n" instead of "yes or no"
 (fset 'yes-or-no-p 'y-or-n-p)
 
@@ -491,10 +497,6 @@ running, raises the most recently updated ERC buffer."
  '(mac-option-modifier (quote alt))
  '(org-cycle-include-plain-lists t)
  '(org-tags-column 67)
- '(pr-gs-command "c:\\Program Files\\gs\\gs8.62\\bin\\gswin32c.exe")
- '(pr-gv-command "C:\\Program Files\\Ghostgum\\gsview\\gsview32.exe")
- '(scroll-conservatively 0)
- '(scroll-step 0)
  '(show-paren-mode t)
  '(show-paren-style (quote mixed))
  '(special-display-regexps (quote (".*SPEEDBAR.*")))
