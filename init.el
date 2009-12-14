@@ -27,7 +27,7 @@
 ;; Load emacsw32 here instead of site-start.el so it finds my org installation.
 ;; You still have to remove it from site-start.el, though, because that happens
 ;; before this.
-(require 'emacsw32 nil t)
+(if (eq system-type 'windows-nt) (require 'emacsw32 nil t))
 
 (defvar my-org-dir "~/action")
 (defvar my-action-org (concat my-org-dir "/action.org"))
@@ -107,7 +107,7 @@ narrowing and widening."
       (message "%d characters" count))))
 
 (defun toggle-selective-display ()
-  "A poor-man's version of code folding. From jao."
+  "A poor-man's version of code folding. From jao via stevey."
   (interactive)
   (set-selective-display (if selective-display nil 1)))
 
@@ -163,8 +163,8 @@ scan-error if not."
 (global-set-key [f5] 'revert-buffer)
 (global-set-key [f6] 'kill-this-buffer)
 
-;; Rebind C-M-\. The default indent-region just isn't very useful for me.
-(global-set-key "\C-\M-\\" 'my-indent-region)
+;; Indent region or whole buffer
+(global-set-key "\C-c/" 'my-indent-region)
 
 ;; Shift+(left|right|up|down) to get to a window quicker than with C-x o
 (windmove-default-keybindings)
@@ -225,14 +225,14 @@ line instead."
         (save-buffer)
       ;; Clear buffer-modified flag caused by set-visited-file-name
       (set-buffer-modified-p nil))
-  (message "Renamed to %s." new-name)))
+    (message "Renamed to %s." new-name)))
 
 ;; C
 (add-hook 'c-mode-hook
-          '(lambda ()
-             (setq indent-tabs-mode nil)
-             (setq tab-width 2)
-             (setq c-basic-offset 2)))
+          (lambda ()
+            (setq indent-tabs-mode nil)
+            (setq tab-width 2)
+            (setq c-basic-offset 2)))
 
 
 ;; C#
@@ -472,10 +472,10 @@ running, raises the most recently updated ERC buffer."
 ;;   Emacs.toolBar: 0
 ;;   Emacs.full
 (custom-set-variables
-  ;; custom-set-variables was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  '(ansi-color-for-comint-mode t)
  '(aquamacs-additional-fontsets nil t)
  '(aquamacs-customization-version-id 172 t)
@@ -539,14 +539,14 @@ running, raises the most recently updated ERC buffer."
  (t
   (load "~/emacs/site-lisp/color-theme-6.6.0/themes/zenburn-shawn")
   (zenburn-shawn)
-  ;(load "~/emacs/site-lisp/color-theme-6.6.0/themes/zenburn")
-  ;(zenburn)
+  ;;(load "~/emacs/site-lisp/color-theme-6.6.0/themes/zenburn")
+  ;;(zenburn)
   ))
 
 (cd emacs-root)
 (custom-set-faces
-  ;; custom-set-faces was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  )
