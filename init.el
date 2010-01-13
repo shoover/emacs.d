@@ -122,6 +122,22 @@ narrowing and widening."
         (incf count))
       (message "%d characters" count))))
 
+;; adapted from http://blog.bookworm.at/2007/03/pretty-print-xml-with-emacs.html
+(defun my-nxml-format-region (begin end)
+  "Formats XML markup in the region with line breaks and indentation."
+  (interactive
+   (if mark-active
+       (list (region-beginning) (region-end))
+     (list (point-min) (point-max))))
+  (save-excursion
+    (save-restriction
+      (narrow-to-region begin end)
+      (goto-char begin)
+      (while (search-forward-regexp "\>[ \\t]*\<" nil t)
+        (backward-char)
+        (insert "\n"))
+      (indent-region begin end))))
+
 (defun toggle-selective-display ()
   "A poor-man's version of code folding. From jao via stevey."
   (interactive)
@@ -212,6 +228,14 @@ line instead."
 (require 'uniquify)
 (setq uniquify-buffer-name-style 'post-forward
       uniquify-separator ":")
+
+;; Project setup
+
+;; Files to include in find-file-in-project. Requires find-file-in-project and
+;; project.el to be package installed. (Get
+;; http://github.com/technomancy/find-file-in-project and run `git submodule
+;; update`, then package-install-from-buffer.)
+(setq ffip-patterns '("*.c" "*.cs" "*.el" "*.h" "*.rb" "*.t"))
 
 ;; Originally from stevey, adapted to support moving to a new directory.
 (defun rename-file-and-buffer (new-name)
@@ -365,15 +389,13 @@ running, raises the most recently updated ERC buffer."
          :publishing-function org-publish-attachment)
         ("work" :components ("workorg" "workdocs"))
         ("clojure-box-org"
-         :base-directory "c:/docume~1/shawn/desktop/clojure-box-setup/web"
-         :publishing-directory "c:/tmp"
-         ;;:publishing-directory "ftp://clojure.bighugh.com"
-         :style "<link rel=stylesheet href=\"styles.css\" type=\"text/css\">")
+         :base-directory "c:/users/shawn/clojure-box/web"
+         :publishing-directory "/plinkx:dh:clojure.bighugh.com")
         ("clojure-box-extra"
-         :base-directory "c:/docume~1/shawn/desktop/clojure-box-setup/web"
+         :base-directory "c:/users/shawn/clojure-box/web"
          :base-extension "css"
          :publishing-function org-publish-attachment
-         :publishing-directory "c:/tmp")
+         :publishing-directory "/plinkx:dh:clojure.bighugh.com")
         ("clojure-box" :components ("clojure-box-org" "clojure-box-extra"))
         ))
 (add-hook 'org-mode-hook
@@ -517,10 +539,10 @@ running, raises the most recently updated ERC buffer."
 
 ;;; Faces
 (custom-set-faces
-  ;; custom-set-faces was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  )
 
 ;; Subtle face for parens in lisp modes
