@@ -187,13 +187,21 @@ scan-error if not."
        'paredit-backward-maybe-delete-region)
      (define-key paredit-mode-map (kbd ";") 'self-insert-command)))
 
+(defun my-next-previous-buffer (arg)
+  "next-buffer, or previous- with prefix arg"
+  (interactive "P")
+  (if arg
+      (previous-buffer)
+    (next-buffer)))
+
 ;;; Custom keybindings
 (global-set-key "\M-s"     'isearch-forward-regexp)
 (global-set-key "\M-r"     'isearch-backward-regexp)
 
 (global-set-key [f1] 'toggle-selective-display)
 
-(global-set-key [C-tab] 'next-buffer)
+(global-set-key [C-tab] 'my-next-previous-buffer)
+
 (global-set-key [f5] 'revert-buffer)
 (global-set-key [f6] 'kill-this-buffer)
 
@@ -411,6 +419,9 @@ running, raises the most recently updated ERC buffer."
             (define-key org-mode-map "\M-," 'org-mark-ring-goto)
 
             (define-key org-mode-map "\C-cd" 'my-org-todo-done)
+
+            ;; clear this so next- previous-buffer works
+            (define-key org-mode-map [C-tab] nil)
 
             (setq org-agenda-files (list my-action-org
                                          my-work-org))
