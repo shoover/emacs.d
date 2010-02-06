@@ -898,7 +898,7 @@ hg-commit-allow-empty-file-list is nil, an error is raised."
 	(setq message (concat message "\n"))
 	(apply 'hg-run0 "--cwd" hg-root "commit" "-m" message files))
       (let ((buf hg-prev-buffer))
-	(kill-buffer nil)
+	(kill-buffer-and-window)
 	(switch-to-buffer buf))
       (hg-update-mode-lines root))))
 
