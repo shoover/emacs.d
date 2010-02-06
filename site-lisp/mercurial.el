@@ -166,6 +166,10 @@ repository-related commands."
 (make-variable-buffer-local 'hg-prev-buffer)
 (put 'hg-prev-buffer 'permanent-local t)
 
+(defvar hg-prev-window-config nil)
+(make-variable-buffer-local 'hg-prev-window-config)
+(put 'hg-prev-window-config 'permanent-local t)
+
 (defvar hg-root nil)
 (make-variable-buffer-local 'hg-root)
 (put 'hg-root 'permanent-local t)
@@ -898,7 +902,8 @@ hg-commit-allow-empty-file-list is nil, an error is raised."
 	(setq message (concat message "\n"))
 	(apply 'hg-run0 "--cwd" hg-root "commit" "-m" message files))
       (let ((buf hg-prev-buffer))
-	(kill-buffer-and-window)
+	(kill-buffer nil)
+  (set-window-configuration hg-prev-window-config)
 	(switch-to-buffer buf))
       (hg-update-mode-lines root))))
 
@@ -949,6 +954,7 @@ Key bindings
 	       (not hg-commit-allow-empty-file-list))
       (error "No pending changes to commit"))
     (let* ((buf-name (format "*Mercurial: Commit %s*" root)))
+      (setq hg-prev-window-config (current-window-configuration))
       (pop-to-buffer (get-buffer-create buf-name))
       (when (= (point-min) (point-max))
 	(set (make-local-variable 'hg-root) root)
