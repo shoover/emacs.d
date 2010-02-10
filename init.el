@@ -24,10 +24,16 @@
   (add-path "emacs/site-lisp/org/lisp")
   (add-path "emacs/site-lisp/remember-2.0"))
 
-;; Load emacsw32 here instead of site-start.el so it finds my org installation.
-;; You still have to remove it from site-start.el, though, because that happens
-;; before this.
-(if (eq system-type 'windows-nt) (require 'emacsw32 nil t))
+(when (eq system-type 'windows-nt)
+  ;; Load emacsw32 here instead of site-start.el so it finds my org
+  ;; installation.  You still have to remove it from site-start.el, though,
+  ;; because that happens before this.
+  (require 'emacsw32 nil t)
+
+  ;; Put cygwin ahead for system32 for emacs and things it shells out to.
+  ;; The gnuwin32 find.exe that comes with emacsw32 has a bug and doesn't
+  ;; look for wildcards in the path you specify.
+  (setenv "PATH" (concat "c:/bin" path-separator (getenv "PATH"))))
 
 (defvar my-org-dir "~/action")
 (defvar my-action-org (concat my-org-dir "/action.org"))
@@ -64,7 +70,11 @@
 ;; A more generic solution will be needed to work with @param lists in C-code.
 (setq paragraph-start "\f\\|[ 	]*$\\|\\([ ]+- \\)")
 
-;;; Functions
+(setq ispell-program-name "aspell"
+      ispell-extra-args '("--sug-mode=ultra"))
+
+(setq scpaste-http-destination "http://paste.bighugh.com"
+      scpaste-scp-destination "dh:paste.bighugh.com")
 
 (defun init ()
   "Find my init file"
@@ -511,10 +521,10 @@ running, raises the most recently updated ERC buffer."
 ;;   Emacs.toolBar: 0
 ;;   Emacs.full
 (custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
+  ;; custom-set-variables was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
  '(ansi-color-for-comint-mode t)
  '(aquamacs-additional-fontsets nil t)
  '(aquamacs-customization-version-id 190 t)
@@ -550,10 +560,10 @@ running, raises the most recently updated ERC buffer."
 
 ;;; Faces
 (custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
+  ;; custom-set-faces was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
  )
 
 ;; Subtle face for parens in lisp modes
@@ -586,9 +596,4 @@ running, raises the most recently updated ERC buffer."
   ))
 
 (cd emacs-root)
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
+
