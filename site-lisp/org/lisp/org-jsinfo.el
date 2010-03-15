@@ -1,11 +1,12 @@
 ;;; org-jsinfo.el --- Support for org-info.js Javascript in Org HTML export
 
-;; Copyright (C) 2004, 2005, 2006, 2007, 2008 Free Software Foundation, Inc.
+;; Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009
+;;   Free Software Foundation, Inc.
 
 ;; Author: Carsten Dominik <carsten at orgmode dot org>
 ;; Keywords: outlines, hypermedia, calendar, wp
 ;; Homepage: http://orgmode.org
-;; Version: 6.14
+;; Version: 6.34trans
 ;;
 ;; This file is part of GNU Emacs.
 ;;
@@ -40,6 +41,7 @@
 ;;; Code:
 
 (require 'org-exp)
+(require 'org-html)
 
 (add-to-list 'org-export-inbuffer-options-extra '("INFOJS_OPT" :infojs-opt))
 (add-hook 'org-export-options-filters 'org-infojs-handle-options)
@@ -50,7 +52,7 @@
   :group 'org-export-html)
 
 (defcustom org-export-html-use-infojs 'when-configured
-  "Should Sebasian Rose's Java Script org-info.js be linked into HTML files?
+  "Should Sebastian Rose's Java Script org-info.js be linked into HTML files?
 This option can be nil or t to never or always use the script.  It can
 also be the symbol `when-configured', meaning that the script will be
 linked into the export file if and only if there is a \"#+INFOJS_OPT:\"
@@ -108,8 +110,8 @@ means to use the maximum value consistent with other options."
 <script type=\"text/javascript\" >
 <!--/*--><![CDATA[/*><!--*/
 %MANAGER_OPTIONS
-org_html_manager.setup();  // activate after the parameterd are set
-/*]]>*/-->
+org_html_manager.setup();  // activate after the parameters are set
+/*]]>*///-->
 </script>"
   "The template for the export style additions when org-info.js is used.
 Option settings will replace the %MANAGER-OPTIONS cookie."
@@ -129,7 +131,7 @@ Option settings will replace the %MANAGER-OPTIONS cookie."
     (let ((template org-infojs-template)
 	(ptoc (plist-get exp-plist :table-of-contents))
 	(hlevels (plist-get exp-plist :headline-levels))
-	tdepth sdepth p1 s p v a1 tmp e opt var val table default)
+	tdepth sdepth s v e opt var val table default)
     (setq sdepth hlevels
 	  tdepth hlevels)
     (if (integerp ptoc) (setq tdepth (min ptoc tdepth)))
@@ -140,7 +142,7 @@ Option settings will replace the %MANAGER-OPTIONS cookie."
 	    default (cdr (assoc opt org-infojs-options)))
       (and (symbolp default) (not (memq default '(t nil)))
 	   (setq default (plist-get exp-plist default)))
-      (if (string-match (format " %s:\\(\\S-+\\)" opt) v)
+      (if (and v (string-match (format " %s:\\(\\S-+\\)" opt) v))
 	  (setq val (match-string 1 v))
 	(setq val default))
       (cond
@@ -167,7 +169,7 @@ Option settings will replace the %MANAGER-OPTIONS cookie."
     ;; actually be displayed is governed by the TDEPTH option.
     (setq exp-plist (plist-put exp-plist :table-of-contents sdepth))
 
-    ;; The table of contents should ot show more sections then we generate
+    ;; The table of contents should not show more sections then we generate
     (setq tdepth (min tdepth sdepth))
     (push (cons "TOC_DEPTH" tdepth) s)
 
