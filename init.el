@@ -55,8 +55,7 @@
 (when (>= emacs-major-version 23)
   (setq whitespace-global-modes '(c-mode clojure-mode emacs-lisp-mode ruby-mode)
         whitespace-style '(tabs trailing lines-tail space-before-tab empty
-                                space-after-tab))
-  (global-whitespace-mode 1))
+                                space-after-tab)))
 
 ;; Allow "y or n" instead of "yes or no"
 (fset 'yes-or-no-p 'y-or-n-p)
