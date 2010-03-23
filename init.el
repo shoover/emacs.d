@@ -453,6 +453,7 @@ running, raises the most recently updated ERC buffer."
             (define-key org-mode-map "\M-." 'org-open-at-point)
             (define-key org-mode-map "\M-," 'org-mark-ring-goto)
 
+            (define-key org-mode-map "\C-\M-a" 'org-archive-subtree)
             (define-key org-mode-map "\C-cd" 'my-org-todo-done)
 
             ;; clear this so next- previous-buffer works
