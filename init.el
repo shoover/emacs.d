@@ -279,6 +279,8 @@ line instead."
 ;; http://github.com/technomancy/find-file-in-project and run `git submodule
 ;; update`, then package-install-from-buffer.)
 (setq ffip-patterns '("*.c" "*.cs" "*.el" "*.h" "*.rb" "*.t"))
+;; This is needed for ffip to work, but it's not on all my machines yet.
+;;(require 'project nil t)
 
 ;; Originally from stevey, adapted to support moving to a new directory.
 (defun rename-file-and-buffer (new-name)
