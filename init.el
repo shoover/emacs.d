@@ -246,6 +246,32 @@ line instead."
 (setq uniquify-buffer-name-style 'post-forward
       uniquify-separator ":")
 
+;; Fancy buffer listing
+(require 'ibuffer) 
+(setq ibuffer-saved-filter-groups
+  (quote (("default"      
+            ("Org" ;; all org-related buffers
+              (mode . org-mode))  
+            ("CounterMeasure"
+              (filename . "/dev/counter/"))
+            ("Handel"
+              (filename . "/dev/handel/"))
+            ("Programming"
+              (or
+                (filename . "/dev/")
+                (name . "repl")
+                (name . "\\*inf\\(erior\\)?-")
+                (mode . c-mode)
+                (mode . clojure-mode)
+                (mode . cs-mode)
+                (mode . emacs-lisp-mode)
+                (mode . java-mode)
+                (mode . perl-mode)
+                (mode . python-mode)
+                (mode . ruby-mode)
+                )) 
+            ("ERC"   (mode . erc-mode))))))
+
 ;; Project setup
 
 ;; Files to include in find-file-in-project. Requires find-file-in-project and
