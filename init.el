@@ -338,7 +338,9 @@ line instead."
 ;; elisp
 (add-hook 'emacs-lisp-mode-hook
           (lambda ()
-            (define-key emacs-lisp-mode-map "\C-c\C-k" 'eval-buffer)))
+            (define-key emacs-lisp-mode-map "\C-c\C-k" 'eval-buffer)
+            (turn-on-eldoc-mode)
+            (paredit-mode 1)))
 
 ;; erc
 (setq erc-autojoin-channels-alist '(("freenode.net" "#clojure")))
