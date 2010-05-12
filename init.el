@@ -22,7 +22,8 @@
   (add-path "emacs/site-lisp")
   (add-path "emacs/site-lisp/color-theme-6.6.0") ;; my color preferences
   (add-path "emacs/site-lisp/org/lisp")
-  (add-path "emacs/site-lisp/remember-2.0"))
+  (when (< emacs-major-version 23)
+    (add-path "emacs/site-lisp/remember-2.0")))
 
 (when (eq system-type 'windows-nt)
   ;; Load emacsw32 here instead of site-start.el so it finds my org
@@ -417,7 +418,7 @@ running, raises the most recently updated ERC buffer."
 
 ;; org-mode
 (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
-(require 'org)
+(require 'org-install)
 (defun my-org-todo-done ()
   (interactive)
   (org-todo 'done))
@@ -436,22 +437,22 @@ running, raises the most recently updated ERC buffer."
          :publishing-function org-publish-attachment)
         ("work" :components ("workorg" "workdocs"))
         ("clojure-box-org"
-         :base-directory "c:/users/shawn/clojure-box/web"
+         :base-directory "c:/users/shawn/dev/clojure-box/web"
          :publishing-directory "/plinkx:dh:clojure.bighugh.com")
         ("clojure-box-extra"
-         :base-directory "c:/users/shawn/clojure-box/web"
+         :base-directory "c:/users/shawn/dev/clojure-box/web"
          :base-extension "css"
          :publishing-function org-publish-attachment
          :publishing-directory "/plinkx:dh:clojure.bighugh.com")
         ("clojure-box" :components ("clojure-box-org" "clojure-box-extra"))
         ))
 (add-hook 'org-mode-hook
+          (lambda () (turn-on-auto-fill)))
+(add-hook 'org-load-hook
           (lambda ()
-            (turn-on-auto-fill)
-
-            ;; These commands have no binding by default.
             (define-key org-mode-map "\C-ca" 'org-agenda)
             (define-key org-mode-map "\C-cl" 'org-store-link)
+            (define-key org-mode-map "\C-cb" 'org-iswitchb)
 
             ;; Make links work like chasing definitions in source code.
             (define-key org-mode-map "\M-." 'org-open-at-point)
@@ -466,27 +467,23 @@ running, raises the most recently updated ERC buffer."
             (setq org-agenda-files (list my-action-org
                                          my-work-org))
             (setq org-agenda-custom-commands
-                  '(("A" "30 day agenda" agenda "" ((org-agenda-ndays 30)))))
-
-            ;; Variables used to save remember notes
-            (setq org-directory my-org-dir)
-            (setq org-default-notes-file my-action-org)
-
-            ;; One template--insert note at top of org file
-            (setq org-remember-templates
-                  `((?t "%?\n  %i\n  %a" ,my-action-org)))
-            ;;(?j "* %U %?\n\n  %i\n  %a" "~/.notes")
-            ;;(?i "* %^{Title}\n  %i\n  %a" "~/.notes" "New Ideas")))
-
-            ;; Make remember insert new notes at top
-            (setq org-reverse-note-order t)))
+                  '(("A" "30 day agenda" agenda "" ((org-agenda-ndays 30)))))))
 
 ;; Store to org file from remember-mode
-(require 'remember)
+(org-remember-insinuate)
 (setq remember-annotation-functions '(org-remember-annotation))
 (setq remember-handler-functions '(org-remember-handler))
 (add-hook 'remember-mode-hook 'org-remember-apply-template)
+(setq org-directory my-org-dir)
+(setq org-default-notes-file my-action-org)
+(setq org-remember-templates
+      `(("Home" ?h
+         "* %^{headline}\n  %i%?\n  %a\n  %U" ,my-action-org)
+        ("Work" ?w
+         "* %^{headline}\n  %i%?\n  %a\n  %U" ,my-work-org)))
 
+;; Make remember insert new notes at top
+(setq org-reverse-note-order t)
 ;; Make
 (setq compile-command "make ")
 
