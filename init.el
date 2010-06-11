@@ -368,8 +368,9 @@ running, raises the most recently updated ERC buffer."
 
   ;; Open ERC if the buffer is dead
   (unless (buffer-live-p my-erc-buffer)
+    (load "~/.emacs.d/.ercpass")
     (select-frame my-erc-frame)
-    (setq my-erc-buffer (erc)))
+    (setq my-erc-buffer (erc :nick erc-nick :password erc-password)))
 
   (raise-frame (select-frame my-erc-frame))
   (switch-to-buffer my-erc-buffer))
@@ -567,7 +568,9 @@ running, raises the most recently updated ERC buffer."
  '(column-number-mode t)
  '(completion-ignored-extensions (quote (".obj" ".pdb" ".svn/" "CVS/" ".o" "~" ".bin" ".bak" ".obj" ".map" ".ico" ".pif" ".lnk" ".a" ".ln" ".blg" ".bbl" ".dll" ".drv" ".vxd" ".386" ".elc" ".lof" ".glo" ".idx" ".lot" ".fmt" ".tfm" ".class" ".fas" ".lib" ".mem" ".x86f" ".sparcf" ".fasl" ".ufsl" ".fsl" ".dxl" ".pfsl" ".dfsl" ".p64fsl" ".d64fsl" ".dx64fsl" ".lo" ".la" ".gmo" ".mo" ".toc" ".aux" ".cp" ".fn" ".ky" ".pg" ".tp" ".vr" ".cps" ".fns" ".kys" ".pgs" ".tps" ".vrs" ".pyc" ".pyo")))
  '(default-frame-alist (quote ((tool-bar-lines . 0) (fringe) (right-fringe) (left-fringe . 1) (vertical-scroll-bars . right) (menu-bar-lines . 1) (cursor-color . "#dcdccc") (scroll-bar-background . "#5f5f5f") (background-color . "gray11") (background-mode . dark) (border-color . "gray11") (foreground-color . "#dcdccc") (mouse-color . "#dcdccc"))))
+ '(erc-fill-column 68)
  '(erc-fill-function (quote erc-fill-static))
+ '(erc-fill-static-center 10)
  '(erc-fill-variable-maximum-indentation 5)
  '(erc-hide-list (quote ("JOIN" "PART" "QUIT")))
  '(erc-nick "shoover")
