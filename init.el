@@ -25,6 +25,15 @@
   (when (< emacs-major-version 23)
     (add-path "emacs/site-lisp/remember-2.0")))
 
+;; I install some info files here.
+;; makeinfo blah.texi
+;; install-info blah emacs/info/dir
+(add-to-list 'Info-directory-list (expand-file-name "emacs/info" emacs-root))
+
+;; No need to put this before initializing `package' because it byte-compiles
+;; everything on install anyway.
+(require 'byte-code-cache)
+
 (when (eq system-type 'windows-nt)
   ;; Load emacsw32 here instead of site-start.el so it finds my org
   ;; installation.  You still have to remove it from site-start.el, though,
@@ -43,7 +52,7 @@
 
 ;; Tab defaults
 (setq-default indent-tabs-mode nil)
-(setq default-tab-width 2)
+(setq tab-width 2)
 
 ;; Scroll when the cursor nears the edge, move up to a proportion of the screen
 (setq scroll-margin 2
@@ -159,6 +168,19 @@ narrowing and widening."
   (interactive)
   (set-selective-display (if selective-display nil 1)))
 
+(defun my-comint (cmd)
+  "Runs `comint', but parses cmd into a program and args like `inferior-lisp'."
+  (interactive (list (if current-prefix-arg
+                         ""
+                         (read-string "Program: "))))
+  (let* ((cmdlist (split-string cmd))
+        (new-buf (set-buffer (apply (function make-comint)
+                                    (format (car cmdlist))
+                                    (car cmdlist)
+                                    nil
+                                    (cdr cmdlist)))))
+    (pop-to-buffer new-buf)))
+
 ;; paredit keyboard tweaks--from Bill Clementson
 (require 'paredit)
 (defun lisp-enable-paredit-hook () (paredit-mode 1))
@@ -226,6 +248,9 @@ scan-error if not."
 
 ;; Shift+(left|right|up|down) to get to a window quicker than with C-x o
 (windmove-default-keybindings)
+
+;; Snippets
+(yas/load-directory (concat emacs-root "emacs/snippets"))
 
 ;; Line killing goodness from emacs-fu
 (defadvice kill-ring-save (before slick-copy activate compile)
@@ -324,7 +349,7 @@ line instead."
             (setq indent-tabs-mode nil)
             (setq tab-width 2)
             (setq c-basic-offset 2)))
-
+(add-to-list 'auto-mode-alist '("\\.rl$" . c-mode))
 
 ;; C#
 (autoload 'csharp-mode "csharp-mode" "Edit C# files")
@@ -332,6 +357,30 @@ line instead."
 
 ;; Clojure
 (add-hook 'clojure-mode-hook 'lisp-enable-paredit-hook)
+(add-hook 'clojure-mode-hook
+          (lambda ()
+            (define-key clojure-mode-map "\C-c\C-l" 'my-load-buffer)))
+(add-hook 'inferior-lisp-mode-hook
+          (lambda ()
+            (add-to-list 'comint-output-filter-functions
+                         'comint-truncate-buffer)
+            (setq comint-buffer-maximum-size 5000)))
+
+;; From nakkaya.com
+(defun my-load-buffer ()
+  (interactive)
+  (point-to-register 5)
+  (mark-whole-buffer)
+  (lisp-eval-region (point) (mark) nil)
+  (jump-to-register 5))
+
+(defun my-slime (clojure-jar)
+  "Set up the classpath with a custom clojure jar."
+  (interactive (list (read-string "Clojure jar:")))
+  ;; (setq swank-clojure-classpath (swank-clojure-default-classpath))
+  (let ((swank-clojure-classpath (cons clojure-jar
+                                       (swank-clojure-default-classpath))))
+    (slime)))
 
 ;; CMake
 (autoload 'cmake-mode "cmake-mode" "Edit CMake definitions" t)
@@ -353,7 +402,7 @@ line instead."
 (setq erc-autojoin-channels-alist '(("freenode.net" "#clojure")))
 (defvar my-erc-frame nil "Cache the frame where ERC lives to raise later")
 (defvar my-erc-buffer nil "Cache the buffer ERC to see if it's alive later")
-(defun my-erc ()
+(defun my-erc (&optional server nick pass)
   "Starts ERC in a new frame with Georgia font. If ERC is
 running, raises the most recently updated ERC buffer."
   (interactive)
@@ -370,7 +419,8 @@ running, raises the most recently updated ERC buffer."
   (unless (buffer-live-p my-erc-buffer)
     (load "~/.emacs.d/.ercpass")
     (select-frame my-erc-frame)
-    (setq my-erc-buffer (erc :nick erc-nick :password erc-password)))
+    (setq my-erc-buffer (erc :server server :nick (or nick erc-nick)
+                             :password (or pass erc-password))))
 
   (raise-frame (select-frame my-erc-frame))
   (switch-to-buffer my-erc-buffer))
@@ -379,6 +429,12 @@ running, raises the most recently updated ERC buffer."
 ;; erc buffer.
 (add-hook 'erc-insert-post-hook
           (lambda () (setq my-erc-buffer (current-buffer))))
+
+(defun my-erc-scroll-to-bottom ()
+  (interactive)
+  (end-of-buffer)
+  (previous-line)
+  (recenter 0))
 
 ;; Erlang
 (defun my-erlang ()
@@ -574,8 +630,10 @@ running, raises the most recently updated ERC buffer."
  '(erc-fill-variable-maximum-indentation 5)
  '(erc-hide-list (quote ("JOIN" "PART" "QUIT")))
  '(erc-nick "shoover")
+ '(erc-nick-uniquifier "_")
  '(erc-port 6667)
  '(erc-server "irc.freenode.net")
+ '(erc-server-reconnect-timeout 30)
  '(erc-timestamp-use-align-to t)
  '(erc-user-full-name "Shawn Hoover")
  '(fill-column 78)
@@ -592,6 +650,7 @@ running, raises the most recently updated ERC buffer."
  '(tab-width 2)
  '(transient-mark-mode t)
  '(user-full-name "Shawn Hoover")
+ '(user-mail-address "shawn@bighugh.com")
  '(visual-scroll-margin 0)
  '(w32shell-cygwin-bin "C:\\bin")
  '(x-select-enable-clipboard t))

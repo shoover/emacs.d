@@ -524,7 +524,7 @@ static char *gnus-pointer[] = {
      '(erc-highlight ((t (:inherit hover-highlight))))
      `(erc-input ((t (:foreground ,zenburn-yellow))))
      '(erc-keyword ((t (:inherit zenburn-primary-1))))
-     `(erc-nick-default ((t (:weight bold :foreground ,zenburn-gold))))
+     '(erc-nick-default ((t (:weight bold :inherit zenburn-blue-1))))
      '(erc-nick-msg ((t (:inherit erc-default))))
      '(erc-notice ((t (:inherit zenburn-green))))
      `(erc-pal ((t (:foreground ,zenburn-blue :weight bold))))
