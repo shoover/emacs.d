@@ -22,20 +22,37 @@
   (add-path "emacs/site-lisp")
   (add-path "emacs/site-lisp/color-theme-6.6.0") ;; my color preferences
   (add-path "emacs/site-lisp/org/lisp")
-  (add-path "emacs/site-lisp/remember-2.0"))
+  (when (< emacs-major-version 23)
+    (add-path "emacs/site-lisp/remember-2.0")))
 
-;; Load emacsw32 here instead of site-start.el so it finds my org installation.
-;; You still have to remove it from site-start.el, though, because that happens
-;; before this.
-(if (eq system-type 'windows-nt) (require 'emacsw32 nil t))
+;; I install some info files here.
+;; makeinfo blah.texi
+;; install-info blah emacs/info/dir
+(add-to-list 'Info-directory-list (expand-file-name "emacs/info" emacs-root))
+
+;; No need to put this before initializing `package' because it byte-compiles
+;; everything on install anyway.
+(require 'byte-code-cache)
+
+(when (eq system-type 'windows-nt)
+  ;; Load emacsw32 here instead of site-start.el so it finds my org
+  ;; installation.  You still have to remove it from site-start.el, though,
+  ;; because that happens before this.
+  (require 'emacsw32 nil t)
+
+  ;; Put cygwin ahead for system32 for emacs and things it shells out to.
+  ;; The gnuwin32 find.exe that comes with emacsw32 has a bug and doesn't
+  ;; look for wildcards in the path you specify.
+  (setenv "PATH" (concat "c:/bin" path-separator (getenv "PATH"))))
 
 (defvar my-org-dir "~/action")
 (defvar my-action-org (concat my-org-dir "/action.org"))
 (defvar my-work-org (concat my-org-dir "/work.org"))
+(defvar my-house-org (concat my-org-dir "/../house/maintenance.org"))
 
 ;; Tab defaults
 (setq-default indent-tabs-mode nil)
-(setq default-tab-width 2)
+(setq tab-width 2)
 
 ;; Scroll when the cursor nears the edge, move up to a proportion of the screen
 (setq scroll-margin 2
@@ -49,8 +66,7 @@
 (when (>= emacs-major-version 23)
   (setq whitespace-global-modes '(c-mode clojure-mode emacs-lisp-mode ruby-mode)
         whitespace-style '(tabs trailing lines-tail space-before-tab empty
-                                space-after-tab))
-  (global-whitespace-mode 1))
+                                space-after-tab)))
 
 ;; Allow "y or n" instead of "yes or no"
 (fset 'yes-or-no-p 'y-or-n-p)
@@ -64,7 +80,11 @@
 ;; A more generic solution will be needed to work with @param lists in C-code.
 (setq paragraph-start "\f\\|[ 	]*$\\|\\([ ]+- \\)")
 
-;;; Functions
+(setq ispell-program-name "aspell"
+      ispell-extra-args '("--sug-mode=ultra"))
+
+(setq scpaste-http-destination "http://paste.bighugh.com"
+      scpaste-scp-destination "dh:paste.bighugh.com")
 
 (defun init ()
   "Find my init file"
@@ -80,6 +100,11 @@
   "Find my work org file"
   (interactive)
   (find-file my-work-org))
+
+(defun house ()
+  "Find my house org file"
+  (interactive)
+  (find-file my-house-org))
 
 (defun next-slide ()
   "org-mode slideware, jumps to next subtree with automatic
@@ -142,6 +167,19 @@ narrowing and widening."
   "A poor-man's version of code folding. From jao via stevey."
   (interactive)
   (set-selective-display (if selective-display nil 1)))
+
+(defun my-comint (cmd)
+  "Runs `comint', but parses cmd into a program and args like `inferior-lisp'."
+  (interactive (list (if current-prefix-arg
+                         ""
+                         (read-string "Program: "))))
+  (let* ((cmdlist (split-string cmd))
+        (new-buf (set-buffer (apply (function make-comint)
+                                    (format (car cmdlist))
+                                    (car cmdlist)
+                                    nil
+                                    (cdr cmdlist)))))
+    (pop-to-buffer new-buf)))
 
 ;; paredit keyboard tweaks--from Bill Clementson
 (require 'paredit)
@@ -211,6 +249,9 @@ scan-error if not."
 ;; Shift+(left|right|up|down) to get to a window quicker than with C-x o
 (windmove-default-keybindings)
 
+;; Snippets
+(yas/load-directory (concat emacs-root "emacs/snippets"))
+
 ;; Line killing goodness from emacs-fu
 (defadvice kill-ring-save (before slick-copy activate compile)
   "When called interactively with no active region, copy a single
@@ -237,6 +278,32 @@ line instead."
 (setq uniquify-buffer-name-style 'post-forward
       uniquify-separator ":")
 
+;; Fancy buffer listing
+(require 'ibuffer) 
+(setq ibuffer-saved-filter-groups
+  (quote (("default"      
+            ("Org" ;; all org-related buffers
+              (mode . org-mode))  
+            ("CounterMeasure"
+              (filename . "/dev/counter/"))
+            ("Handel"
+              (filename . "/dev/handel/"))
+            ("Programming"
+              (or
+                (filename . "/dev/")
+                (name . "repl")
+                (name . "\\*inf\\(erior\\)?-")
+                (mode . c-mode)
+                (mode . clojure-mode)
+                (mode . cs-mode)
+                (mode . emacs-lisp-mode)
+                (mode . java-mode)
+                (mode . perl-mode)
+                (mode . python-mode)
+                (mode . ruby-mode)
+                )) 
+            ("ERC"   (mode . erc-mode))))))
+
 ;; Project setup
 
 ;; Files to include in find-file-in-project. Requires find-file-in-project and
@@ -244,6 +311,8 @@ line instead."
 ;; http://github.com/technomancy/find-file-in-project and run `git submodule
 ;; update`, then package-install-from-buffer.)
 (setq ffip-patterns '("*.c" "*.cs" "*.el" "*.h" "*.rb" "*.t"))
+;; This is needed for ffip to work, but it's not on all my machines yet.
+;;(require 'project nil t)
 
 ;; Originally from stevey, adapted to support moving to a new directory.
 (defun rename-file-and-buffer (new-name)
@@ -280,7 +349,7 @@ line instead."
             (setq indent-tabs-mode nil)
             (setq tab-width 2)
             (setq c-basic-offset 2)))
-
+(add-to-list 'auto-mode-alist '("\\.rl$" . c-mode))
 
 ;; C#
 (autoload 'csharp-mode "csharp-mode" "Edit C# files")
@@ -293,6 +362,30 @@ line instead."
 
 ;; Clojure
 (add-hook 'clojure-mode-hook 'lisp-enable-paredit-hook)
+(add-hook 'clojure-mode-hook
+          (lambda ()
+            (define-key clojure-mode-map "\C-c\C-l" 'my-load-buffer)))
+(add-hook 'inferior-lisp-mode-hook
+          (lambda ()
+            (add-to-list 'comint-output-filter-functions
+                         'comint-truncate-buffer)
+            (setq comint-buffer-maximum-size 5000)))
+
+;; From nakkaya.com
+(defun my-load-buffer ()
+  (interactive)
+  (point-to-register 5)
+  (mark-whole-buffer)
+  (lisp-eval-region (point) (mark) nil)
+  (jump-to-register 5))
+
+(defun my-slime (clojure-jar)
+  "Set up the classpath with a custom clojure jar."
+  (interactive (list (read-string "Clojure jar:")))
+  ;; (setq swank-clojure-classpath (swank-clojure-default-classpath))
+  (let ((swank-clojure-classpath (cons clojure-jar
+                                       (swank-clojure-default-classpath))))
+    (slime)))
 
 ;; CMake
 (autoload 'cmake-mode "cmake-mode" "Edit CMake definitions" t)
@@ -306,13 +399,15 @@ line instead."
 ;; elisp
 (add-hook 'emacs-lisp-mode-hook
           (lambda ()
-            (define-key emacs-lisp-mode-map "\C-c\C-k" 'eval-buffer)))
+            (define-key emacs-lisp-mode-map "\C-c\C-k" 'eval-buffer)
+            (turn-on-eldoc-mode)
+            (paredit-mode 1)))
 
 ;; erc
 (setq erc-autojoin-channels-alist '(("freenode.net" "#clojure")))
 (defvar my-erc-frame nil "Cache the frame where ERC lives to raise later")
 (defvar my-erc-buffer nil "Cache the buffer ERC to see if it's alive later")
-(defun my-erc ()
+(defun my-erc (&optional server nick pass)
   "Starts ERC in a new frame with Georgia font. If ERC is
 running, raises the most recently updated ERC buffer."
   (interactive)
@@ -327,8 +422,10 @@ running, raises the most recently updated ERC buffer."
 
   ;; Open ERC if the buffer is dead
   (unless (buffer-live-p my-erc-buffer)
+    (load "~/.emacs.d/.ercpass")
     (select-frame my-erc-frame)
-    (setq my-erc-buffer (erc)))
+    (setq my-erc-buffer (erc :server server :nick (or nick erc-nick)
+                             :password (or pass erc-password))))
 
   (raise-frame (select-frame my-erc-frame))
   (switch-to-buffer my-erc-buffer))
@@ -337,6 +434,12 @@ running, raises the most recently updated ERC buffer."
 ;; erc buffer.
 (add-hook 'erc-insert-post-hook
           (lambda () (setq my-erc-buffer (current-buffer))))
+
+(defun my-erc-scroll-to-bottom ()
+  (interactive)
+  (end-of-buffer)
+  (previous-line)
+  (recenter 0))
 
 ;; Erlang
 (defun my-erlang ()
@@ -383,7 +486,7 @@ running, raises the most recently updated ERC buffer."
 
 ;; org-mode
 (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
-(require 'org)
+(require 'org-install)
 (defun my-org-todo-done ()
   (interactive)
   (org-todo 'done))
@@ -402,56 +505,55 @@ running, raises the most recently updated ERC buffer."
          :publishing-function org-publish-attachment)
         ("work" :components ("workorg" "workdocs"))
         ("clojure-box-org"
-         :base-directory "c:/users/shawn/clojure-box/web"
+         :base-directory "c:/users/shawn/dev/clojure-box/web"
          :publishing-directory "/plinkx:dh:clojure.bighugh.com")
         ("clojure-box-extra"
-         :base-directory "c:/users/shawn/clojure-box/web"
+         :base-directory "c:/users/shawn/dev/clojure-box/web"
          :base-extension "css"
          :publishing-function org-publish-attachment
          :publishing-directory "/plinkx:dh:clojure.bighugh.com")
         ("clojure-box" :components ("clojure-box-org" "clojure-box-extra"))
         ))
 (add-hook 'org-mode-hook
+          (lambda () (turn-on-auto-fill)))
+(add-hook 'org-load-hook
           (lambda ()
-            (turn-on-auto-fill)
-
-            ;; These commands have no binding by default.
             (define-key org-mode-map "\C-ca" 'org-agenda)
             (define-key org-mode-map "\C-cl" 'org-store-link)
+            (define-key org-mode-map "\C-cb" 'org-iswitchb)
 
             ;; Make links work like chasing definitions in source code.
             (define-key org-mode-map "\M-." 'org-open-at-point)
             (define-key org-mode-map "\M-," 'org-mark-ring-goto)
 
+            (define-key org-mode-map "\C-\M-a" 'org-archive-subtree)
             (define-key org-mode-map "\C-cd" 'my-org-todo-done)
 
             ;; clear this so next- previous-buffer works
             (define-key org-mode-map [C-tab] nil)
 
-            (setq org-agenda-files (list my-action-org
-                                         my-work-org))
+            (setq org-agenda-files
+                  (list my-action-org
+                        my-work-org
+                        my-house-org))
             (setq org-agenda-custom-commands
-                  '(("A" "30 day agenda" agenda "" ((org-agenda-ndays 30)))))
-
-            ;; Variables used to save remember notes
-            (setq org-directory my-org-dir)
-            (setq org-default-notes-file my-action-org)
-
-            ;; One template--insert note at top of org file
-            (setq org-remember-templates
-                  `((?t "%?\n  %i\n  %a" ,my-action-org)))
-            ;;(?j "* %U %?\n\n  %i\n  %a" "~/.notes")
-            ;;(?i "* %^{Title}\n  %i\n  %a" "~/.notes" "New Ideas")))
-
-            ;; Make remember insert new notes at top
-            (setq org-reverse-note-order t)))
+                  '(("A" "30 day agenda" agenda "" ((org-agenda-ndays 30)))))))
 
 ;; Store to org file from remember-mode
-(require 'remember)
+(org-remember-insinuate)
 (setq remember-annotation-functions '(org-remember-annotation))
 (setq remember-handler-functions '(org-remember-handler))
 (add-hook 'remember-mode-hook 'org-remember-apply-template)
+(setq org-directory my-org-dir)
+(setq org-default-notes-file my-action-org)
+(setq org-remember-templates
+      `(("Home" ?h
+         "* %^{headline}\n  %i%?\n  %a\n  %U" ,my-action-org)
+        ("Work" ?w
+         "* %^{headline}\n  %i%?\n  %a\n  %U" ,my-work-org)))
 
+;; Make remember insert new notes at top
+(setq org-reverse-note-order t)
 ;; Make
 (setq compile-command "make ")
 
@@ -516,10 +618,10 @@ running, raises the most recently updated ERC buffer."
 ;;   Emacs.toolBar: 0
 ;;   Emacs.full
 (custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
+  ;; custom-set-variables was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
  '(ansi-color-for-comint-mode t)
  '(aquamacs-additional-fontsets nil t)
  '(aquamacs-customization-version-id 190 t)
@@ -527,12 +629,16 @@ running, raises the most recently updated ERC buffer."
  '(column-number-mode t)
  '(completion-ignored-extensions (quote (".obj" ".pdb" ".svn/" "CVS/" ".o" "~" ".bin" ".bak" ".obj" ".map" ".ico" ".pif" ".lnk" ".a" ".ln" ".blg" ".bbl" ".dll" ".drv" ".vxd" ".386" ".elc" ".lof" ".glo" ".idx" ".lot" ".fmt" ".tfm" ".class" ".fas" ".lib" ".mem" ".x86f" ".sparcf" ".fasl" ".ufsl" ".fsl" ".dxl" ".pfsl" ".dfsl" ".p64fsl" ".d64fsl" ".dx64fsl" ".lo" ".la" ".gmo" ".mo" ".toc" ".aux" ".cp" ".fn" ".ky" ".pg" ".tp" ".vr" ".cps" ".fns" ".kys" ".pgs" ".tps" ".vrs" ".pyc" ".pyo")))
  '(default-frame-alist (quote ((tool-bar-lines . 0) (fringe) (right-fringe) (left-fringe . 1) (vertical-scroll-bars . right) (menu-bar-lines . 1) (cursor-color . "#dcdccc") (scroll-bar-background . "#5f5f5f") (background-color . "gray11") (background-mode . dark) (border-color . "gray11") (foreground-color . "#dcdccc") (mouse-color . "#dcdccc"))))
+ '(erc-fill-column 68)
  '(erc-fill-function (quote erc-fill-static))
+ '(erc-fill-static-center 10)
  '(erc-fill-variable-maximum-indentation 5)
  '(erc-hide-list (quote ("JOIN" "PART" "QUIT")))
  '(erc-nick "shoover")
+ '(erc-nick-uniquifier "_")
  '(erc-port 6667)
  '(erc-server "irc.freenode.net")
+ '(erc-server-reconnect-timeout 30)
  '(erc-timestamp-use-align-to t)
  '(erc-user-full-name "Shawn Hoover")
  '(fill-column 78)
@@ -549,16 +655,17 @@ running, raises the most recently updated ERC buffer."
  '(tab-width 2)
  '(transient-mark-mode t)
  '(user-full-name "Shawn Hoover")
+ '(user-mail-address "shawn@bighugh.com")
  '(visual-scroll-margin 0)
  '(w32shell-cygwin-bin "C:\\bin")
  '(x-select-enable-clipboard t))
 
 ;;; Faces
 (custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
+  ;; custom-set-faces was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
  )
 
 ;; Subtle face for parens in lisp modes
@@ -591,9 +698,4 @@ running, raises the most recently updated ERC buffer."
   ))
 
 (cd emacs-root)
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
+
