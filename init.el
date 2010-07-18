@@ -285,6 +285,11 @@ line instead."
 ;; C#
 (autoload 'csharp-mode "csharp-mode" "Edit C# files")
 (add-to-list 'auto-mode-alist '("\\.cs$" . csharp-mode))
+(add-hook 'csharp-mode-hook
+          (lambda ()
+            (setq tab-width 4)
+            (setq c-basic-offset 4)
+            (c-set-style "c#")))
 
 ;; Clojure
 (add-hook 'clojure-mode-hook 'lisp-enable-paredit-hook)
@@ -579,10 +584,10 @@ running, raises the most recently updated ERC buffer."
   ;; Lest we get black on black parens
   (set-face-foreground 'paren-face "green"))
  (t
-  (load "~/emacs/site-lisp/color-theme-6.6.0/themes/zenburn-shawn")
-  (zenburn-shawn)
-  ;;(load "~/emacs/site-lisp/color-theme-6.6.0/themes/zenburn")
-  ;;(zenburn)
+  ;;(load "~/emacs/site-lisp/color-theme-6.6.0/themes/zenburn-shawn")
+  ;;(zenburn-shawn)
+  (load "~/emacs/site-lisp/color-theme-6.6.0/themes/zenburn")
+  (zenburn)
   ))
 
 (cd emacs-root)
