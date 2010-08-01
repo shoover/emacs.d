@@ -28,6 +28,7 @@
 ;; I install some info files here.
 ;; makeinfo blah.texi
 ;; install-info blah emacs/info/dir
+(require 'info)
 (add-to-list 'Info-directory-list (expand-file-name "emacs/info" emacs-root))
 
 ;; No need to put this before initializing `package' because it byte-compiles
@@ -135,6 +136,13 @@ narrowing and widening."
   (untabify (point-min) (point-max))
   (indent-region (point-min) (point-max))
   (delete-trailing-whitespace))
+
+;;; From Stefan Monnier. It is the opposite of fill-paragraph. Takes a
+;;; multi-line paragraph and makes it into a single line of text.
+(defun unfill-paragraph ()
+  (interactive)
+  (let ((fill-column (point-max)))
+    (fill-paragraph nil)))
 
 (defun count-chars-region (beginning end)
   "Displays a message with the number of characters in the region."
