@@ -651,6 +651,7 @@ running, raises the most recently updated ERC buffer."
  '(erc-user-full-name "Shawn Hoover")
  '(fill-column 78)
  '(global-hl-line-mode t)
+ '(hg-outgoing-repository "")
  '(ido-create-new-buffer (quote always))
  '(indent-tabs-mode nil)
  '(ns-alternate-modifier (quote alt))
