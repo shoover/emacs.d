@@ -29,7 +29,9 @@
 ;; makeinfo blah.texi
 ;; install-info blah emacs/info/dir
 (require 'info)
-(add-to-list 'Info-directory-list (expand-file-name "emacs/info" emacs-root))
+(setq Info-directory-list
+      (add-to-list 'Info-default-directory-list
+                   (expand-file-name "emacs/info" emacs-root)))
 
 ;; No need to put this before initializing `package' because it byte-compiles
 ;; everything on install anyway.
