@@ -52,6 +52,7 @@
 (defvar my-action-org (concat my-org-dir "/action.org"))
 (defvar my-work-org (concat my-org-dir "/work.org"))
 (defvar my-house-org (concat my-org-dir "/../house/maintenance.org"))
+(defvar my-moby-org (concat my-org-dir "/mobykids.org"))
 
 ;; Tab defaults
 (setq-default indent-tabs-mode nil)
@@ -108,6 +109,11 @@
   "Find my house org file"
   (interactive)
   (find-file my-house-org))
+
+(defun moby ()
+  "Find my house org file"
+  (interactive)
+  (find-file my-moby-org))
 
 (defun next-slide ()
   "org-mode slideware, jumps to next subtree with automatic
@@ -545,7 +551,8 @@ running, raises the most recently updated ERC buffer."
             (setq org-agenda-files
                   (list my-action-org
                         my-work-org
-                        my-house-org))
+                        my-house-org
+                        my-moby-org))
             (setq org-agenda-custom-commands
                   '(("A" "30 day agenda" agenda "" ((org-agenda-ndays 30)))))))
 
@@ -556,6 +563,8 @@ running, raises the most recently updated ERC buffer."
 (add-hook 'remember-mode-hook 'org-remember-apply-template)
 (setq org-directory my-org-dir)
 (setq org-default-notes-file my-action-org)
+(setq org-mobile-inbox-for-pull (concat my-org-dir "/flagged.org")
+      org-mobile-directory (concat my-org-dir "/../MobileOrg"))
 (setq org-remember-templates
       `(("Home" ?h
          "* %^{headline}\n  %i%?\n  %a\n  %U" ,my-action-org)
