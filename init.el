@@ -466,49 +466,6 @@ running, raises the most recently updated ERC buffer."
   (previous-line)
   (recenter 0))
 
-;; Erlang
-(defun my-erlang ()
-  "Load erlang. It's just in a function because I don't use it often enough
-   to need all the time."
-  (interactive)
-
-  ;; TODO: get erlang dir from env
-  (add-to-list 'load-path "C:/Program Files/erl5.5.5/lib/tools-2.5.5/emacs")
-  (setq erlang-root-dir "C:/Program Files/erl5.5.5")
-  (add-to-list 'exec-path "C:/Program Files/erl5.5.5/bin")
-  ;; Not all my machines have erlang set up
-  (ignore-errors
-    (require 'erlang-start)
-    (add-to-list 'load-path "c:/users/shawn/emacs/site-lisp/distel/elisp")
-    (require 'distel)
-    (distel-setup)))
-
-(defun sah-erlang-drop-to-body ()
-  "This function is a drop-in enhancement for comment-indent-new-line for
-   erlang-mode. If you're in a function clause it jumps you down to the
-   function body without having to skip past the closing ) or type the
-   freakin arrow."
-
-  (interactive)
-  (undo-boundary)
-
-  (cond
-   ;; Assume ) at point is part of an argument list inserted by an electric
-   ;; command, in which case the arrow is already there.
-   ((looking-at ")")
-    (end-of-line))
-   ;; Assume preceeding ) was manually typed by user and there is no arrow.
-   ((looking-back ")")
-    (insert " ->"))
-   (t))
-  (comment-indent-new-line))
-
-;; erlang-mode-map doesn't seem to be available after requiring erlang-start,
-;; so I wait until erlang-mode is loaded to set up the keys.
-(add-hook 'erlang-mode-hook (lambda ()
-                              (define-key erlang-mode-map "\M-j"
-                                'sah-erlang-drop-to-body)))
-
 ;; org-mode
 (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
 (require 'org-install)
