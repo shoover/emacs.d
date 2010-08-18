@@ -22,6 +22,7 @@
   (add-path "emacs/site-lisp")
   (add-path "emacs/site-lisp/color-theme-6.6.0") ;; my color preferences
   (add-path "emacs/site-lisp/org/lisp")
+  (add-path "emacs/site-lisp/auto-complete")
   (when (< emacs-major-version 23)
     (add-path "emacs/site-lisp/remember-2.0")))
 
@@ -86,6 +87,11 @@
 
 (setq ispell-program-name "aspell"
       ispell-extra-args '("--sug-mode=ultra"))
+
+(require 'auto-complete-config)
+(add-to-list 'ac-dictionary-directories
+             (concat emacs-root "emacs/site-lisp/auto-complete/ac-dict"))
+(ac-config-default)
 
 (setq scpaste-http-destination "http://paste.bighugh.com"
       scpaste-scp-destination "dh:paste.bighugh.com")
@@ -386,6 +392,8 @@ line instead."
             (add-to-list 'comint-output-filter-functions
                          'comint-truncate-buffer)
             (setq comint-buffer-maximum-size 5000)))
+(require 'ac-slime)
+(add-hook 'slime-mode-hook 'set-up-slime-ac)
 
 ;; From nakkaya.com
 (defun my-load-buffer ()
