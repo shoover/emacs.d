@@ -194,13 +194,13 @@ narrowing and widening."
   "Runs `comint', but parses cmd into a program and args like `inferior-lisp'."
   (interactive (list (if current-prefix-arg
                          ""
-                         (read-string "Program: "))))
+                       (read-string "Program: "))))
   (let* ((cmdlist (split-string cmd))
-        (new-buf (set-buffer (apply (function make-comint)
-                                    (format (car cmdlist))
-                                    (car cmdlist)
-                                    nil
-                                    (cdr cmdlist)))))
+         (new-buf (set-buffer (apply (function make-comint)
+                                     (format (car cmdlist))
+                                     (car cmdlist)
+                                     nil
+                                     (cdr cmdlist)))))
     (pop-to-buffer new-buf)))
 
 ;; paredit keyboard tweaks--from Bill Clementson
@@ -303,28 +303,28 @@ line instead."
 ;; Fancy buffer listing
 (require 'ibuffer) 
 (setq ibuffer-saved-filter-groups
-  (quote (("default"      
-            ("Org" ;; all org-related buffers
-              (mode . org-mode))  
-            ("CounterMeasure"
-              (filename . "/dev/counter/"))
-            ("Handel"
-              (filename . "/dev/handel/"))
-            ("Programming"
-              (or
-                (filename . "/dev/")
-                (name . "repl")
-                (name . "\\*inf\\(erior\\)?-")
-                (mode . c-mode)
-                (mode . clojure-mode)
-                (mode . cs-mode)
-                (mode . emacs-lisp-mode)
-                (mode . java-mode)
-                (mode . perl-mode)
-                (mode . python-mode)
-                (mode . ruby-mode)
-                )) 
-            ("ERC"   (mode . erc-mode))))))
+      (quote (("default"      
+               ("Org" ;; all org-related buffers
+                (mode . org-mode))  
+               ("CounterMeasure"
+                (filename . "/dev/counter/"))
+               ("Handel"
+                (filename . "/dev/handel/"))
+               ("Programming"
+                (or
+                 (filename . "/dev/")
+                 (name . "repl")
+                 (name . "\\*inf\\(erior\\)?-")
+                 (mode . c-mode)
+                 (mode . clojure-mode)
+                 (mode . cs-mode)
+                 (mode . emacs-lisp-mode)
+                 (mode . java-mode)
+                 (mode . perl-mode)
+                 (mode . python-mode)
+                 (mode . ruby-mode)
+                 )) 
+               ("ERC"   (mode . erc-mode))))))
 
 ;; Project setup
 
@@ -521,6 +521,8 @@ running, raises the most recently updated ERC buffer."
                         my-moby-org))
             (setq org-agenda-custom-commands
                   '(("A" "30 day agenda" agenda "" ((org-agenda-ndays 30)))))))
+(setq org-mobile-inbox-for-pull (concat my-org-dir "/flagged.org")
+      org-mobile-directory (concat my-org-dir "/../MobileOrg"))
 
 ;; Store to org file from remember-mode
 (org-remember-insinuate)
@@ -529,16 +531,38 @@ running, raises the most recently updated ERC buffer."
 (add-hook 'remember-mode-hook 'org-remember-apply-template)
 (setq org-directory my-org-dir)
 (setq org-default-notes-file my-action-org)
-(setq org-mobile-inbox-for-pull (concat my-org-dir "/flagged.org")
-      org-mobile-directory (concat my-org-dir "/../MobileOrg"))
 (setq org-remember-templates
       `(("Home" ?h
          "* %^{headline}\n  %i%?\n  %a\n  %U" ,my-action-org)
         ("Work" ?w
          "* %^{headline}\n  %i%?\n  %a\n  %U" ,my-work-org)))
+(setq org-reverse-note-order t) ;; new notes at top
 
-;; Make remember insert new notes at top
-(setq org-reverse-note-order t)
+;; remember frames adapted from
+;; http://github.com/LauJensen/Configs/blob/master/emacs
+(defun remember-frame-p ()
+  (equal "*Remember*" (frame-parameter nil 'name)))
+;; Org-remember splits windows, force it to a single window
+(add-hook 'remember-mode-hook
+          (lambda ()
+            (when (remember-frame-p)
+              (delete-other-windows))))
+;; Automatic closing of remember frames
+(defadvice remember-finalize (after delete-remember-frame activate)
+  "Advise remember-finalize to close the frame if it is the remember frame"
+  (when (remember-frame-p)
+    (delete-frame)))
+(defadvice remember-destroy (after delete-remember-frame activate)
+  "Advise remember-destroy to close the frame if it is the remember frame"
+  (when (remember-frame-p)
+    (delete-frame)))
+(defun make-remember-frame ()
+  "Create a new frame and run org-remember"
+  (interactive)
+  (make-frame '((name . "*Remember*") (width . 80) (height . 20)))
+  (select-frame-by-name "*Remember*")
+  (org-remember))
+
 ;; Make
 (setq compile-command "make ")
 
@@ -603,10 +627,10 @@ running, raises the most recently updated ERC buffer."
 ;;   Emacs.toolBar: 0
 ;;   Emacs.full
 (custom-set-variables
-  ;; custom-set-variables was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  '(ansi-color-for-comint-mode t)
  '(aquamacs-additional-fontsets nil t)
  '(aquamacs-customization-version-id 190 t)
@@ -648,10 +672,10 @@ running, raises the most recently updated ERC buffer."
 
 ;;; Faces
 (custom-set-faces
-  ;; custom-set-faces was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  )
 
 ;; Subtle face for parens in lisp modes
@@ -684,4 +708,3 @@ running, raises the most recently updated ERC buffer."
   ))
 
 (cd emacs-root)
-
