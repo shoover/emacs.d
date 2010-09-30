@@ -144,6 +144,28 @@ narrowing and widening."
         (indent-region (region-beginning) (region-end))
       (indent-buffer))))
 
+(defun my-indent-line ()
+  "Indent ;-comments like ;;-comments for compatibility with
+other Clojure programmers. Mostly cribbed from `lisp-indent-line'."
+  (interactive)
+  (let ((indent (calculate-lisp-indent)) shift-amt end
+        (beg (progn (beginning-of-line) (point))))
+    (skip-chars-forward " \t")
+    (if (or (looking-at "\\s<\\s<") (not (looking-at "\\s<")))
+        (lisp-indent-line)
+      (if (listp indent) (setq indent (car indent)))
+      (setq shift-amt (- indent (current-column)))
+      (if (zerop shift-amt)
+          nil
+        (delete-region beg (point))
+        (indent-to indent)))))
+
+(defun my-comment-sexp ()
+  (interactive)
+  (save-excursion
+    (mark-sexp)
+    (comment-region (region-beginning) (region-end))))
+
 ;; cleanup, from Tim Dysinger
 (defun cleanup-whitespace ()
   (interactive)
@@ -386,7 +408,9 @@ line instead."
 (add-hook 'clojure-mode-hook 'lisp-enable-paredit-hook)
 (add-hook 'clojure-mode-hook
           (lambda ()
-            (define-key clojure-mode-map "\C-c\C-l" 'my-load-buffer)))
+            (define-key clojure-mode-map "\C-c\C-l" 'my-load-buffer)
+            (set (make-local-variable 'indent-line-function)
+                 'my-indent-line)))
 (add-hook 'inferior-lisp-mode-hook
           (lambda ()
             (add-to-list 'comint-output-filter-functions
