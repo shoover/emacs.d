@@ -225,6 +225,13 @@ other Clojure programmers. Mostly cribbed from `lisp-indent-line'."
                                      (cdr cmdlist)))))
     (pop-to-buffer new-buf)))
 
+(defun my-eval-print ()
+  (interactive)
+  (let ((standard-output (current-buffer)))
+    (terpri)
+    (eval-last-sexp t)
+    (terpri)))
+
 ;; paredit keyboard tweaks--from Bill Clementson
 (require 'paredit)
 (defun lisp-enable-paredit-hook () (paredit-mode 1))
