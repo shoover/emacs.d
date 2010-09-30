@@ -465,7 +465,7 @@ running, raises the most recently updated ERC buffer."
   (unless (frame-live-p my-erc-frame)
     (setq my-erc-frame (select-frame (make-frame)))
     (unless nix
-      (set-frame-font "Georgia-12")
+      ;;(set-frame-font "Georgia-12")
       ;; Widen a bit to correct timestamp display at right edge.
       (set-frame-width my-erc-frame (+ (frame-width my-erc-frame) 2))))
 
@@ -489,6 +489,9 @@ running, raises the most recently updated ERC buffer."
   (end-of-buffer)
   (previous-line)
   (recenter 0))
+(eval-after-load 'erc
+  '(progn
+     (define-key erc-mode-map "\M->" 'my-erc-scroll-to-bottom)))
 
 ;; org-mode
 (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
@@ -666,7 +669,7 @@ running, raises the most recently updated ERC buffer."
  '(erc-fill-function (quote erc-fill-static))
  '(erc-fill-static-center 10)
  '(erc-fill-variable-maximum-indentation 5)
- '(erc-hide-list (quote ("JOIN" "PART" "QUIT")))
+ '(erc-hide-list (quote ("JOIN" "NICK" "PART" "QUIT")))
  '(erc-nick "shoover")
  '(erc-nick-uniquifier "_")
  '(erc-port 6667)
