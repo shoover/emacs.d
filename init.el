@@ -283,6 +283,20 @@ scan-error if not."
       (previous-buffer)
     (next-buffer)))
 
+(defun my-move-buffer-other-frame ()
+  "Moves the current buffer to another frame. If there's another
+frame, it is used. Otherwise a new frame is created. This is
+mainly useful when emacsclient opens a file in a frame that's
+sized for something other than reading code or logs."
+  (interactive)
+  (let ((buf (current-buffer)))
+    (bury-buffer)
+    (let ((frame (next-frame (selected-frame))))
+      (when (eq frame (selected-frame))
+        (setq frame (make-frame)))
+      (select-frame-set-input-focus frame)
+      (switch-to-buffer buf))))
+
 ;;; Custom keybindings
 (global-set-key "\M-s"     'isearch-forward-regexp)
 (global-set-key "\M-r"     'isearch-backward-regexp)
