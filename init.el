@@ -6,6 +6,7 @@
 ;; (setq custom-file "~/emacs/init.el")
 ;; (load custom-file)
 
+
 (defvar nix (or (eq system-type 'cygwin)
                 (eq system-type 'gnu/linux)
                 (eq system-type 'linux)
@@ -431,7 +432,8 @@ line instead."
           (lambda ()
             (define-key clojure-mode-map "\C-c\C-l" 'my-load-buffer)
             (set (make-local-variable 'indent-line-function)
-                 'my-indent-line)))
+                 'my-indent-line)
+            (define-clojure-indent (defmethod 'defun))))
 (add-hook 'inferior-lisp-mode-hook
           (lambda ()
             (add-to-list 'comint-output-filter-functions
@@ -488,7 +490,10 @@ running, raises the most recently updated ERC buffer."
     (unless nix
       ;;(set-frame-font "Georgia-12")
       ;; Widen a bit to correct timestamp display at right edge.
-      (set-frame-width my-erc-frame (+ (frame-width my-erc-frame) 2))))
+      ;; (set-frame-width my-erc-frame (+ (frame-width my-erc-frame) 2))
+      ;; No, narrow it!
+      (set-frame-width my-erc-frame (- (frame-width my-erc-frame) 8))
+      ))
 
   ;; Open ERC if the buffer is dead
   (unless (buffer-live-p my-erc-buffer)
@@ -675,10 +680,10 @@ running, raises the most recently updated ERC buffer."
 ;;   Emacs.toolBar: 0
 ;;   Emacs.full
 (custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
+  ;; custom-set-variables was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
  '(ansi-color-for-comint-mode t)
  '(aquamacs-additional-fontsets nil t)
  '(aquamacs-customization-version-id 190 t)
@@ -695,6 +700,7 @@ running, raises the most recently updated ERC buffer."
  '(erc-nick-uniquifier "_")
  '(erc-port 6667)
  '(erc-server "irc.freenode.net")
+ '(erc-server-reconnect-attempts 4)
  '(erc-server-reconnect-timeout 30)
  '(erc-timestamp-use-align-to t)
  '(erc-user-full-name "Shawn Hoover")
@@ -720,10 +726,10 @@ running, raises the most recently updated ERC buffer."
 
 ;;; Faces
 (custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
+  ;; custom-set-faces was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
  )
 
 ;; Subtle face for parens in lisp modes
