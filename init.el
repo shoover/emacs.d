@@ -181,6 +181,49 @@ other Clojure programmers. Mostly cribbed from `lisp-indent-line'."
   (let ((fill-column (point-max)))
     (fill-paragraph nil)))
 
+;;; From http://www.emacswiki.org/emacs/basic-edit-toolkit.el
+(defun move-text-internal (arg)
+  "Move region (transient-mark-mode active) or current line."
+  (let ((remember-point (point)))
+    ;; Can't get correct effect of `transpose-lines'
+    ;; when `point-max' is not at beginning of line
+    ;; So fix this bug.
+    (goto-char (point-max))
+    (if (not (bolp)) (newline))         ;add newline to fix
+    (goto-char remember-point)
+    ;; logic code start
+    (cond ((and mark-active transient-mark-mode)
+           (if (> (point) (mark))
+               (exchange-point-and-mark))
+           (let ((column (current-column))
+                 (text (delete-and-extract-region (point) (mark))))
+             (forward-line arg)
+             (move-to-column column t)
+             (set-mark (point))
+             (insert text)
+             (exchange-point-and-mark)
+             (setq deactivate-mark nil)))
+          (t
+           (let ((column (current-column)))
+             (beginning-of-line)
+             (when (or (> arg 0) (not (bobp)))
+               (forward-line 1)
+               (when (or (< arg 0) (not (eobp)))
+                 (transpose-lines arg))
+               (forward-line -1))
+             (move-to-column column t))
+           ))))
+
+(defun move-text-up (arg)
+  "Move region (transient-mark-mode active) or current line ARG lines up."
+  (interactive "*p")
+  (move-text-internal (- arg)))
+
+(defun move-text-down (arg)
+  "Move region (transient-mar-mode active) or current line (ARG lines) down."
+  (interactive "*p")
+  (move-text-internal arg))
+
 (defun count-chars-region (beginning end)
   "Displays a message with the number of characters in the region."
   (interactive "r")
@@ -309,6 +352,9 @@ sized for something other than reading code or logs."
 (global-set-key [f5] 'revert-buffer)
 (global-set-key [f6] 'kill-this-buffer)
 
+(global-set-key [C-up] 'move-text-up)
+(global-set-key [C-down] 'move-text-down)
+
 ;; Indent region or whole buffer
 (global-set-key "\C-c/" 'my-indent-region)
 
@@ -337,6 +383,10 @@ line instead."
      (list (line-beginning-position) (line-beginning-position 2)))))
 
 ;; Fancy buffer and everything else switching
+(setq ido-enable-flex-matching t
+      ido-everywhere t
+      ido-use-filename-at-point 'guess
+      ido-create-new-buffer 'always)
 (ido-mode 1)
 
 ;; Unique buffer names
@@ -680,10 +730,10 @@ running, raises the most recently updated ERC buffer."
 ;;   Emacs.toolBar: 0
 ;;   Emacs.full
 (custom-set-variables
-  ;; custom-set-variables was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  '(ansi-color-for-comint-mode t)
  '(aquamacs-additional-fontsets nil t)
  '(aquamacs-customization-version-id 190 t)
@@ -707,7 +757,6 @@ running, raises the most recently updated ERC buffer."
  '(fill-column 78)
  '(global-hl-line-mode t)
  '(hg-outgoing-repository "")
- '(ido-create-new-buffer (quote always))
  '(indent-tabs-mode nil)
  '(ns-alternate-modifier (quote alt))
  '(org-cycle-include-plain-lists t)
@@ -726,10 +775,10 @@ running, raises the most recently updated ERC buffer."
 
 ;;; Faces
 (custom-set-faces
-  ;; custom-set-faces was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  )
 
 ;; Subtle face for parens in lisp modes
