@@ -85,6 +85,7 @@
 ;;
 ;; A more generic solution will be needed to work with @param lists in C-code.
 (setq paragraph-start "\f\\|[ 	]*$\\|\\([ ]+- \\)")
+(setq sentence-end-double-space nil)
 
 (setq ispell-program-name "aspell"
       ispell-extra-args '("--sug-mode=ultra"))
