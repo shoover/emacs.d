@@ -12,20 +12,20 @@
                 (eq system-type 'linux)
                 (eq system-type 'darwin)))
 
-(defvar emacs-root "~/" "My home directory is the root of my emacs load-path.")
+(defvar emacs-root "~/emacs/" "emacs load path root")
 
 ;; Add elisp directories under ~/emacs to my load path.
 (require 'cl)
 (labels ((add-path (p)
                    (add-to-list 'load-path
                                 (concat emacs-root p))))
-  (add-path "emacs/lisp")
-  (add-path "emacs/site-lisp")
-  (add-path "emacs/site-lisp/color-theme-6.6.0") ;; my color preferences
-  (add-path "emacs/site-lisp/org/lisp")
-  (add-path "emacs/site-lisp/auto-complete")
+  (add-path "lisp")
+  (add-path "site-lisp")
+  (add-path "site-lisp/color-theme-6.6.0") ;; my color preferences
+  (add-path "site-lisp/org/lisp")
+  (add-path "site-lisp/auto-complete")
   (when (< emacs-major-version 23)
-    (add-path "emacs/site-lisp/remember-2.0")))
+    (add-path "site-lisp/remember-2.0")))
 
 ;; I install some info files here.
 ;; makeinfo blah.texi
@@ -33,7 +33,7 @@
 (require 'info)
 (setq Info-directory-list
       (add-to-list 'Info-default-directory-list
-                   (expand-file-name "emacs/info" emacs-root)))
+                   (expand-file-name "info" emacs-root)))
 
 ;; No need to put this before initializing `package' because it byte-compiles
 ;; everything on install anyway.
@@ -92,8 +92,11 @@
 
 (require 'auto-complete-config)
 (add-to-list 'ac-dictionary-directories
-             (concat emacs-root "emacs/site-lisp/auto-complete/ac-dict"))
+             (concat emacs-root "site-lisp/auto-complete/ac-dict"))
 (ac-config-default)
+
+(setq backup-directory-alist
+      `(("." . ,(expand-file-name "~/.emacs.d/auto-save"))))
 
 (setq scpaste-http-destination "http://paste.bighugh.com"
       scpaste-scp-destination "dh:paste.bighugh.com")
@@ -363,7 +366,7 @@ sized for something other than reading code or logs."
 (windmove-default-keybindings)
 
 ;; Snippets
-(yas/load-directory (concat emacs-root "emacs/snippets"))
+(yas/load-directory (concat emacs-root "snippets"))
 
 ;; Line killing goodness from emacs-fu
 (defadvice kill-ring-save (before slick-copy activate compile)
@@ -459,6 +462,7 @@ line instead."
       ;; Clear buffer-modified flag caused by set-visited-file-name
       (set-buffer-modified-p nil))
     (message "Renamed to %s." new-name)))
+
 
 ;; C
 (add-hook 'c-mode-hook
@@ -811,4 +815,4 @@ running, raises the most recently updated ERC buffer."
   (zenburn)
   ))
 
-(cd emacs-root)
+(cd "~")
