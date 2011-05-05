@@ -425,10 +425,8 @@ line instead."
                ("ERC"   (mode . erc-mode))))))
 
 ; eshell prompt
-(setq eshell-prompt-regexp "^[^#$\n ]+[#$]" )
-(setq eshell-prompt-function
-      (lambda nil
-        (concat "\n" (eshell/pwd) "\n$ ")))
+(setq eshell-prompt-function (lambda nil (concat "\n" (eshell/pwd) "\n$ "))
+      eshell-prompt-regexp "^\$ ")
 
 ;; Project setup
 
