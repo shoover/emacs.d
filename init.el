@@ -424,6 +424,12 @@ line instead."
                  )) 
                ("ERC"   (mode . erc-mode))))))
 
+; eshell prompt
+(setq eshell-prompt-regexp "^[^#$\n ]+[#$]" )
+(setq eshell-prompt-function
+      (lambda nil
+        (concat "\n" (eshell/pwd) "\n$ ")))
+
 ;; Project setup
 
 ;; Files to include in find-file-in-project. Requires find-file-in-project and
