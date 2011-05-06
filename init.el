@@ -274,6 +274,7 @@ other Clojure programmers. Mostly cribbed from `lisp-indent-line'."
     (pop-to-buffer new-buf)))
 
 (defun sqlite (db)
+  "Opens an interactive sqlite session in a comint buffer."
   (interactive
    (list (ido-read-file-name "DB: ")))
   (pop-to-buffer 
