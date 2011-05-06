@@ -264,7 +264,7 @@ other Clojure programmers. Mostly cribbed from `lisp-indent-line'."
   "Runs `comint', but parses cmd into a program and args like `inferior-lisp'."
   (interactive (list (if current-prefix-arg
                          ""
-                       (read-string "Program: "))))
+                       (read-string "Program and args: "))))
   (let* ((cmdlist (split-string cmd))
          (new-buf (set-buffer (apply (function make-comint)
                                      (format (car cmdlist))
@@ -272,6 +272,12 @@ other Clojure programmers. Mostly cribbed from `lisp-indent-line'."
                                      nil
                                      (cdr cmdlist)))))
     (pop-to-buffer new-buf)))
+
+(defun sqlite (db)
+  (interactive
+   (list (ido-read-file-name "DB: ")))
+  (pop-to-buffer 
+   (make-comint "sqlite" "sqlite3" nil "-interactive" db)))
 
 (defun my-eval-print ()
   (interactive)
