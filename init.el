@@ -616,7 +616,9 @@ running, raises the most recently updated ERC buffer."
         ("clojure-box" :components ("clojure-box-org" "clojure-box-extra"))
         ))
 (add-hook 'org-mode-hook
-          (lambda () (turn-on-auto-fill)))
+          (lambda ()
+            (turn-on-auto-fill)
+            (refill-mode 1)))
 (add-hook 'org-load-hook
           (lambda ()
             (define-key org-mode-map "\C-ca" 'org-agenda)
