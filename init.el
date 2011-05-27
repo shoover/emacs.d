@@ -636,10 +636,12 @@ running, raises the most recently updated ERC buffer."
             (define-key org-mode-map [C-tab] nil)
 
             (setq org-agenda-files
-                  (list my-action-org
-                        my-work-org
-                        my-house-org
-                        my-moby-org))
+                  (append
+                   (list my-action-org
+                         my-work-org
+                         my-house-org
+                         my-moby-org)
+                   (directory-files (concat my-org-dir "/../docs/banjo") t "\\.org$")))
             (setq org-agenda-custom-commands
                   '(("A" "30 day agenda" agenda "" ((org-agenda-ndays 30)))))))
 (setq org-mobile-inbox-for-pull (concat my-org-dir "/flagged.org")
