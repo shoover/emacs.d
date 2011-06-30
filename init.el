@@ -20,12 +20,11 @@
                    (add-to-list 'load-path
                                 (concat emacs-root p))))
   (add-path "lisp")
-  (add-path "site-lisp")
-  (add-path "site-lisp/color-theme-6.6.0") ;; my color preferences
-  (add-path "site-lisp/org/lisp")
-  (add-path "site-lisp/auto-complete")
+  (add-path "lisp/color-theme-6.6.0") ;; my color preferences
+  (add-path "lisp/org/lisp")
+  (add-path "lisp/auto-complete")
   (when (< emacs-major-version 23)
-    (add-path "site-lisp/remember-2.0")))
+    (add-path "lisp/remember-2.0")))
 
 ;; I install some info files here.
 ;; makeinfo blah.texi
@@ -92,7 +91,7 @@
 
 (require 'auto-complete-config)
 (add-to-list 'ac-dictionary-directories
-             (concat emacs-root "site-lisp/auto-complete/ac-dict"))
+             (concat emacs-root "lisp/auto-complete/ac-dict"))
 (ac-config-default)
 
 (setq backup-directory-alist
@@ -824,9 +823,9 @@ running, raises the most recently updated ERC buffer."
   ;; Lest we get black on black parens
   (set-face-foreground 'paren-face "green"))
  (t
-  ;;(load "~/emacs/site-lisp/color-theme-6.6.0/themes/zenburn-shawn")
+  ;;(load "~/emacs/lisp/color-theme-6.6.0/themes/zenburn-shawn")
   ;;(zenburn-shawn)
-  (load "~/emacs/site-lisp/color-theme-6.6.0/themes/zenburn")
+  (load "~/emacs/lisp/color-theme-6.6.0/themes/zenburn")
   (zenburn)
   ))
 
