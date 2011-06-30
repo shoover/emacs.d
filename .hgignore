@@ -5,6 +5,9 @@ syntax: glob
 ac-dict
 new.lic 
 *.gz 
-.git 
+.git
+.gitignore
 .cvsignore
 CVS
+*.pdf
+ORGWEBPAGE
