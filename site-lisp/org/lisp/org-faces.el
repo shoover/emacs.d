@@ -1,12 +1,12 @@
 ;;; org-faces.el --- Face definitions for Org-mode.
 
-;; Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009
+;; Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011
 ;;   Free Software Foundation, Inc.
 
 ;; Author: Carsten Dominik <carsten at orgmode dot org>
 ;; Keywords: outlines, hypermedia, calendar, wp
 ;; Homepage: http://orgmode.org
-;; Version: 6.34trans
+;; Version: 7.5
 ;;
 ;; This file is part of GNU Emacs.
 ;;
@@ -49,7 +49,7 @@
 (defgroup org-faces nil
   "Faces in Org-mode."
   :tag "Org Faces"
-  :group 'org-font-lock)
+  :group 'org-appearance)
 
 (defface org-hide
   '((((background light)) (:foreground "white"))
@@ -137,7 +137,7 @@ color of the frame."
   :group 'org-faces)
 
 (defface org-special-keyword ;; originally copied from font-lock-string-face
-  (org-compatible-face nil
+  (org-compatible-face 'font-lock-keyword-face
     '((((class color) (min-colors 16) (background light)) (:foreground "RosyBrown"))
       (((class color) (min-colors 16) (background dark)) (:foreground "LightSalmon"))
       (t (:italic t))))
@@ -247,9 +247,10 @@ column view defines special faces for each outline level.  See the file
   :group 'org-faces)
 
 (defface org-link
-  '((((class color) (background light)) (:foreground "Purple" :underline t))
-    (((class color) (background dark)) (:foreground "Cyan" :underline t))
-    (t (:underline t)))
+  (org-compatible-face 'link
+    '((((class color) (background light)) (:foreground "Purple" :underline t))
+      (((class color) (background dark)) (:foreground "Cyan" :underline t))
+      (t (:underline t))))
   "Face for links."
   :group 'org-faces)
 
@@ -321,7 +322,7 @@ specific tags."
       (((class color) (min-colors 8)) (:foreground "green"))
       (t (:bold nil))))
   "Face used in agenda, to indicate lines switched to DONE.
-This face is used to de-emphasize items that where brightly colord in the
+This face is used to de-emphasize items that where brightly colored in the
 agenda because they were things to do, or overdue.  The DONE state itself
 is of course immediately visible, but for example a passed deadline is
 \(by default) very bright read.  This face could be simply the default face
@@ -458,7 +459,7 @@ changes."
        (:foreground "green"))
       (((class color) (min-colors 8) (background dark))
        (:foreground "yellow"))))
-  "Face for fixed-with text like code snippets."
+  "Face for fixed-width text like code snippets."
   :group 'org-faces
   :version "22.1")
 
@@ -467,6 +468,34 @@ changes."
   "Face for meta lines startin with \"#+\"."
   :group 'org-faces
   :version "22.1")
+
+(defface org-document-title
+  '((((class color) (background light)) (:foreground "midnight blue" :weight bold :height 1.44))
+    (((class color) (background dark)) (:foreground "pale turquoise" :weight bold :height 1.44))
+    (t (:weight bold :height 1.44)))
+  "Face for document title, i.e. that which follows the #+TITLE: keyword."
+  :group 'org-faces)
+
+(defface org-document-info
+  '((((class color) (background light)) (:foreground "midnight blue"))
+    (((class color) (background dark)) (:foreground "pale turquoise"))
+    (t nil))
+  "Face for document date, author and email; i.e. that which
+follows a #+DATE:, #+AUTHOR: or #+EMAIL: keyword."
+  :group 'org-faces)
+
+(defface org-document-info-keyword
+  (org-compatible-face 'shadow
+    '((((class color grayscale) (min-colors 88) (background light))
+       (:foreground "grey50"))
+      (((class color grayscale) (min-colors 88) (background dark))
+       (:foreground "grey70"))
+      (((class color) (min-colors 8) (background light))
+       (:foreground "green"))
+      (((class color) (min-colors 8) (background dark))
+       (:foreground "yellow"))))
+  "Face for #+TITLE:, #+AUTHOR:, #+EMAIL: and #+DATE: keywords."
+  :group 'org-faces)
 
 (defface org-block
   (org-compatible-face 'shadow
@@ -481,6 +510,15 @@ changes."
   "Face text in #+begin ... #+end blocks."
   :group 'org-faces
   :version "22.1")
+
+(defface org-block-background '((t ()))
+  "Face used for the source block background.")
+
+(org-copy-face 'org-meta-line 'org-block-begin-line
+  "Face used for the line delimiting the begin of source blocks.")
+
+(org-copy-face 'org-meta-line 'org-block-end-line
+  "Face used for the line delimiting the end of source blocks.")
 
 (defface org-verbatim
   (org-compatible-face 'shadow
@@ -572,7 +610,7 @@ belong to the weekend."
 (defface org-agenda-dimmed-todo-face
   '((((background light)) (:foreground "grey50"))
     (((background dark)) (:foreground "grey50")))
-  "Face used to dimm blocked tasks in the agenda."
+  "Face used to dim blocked tasks in the agenda."
   :group 'org-faces)
 
 (defface org-scheduled-previously
@@ -639,6 +677,9 @@ month and 365.24 days for a year)."
   "Face used for time grids."
   :group 'org-faces)
 
+(org-copy-face 'org-time-grid 'org-agenda-current-time
+  "Face used to show the current time in the time grid.")
+
 (defface org-agenda-diary
   (org-compatible-face 'default
     nil)
@@ -656,6 +697,15 @@ Org-mode defines 8 different headline faces, so this can be at most 8.
 If it is less than 8, the level-1 face gets re-used for level N+1 etc."
   :type 'integer
   :group 'org-faces)
+
+(defcustom org-cycle-level-faces t
+ "Non-nil means level styles cycle after level `org-n-level-faces'.
+Then so level org-n-level-faces+1 is styled like level 1.
+If nil, then all levels >=org-n-level-faces are styled like
+level org-n-level-faces"
+ :group 'org-appearance
+ :group 'org-faces
+ :type 'boolean)
 
 (defface org-latex-and-export-specials
   (let ((font (cond ((assq :inherit custom-face-attributes)
@@ -675,7 +725,7 @@ If it is less than 8, the level-1 face gets re-used for level N+1 etc."
 
 (org-copy-face 'modeline 'org-mode-line-clock
   "Face used for clock display in mode line.")
-(org-copy-face 'modeline 'org-mode-line-clock-overrun 
+(org-copy-face 'modeline 'org-mode-line-clock-overrun
   "Face used for clock display for overrun tasks in mode line."
   :background "red")
 

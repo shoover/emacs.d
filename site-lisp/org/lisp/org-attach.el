@@ -1,10 +1,10 @@
 ;;; org-attach.el --- Manage file attachments to org-mode tasks
 
-;; Copyright (C) 2008, 2009 Free Software Foundation, Inc.
+;; Copyright (C) 2008, 2009, 2010 Free Software Foundation, Inc.
 
 ;; Author: John Wiegley <johnw@newartisans.com>
 ;; Keywords: org data task
-;; Version: 6.34trans
+;; Version: 7.5
 
 ;; This file is part of GNU Emacs.
 ;;
@@ -96,9 +96,13 @@ ln    create a hard link.  Note that this is not supported
   :group 'org-attach
   :type 'boolean)
 
-
 (defvar org-attach-inherited nil
   "Indicates if the last access to the attachment directory was inherited.")
+
+(defcustom org-attach-store-link-p nil
+  "Non-nil means store a link to a file when attaching it."
+  :group 'org-attach
+  :type 'boolean)
 
 ;;;###autoload
 (defun org-attach ()
@@ -241,12 +245,17 @@ the ATTACH_DIR property) their own attachment directory."
   "Commit changes to git if `org-attach-directory' is properly initialized.
 This checks for the existence of a \".git\" directory in that directory."
   (let ((dir (expand-file-name org-attach-directory)))
-    (if (file-exists-p (expand-file-name ".git" dir))
-	(shell-command
-	 (concat "(cd " dir "; "
-		 " git add .; "
-		 " git ls-files --deleted -z | xargs -0 git rm; "
-		 " git commit -m 'Synchronized attachments')")))))
+    (when (file-exists-p (expand-file-name ".git" dir))
+      (with-temp-buffer
+	(cd dir)
+	(shell-command "git add .")
+	(shell-command "git ls-files --deleted" t)
+	(mapc '(lambda (file)
+		 (unless (string= file "")
+		   (shell-command
+		    (concat "git rm \"" file "\""))))
+	      (split-string (buffer-string) "\n"))
+	(shell-command "git commit -m 'Synchronized attachments'")))))
 
 (defun org-attach-tag (&optional off)
   "Turn the autotag on or (if OFF is set) off."
@@ -258,6 +267,14 @@ This checks for the existence of a \".git\" directory in that directory."
 (defun org-attach-untag ()
   "Turn the autotag off."
   (org-attach-tag 'off))
+
+(defun org-attach-store-link (file)
+  "Add a link to `org-stored-link' when attaching a file.
+Only do this when `org-attach-store-link-p' is non-nil."
+  (setq org-stored-links
+	(cons (list (org-attach-expand-link file)
+		    (file-name-nondirectory file))
+	      org-stored-links)))
 
 (defun org-attach-attach (file &optional visit-dir method)
   "Move/copy/link FILE into the attachment directory of the current task.
@@ -277,6 +294,8 @@ METHOD may be `cp', `mv', or `ln', default taken from `org-attach-method'."
        ((eq method 'ln) (add-name-to-file file fname)))
       (org-attach-commit)
       (org-attach-tag)
+      (when org-attach-store-link-p 
+	(org-attach-store-link file))
       (if visit-dir
 	  (dired attach-dir)
 	(message "File \"%s\" is now a task attachment." basename)))))
@@ -322,7 +341,8 @@ The attachment is created as an Emacs buffer."
     (setq file (expand-file-name file attach-dir))
     (unless (file-exists-p file)
       (error "No such attachment: %s" file))
-    (delete-file file)))
+    (delete-file file)
+    (org-attach-commit)))
 
 (defun org-attach-delete-all (&optional force)
   "Delete all attachments from the current task.
