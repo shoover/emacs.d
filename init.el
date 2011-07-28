@@ -483,7 +483,7 @@ line instead."
 (add-to-list 'auto-mode-alist '("\\.rl$" . c-mode))
 
 ;; C#
-(autoload 'csharp-mode "csharp-mode" "Edit C# files")
+(autoload 'csharp-mode "csharp-mode" "Edit C# files" t)
 (add-to-list 'auto-mode-alist '("\\.cs$" . csharp-mode))
 (add-hook 'csharp-mode-hook
           (lambda ()
