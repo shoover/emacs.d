@@ -824,8 +824,11 @@ running, raises the most recently updated ERC buffer."
  (t
   ;;(load "~/emacs/lisp/color-theme-6.6.0/themes/zenburn-shawn")
   ;;(zenburn-shawn)
-  (load "~/emacs/lisp/color-theme-6.6.0/themes/zenburn")
-  (zenburn)
+  ;;(load "~/emacs/lisp/color-theme-6.6.0/themes/zenburn")
+  ;;(zenburn)
+
+  (load "~/emacs/lisp/color-theme-6.6.0/themes/blackboard")
+  (color-theme-blackboard)
   ))
 
 (cd "~")
