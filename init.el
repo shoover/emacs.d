@@ -23,6 +23,7 @@
   (add-path "lisp/color-theme-6.6.0") ;; my color preferences
   (add-path "lisp/org/lisp")
   (add-path "lisp/auto-complete")
+  (add-path "lisp/fsharp")
   (when (< emacs-major-version 23)
     (add-path "lisp/remember-2.0")))
 
@@ -583,6 +584,28 @@ running, raises the most recently updated ERC buffer."
 (eval-after-load 'erc
   '(progn
      (define-key erc-mode-map "\M->" 'my-erc-scroll-to-bottom)))
+
+;; F#
+(setq auto-mode-alist (cons '("\\.fs[iylx]?$" . fsharp-mode) auto-mode-alist))
+(autoload 'fsharp-mode "fsharp" "Major mode for editing F# code." t)
+(autoload 'run-fsharp "inf-fsharp" "Run an inferior F# process." t)
+(defvar inferior-fsharp-program "\"c:\\Program Files (x86)\\Microsoft F#\\v4.0\\Fsi.exe\"")
+(defvar fsharp-compiler "\"c:\\Program Files (x86)\\Microsoft F#\\v4.0\\Fsc.exe\"")
+(add-hook 'fsharp-mode-hook
+          (lambda ()
+            (define-key fsharp-mode-map "\C-c\C-l" 'my-fsharp-load-buffer)))
+(add-hook 'inferior-fsharp-mode-hooks
+          (lambda ()
+            (add-to-list 'comint-output-filter-functions
+                         'comint-truncate-buffer)
+            (setq comint-buffer-maximum-size 5000)))
+
+(defun my-fsharp-load-buffer ()
+  (interactive)
+  (point-to-register 5)
+  (mark-whole-buffer)
+  (fsharp-eval-region (point) (mark))
+  (jump-to-register 5))
 
 ;; org-mode
 (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
