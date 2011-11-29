@@ -53,7 +53,6 @@
 (defvar my-org-dir "~/action")
 (defvar my-action-org (concat my-org-dir "/action.org"))
 (defvar my-work-org (concat my-org-dir "/work.org"))
-(defvar my-house-org (concat my-org-dir "/../house/maintenance.org"))
 (defvar my-moby-org (concat my-org-dir "/mobykids.org"))
 
 ;; Tab defaults
@@ -116,13 +115,8 @@
   (interactive)
   (find-file my-work-org))
 
-(defun house ()
-  "Find my house org file"
-  (interactive)
-  (find-file my-house-org))
-
 (defun moby ()
-  "Find my house org file"
+  "Find my moby org file"
   (interactive)
   (find-file my-moby-org))
 
@@ -660,7 +654,6 @@ running, raises the most recently updated ERC buffer."
                   (append
                    (list my-action-org
                          my-work-org
-                         my-house-org
                          my-moby-org)
                    (directory-files (concat my-org-dir "/../docs/banjo") t "\\.org$")))
             (setq org-agenda-custom-commands
