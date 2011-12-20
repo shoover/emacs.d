@@ -353,6 +353,8 @@ sized for something other than reading code or logs."
 (global-set-key [f1] 'toggle-selective-display)
 
 (global-set-key [C-tab] 'my-next-previous-buffer)
+(when (eq system-type 'darwin)
+  (global-set-key "\M-`" 'other-frame))
 
 (global-set-key [f5] 'revert-buffer)
 (global-set-key [f6] 'kill-this-buffer)
