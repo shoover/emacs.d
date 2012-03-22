@@ -53,7 +53,6 @@
 (defvar my-org-dir "~/action")
 (defvar my-action-org (concat my-org-dir "/action.org"))
 (defvar my-work-org (concat my-org-dir "/work.org"))
-(defvar my-moby-org (concat my-org-dir "/mobykids.org"))
 
 ;; Tab defaults
 (setq-default indent-tabs-mode nil)
@@ -114,11 +113,6 @@
   "Find my work org file"
   (interactive)
   (find-file my-work-org))
-
-(defun moby ()
-  "Find my moby org file"
-  (interactive)
-  (find-file my-moby-org))
 
 (defun next-slide ()
   "org-mode slideware, jumps to next subtree with automatic
@@ -653,11 +647,13 @@ running, raises the most recently updated ERC buffer."
             (setq org-agenda-files
                   (append
                    (list my-action-org
-                         my-work-org
-                         my-moby-org)
+                         my-work-org)
                    (directory-files (concat my-org-dir "/../docs/banjo") t "\\.org$")))
             (setq org-agenda-custom-commands
-                  '(("A" "30 day agenda" agenda "" ((org-agenda-ndays 30)))))))
+                  '(("A" "30 day agenda" agenda "" ((org-agenda-ndays 30)))))
+            (setq org-refile-targets '((org-agenda-files :maxlevel . 1))
+      org-refile-use-outline-path 'file
+      org-refile-allow-creating-parent-nodes 'confirm)))
 (setq org-mobile-inbox-for-pull (concat my-org-dir "/flagged.org")
       org-mobile-directory (concat my-org-dir "/../MobileOrg"))
 
