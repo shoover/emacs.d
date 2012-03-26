@@ -387,7 +387,9 @@ line instead."
 (setq ido-enable-flex-matching t
       ido-everywhere t
       ido-use-filename-at-point 'guess
-      ido-create-new-buffer 'always)
+      ido-create-new-buffer 'always
+      ido-file-extensions-order '(".org" t))
+
 (ido-mode 1)
 
 ;; Unique buffer names
