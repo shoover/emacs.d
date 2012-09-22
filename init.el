@@ -249,6 +249,16 @@ other Clojure programmers. Mostly cribbed from `lisp-indent-line'."
         (insert "\n"))
       (indent-region begin end))))
 
+(add-hook 'archive-extract-hooks
+          (lambda ()
+            (when (and (boundp 'archive-superior-buffer)
+                       archive-superior-buffer
+                       (eq 'nxml-mode major-mode))
+              (my-nxml-format-region (point-min) (point-max))
+              (setq buffer-undo-list nil)
+              (set-buffer-modified-p nil))))
+
+
 (defun toggle-selective-display ()
   "A poor-man's version of code folding. From jao via stevey."
   (interactive)
