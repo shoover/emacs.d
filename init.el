@@ -585,7 +585,8 @@ running, raises the most recently updated ERC buffer."
 (defvar fsharp-compiler "\"c:\\Program Files (x86)\\Microsoft F#\\v4.0\\Fsc.exe\"")
 (add-hook 'fsharp-mode-hook
           (lambda ()
-            (define-key fsharp-mode-map "\C-c\C-l" 'my-fsharp-load-buffer)))
+            (define-key fsharp-mode-map "\C-c\C-b" 'my-fsharp-load-buffer)
+            (define-key fsharp-mode-map "\C-c\C-l" 'my-fsharp-load-line)))
 (add-hook 'inferior-fsharp-mode-hooks
           (lambda ()
             (add-to-list 'comint-output-filter-functions
@@ -594,10 +595,11 @@ running, raises the most recently updated ERC buffer."
 
 (defun my-fsharp-load-buffer ()
   (interactive)
-  (point-to-register 5)
-  (mark-whole-buffer)
-  (fsharp-eval-region (point) (mark))
-  (jump-to-register 5))
+  (fsharp-eval-region (point-min) (point-max)))
+
+(defun my-fsharp-load-line ()
+  (interactive)
+  (fsharp-eval-region (point-at-bol) (point-at-eol)))
 
 ;; org-mode
 (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
@@ -764,10 +766,10 @@ running, raises the most recently updated ERC buffer."
 ;;   Emacs.toolBar: 0
 ;;   Emacs.full
 (custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
+  ;; custom-set-variables was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
  '(ansi-color-for-comint-mode t)
  '(aquamacs-additional-fontsets nil t)
  '(aquamacs-customization-version-id 190 t)
@@ -809,10 +811,10 @@ running, raises the most recently updated ERC buffer."
 
 ;;; Faces
 (custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
+  ;; custom-set-faces was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
  )
 
 ;; Subtle face for parens in lisp modes
