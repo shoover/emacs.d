@@ -227,6 +227,32 @@ other Clojure programmers. Mostly cribbed from `lisp-indent-line'."
         (incf count))
       (message "%d characters" count))))
 
+;; I got this from somewhere, but I can't remember where
+(defun count-words-region (beginning end)
+  "Print number of words in the region.
+Words are defined as at least one word-constituent
+character followed by at least one character that
+is not a word-constituent.  The buffer's syntax
+table determines which characters these are."
+  (interactive "r")
+  (message "Counting words in region ... ")
+
+  (save-excursion
+    (goto-char beginning)
+    (let ((count 0))
+      (while (< (point) end)
+        (re-search-forward "\\w+\\W*")
+        (setq count (1+ count)))
+      (cond ((zerop count)
+             (message
+              "The region does NOT have any words."))
+            ((= 1 count)
+             (message
+              "The region has 1 word."))
+            (t
+             (message
+              "The region has %d words." count))))))
+
 ;; adapted from http://blog.bookworm.at/2007/03/pretty-print-xml-with-emacs.html
 (defun my-nxml-format-region (begin end)
   "Formats XML markup in the region with line breaks and indentation."
@@ -242,6 +268,16 @@ other Clojure programmers. Mostly cribbed from `lisp-indent-line'."
         (backward-char)
         (insert "\n"))
       (indent-region begin end))))
+
+(add-hook 'archive-extract-hooks
+          (lambda ()
+            (when (and (boundp 'archive-superior-buffer)
+                       archive-superior-buffer
+                       (eq 'nxml-mode major-mode))
+              (my-nxml-format-region (point-min) (point-max))
+              (setq buffer-undo-list nil)
+              (set-buffer-modified-p nil))))
+
 
 (defun toggle-selective-display ()
   "A poor-man's version of code folding. From jao via stevey."
