@@ -37,7 +37,7 @@
 
 ;; No need to put this before initializing `package' because it byte-compiles
 ;; everything on install anyway.
-(require 'byte-code-cache)
+;;(require 'byte-code-cache)
 
 (when (eq system-type 'windows-nt)
   ;; Load emacsw32 here instead of site-start.el so it finds my org
@@ -690,7 +690,7 @@ running, raises the most recently updated ERC buffer."
                   (append
                    (list my-action-org
                          my-work-org)
-                   (directory-files (concat my-org-dir "/../docs/banjo") t "\\.org$")))
+                   (directory-files (concat my-org-dir "/../banjo") t "\\.org$")))
             (setq org-agenda-custom-commands
                   '(("A" "30 day agenda" agenda "" ((org-agenda-ndays 30)))))
             (setq org-refile-targets '((org-agenda-files :maxlevel . 1))
