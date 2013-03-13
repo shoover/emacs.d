@@ -851,7 +851,9 @@ running, raises the most recently updated ERC buffer."
   ;; If you edit it by hand, you could mess it up, so be careful.
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
- )
+ '(org-level-2 ((t (:inherit font-lock-keyword-face))))
+ '(org-level-3 ((t (:inherit font-lock-type-face))))
+ '(org-level-4 ((t (:inherit font-lock-variable-name-face)))))
 
 ;; Subtle face for parens in lisp modes
 (require 'parenface)
