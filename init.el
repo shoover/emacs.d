@@ -377,8 +377,8 @@ sized for something other than reading code or logs."
       (switch-to-buffer buf))))
 
 ;;; Custom keybindings
-(global-set-key "\M-s"     'isearch-forward-regexp)
-(global-set-key "\M-r"     'isearch-backward-regexp)
+(global-set-key "\M-s" 'isearch-forward-regexp)
+(global-set-key "\M-r" 'isearch-backward-regexp)
 
 (global-set-key [f1] 'toggle-selective-display)
 
@@ -502,6 +502,38 @@ line instead."
       (set-buffer-modified-p nil))
     (message "Renamed to %s." new-name)))
 
+;; emacsredux.com buffer file goodies
+(defun copy-file-name-to-clipboard ()
+  "Copy the current buffer file name to the clipboard."
+  (interactive)
+  (let ((filename (if (equal major-mode 'dired-mode)
+                      default-directory
+                    (buffer-file-name))))
+    (when filename
+      (kill-new filename)
+      (message "Copied buffer file name '%s' to the clipboard." filename))))
+
+(defun open-with ()
+  "Simple function that allows us to open the underlying
+file of a buffer in an external program."
+  (interactive)
+  (when buffer-file-name
+    (shell-command (concat
+                    (if (eq system-type 'darwin)
+                        "open"
+                      (read-shell-command "Open current file with: "))
+                    " "
+                    buffer-file-name))))
+
+(defun google ()
+  "Google the selected region if any, display a query prompt otherwise."
+  (interactive)
+  (browse-url
+   (concat
+    "http://www.google.com/search?ie=utf-8&oe=utf-8&q="
+    (url-hexify-string (if mark-active
+         (buffer-substring (region-beginning) (region-end))
+       (read-string "Google: "))))))
 
 ;; C
 (add-hook 'c-mode-hook
@@ -885,6 +917,7 @@ running, raises the most recently updated ERC buffer."
 
   (load "~/emacs/lisp/color-theme-6.6.0/themes/blackboard")
   (color-theme-blackboard)
+  (set-face-foreground 'font-lock-type-face "#aDd6ff")
   ))
 
 (cd "~")
