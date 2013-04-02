@@ -1,6 +1,6 @@
 ;;; org-exp.el --- Export internals for Org-mode
 
-;; Copyright (C) 2004-2012 Free Software Foundation, Inc.
+;; Copyright (C) 2004-2013 Free Software Foundation, Inc.
 
 ;; Author: Carsten Dominik <carsten at orgmode dot org>
 ;; Keywords: outlines, hypermedia, calendar, wp
@@ -48,13 +48,11 @@
 (declare-function org-table-colgroup-line-p "org-table" (line))
 (declare-function org-pop-to-buffer-same-window "org-compat"
 		  (&optional buffer-or-name norecord label))
+(declare-function org-unescape-code-in-region "org-src" (beg end))
 
-(autoload 'org-export-generic "org-export-generic" "Export using the generic exporter" t)
-
-(autoload 'org-export-as-odt "org-odt"
-  "Export the outline to a OpenDocument Text file." t)
-(autoload 'org-export-as-odt-and-open "org-odt"
-  "Export the outline to a OpenDocument Text file and open it." t)
+(org-autoload "org-odt" '(org-export-generic
+			  org-export-as-odt
+			  org-export-as-odt-and-open))
 
 (defgroup org-export nil
   "Options for exporting org-listings."
@@ -974,6 +972,8 @@ Pressing `1' will switch between these two options."
   (let* ((bg (org-xor (equal arg '(16)) org-export-run-in-background))
 	 (subtree-p (or (org-region-active-p)
 			(eq org-export-initial-scope 'subtree)))
+	 (regb (and (org-region-active-p) (region-beginning)))
+	 (rege (and (org-region-active-p) (region-end)))
 	 (help "[t]   insert the export option template
 \[v]   limit export to visible part of outline tree
 \[1]   switch buffer/subtree export
@@ -1054,6 +1054,10 @@ Pressing `1' will switch between these two options."
 		((not subtree-p)
 		 (setq subtree-p t)
 		 (setq bpos (point))
+		 (org-mark-subtree)
+		 (org-activate-mark)
+		 (setq regb (and (org-region-active-p) (region-beginning)))
+		 (setq rege (and (org-region-active-p) (region-end)))
 		 (message "Export subtree: "))))
 	(when (eq r1 ?\ )
 	  (let ((case-fold-search t)
@@ -1091,8 +1095,9 @@ Pressing `1' will switch between these two options."
 		  "-f" (symbol-name (nth 1 ass)))))
 	  (set-process-sentinel p 'org-export-process-sentinel)
 	  (message "Background process \"%s\": started" p))
-      ;; background processing not requested, or not possible
-      (if subtree-p (progn (org-mark-subtree) (org-activate-mark)))
+      ;; set the mark correctly when exporting a subtree
+      (if subtree-p (let (deactivate-mark) (push-mark rege t t) (goto-char regb)))
+
       (call-interactively (nth 1 ass))
       (when (and bpos (get-buffer-window cbuf))
 	(let ((cw (selected-window)))
@@ -1783,7 +1788,7 @@ from the buffer."
 		 beg-content end-content
 		 `(org-protected t original-indentation ,ind org-native-text t))
 		;; strip protective commas
-		(org-strip-protective-commas beg-content end-content)
+		(org-unescape-code-in-region beg-content end-content)
 		(delete-region (match-beginning 0) (match-end 0))
 		(save-excursion
 		  (goto-char beg)
@@ -3039,12 +3044,11 @@ to the value of `temporary-file-directory'."
 	  (eval ;; convert to fmt -- mimicking `org-run-like-in-org-mode'
 	   (list 'let org-local-vars
 		 (list (intern (format "org-export-as-%s" fmt))
-		       nil nil nil ''string t))))
+		       nil nil ''string t dir))))
       (delete-file tmp-file))))
 
 ;;;###autoload
-(defun org-export-as-org (arg &optional hidden ext-plist
-			      to-buffer body-only pub-dir)
+(defun org-export-as-org (arg &optional ext-plist to-buffer body-only pub-dir)
   "Make a copy with not-exporting stuff removed.
 The purpose of this function is to provide a way to export the source
 Org file of a webpage in Org format, but with sensitive and/or irrelevant
@@ -3223,7 +3227,6 @@ Does include HTML export options as well as TODO and CATEGORY stuff."
    org-archive-location
    "org file:~/org/%s.org"))
 
-;;;###autoload
 (defun org-insert-export-options-template ()
   "Insert into the buffer a template with information for exporting."
   (interactive)
@@ -3340,5 +3343,9 @@ The depends on the variable `org-export-copy-to-kill-ring'."
     (message "%s export done, pushed to kill ring and clipboard" format)))
 
 (provide 'org-exp)
+
+;; Local variables:
+;; generated-autoload-file: "org-loaddefs.el"
+;; End:
 
 ;;; org-exp.el ends here

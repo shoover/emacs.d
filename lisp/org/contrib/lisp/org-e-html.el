@@ -1,6 +1,6 @@
 ;;; org-e-html.el --- HTML Back-End For Org Export Engine
 
-;; Copyright (C) 2011-2012  Free Software Foundation, Inc.
+;; Copyright (C) 2011-2013  Free Software Foundation, Inc.
 
 ;; Author: Jambunathan K <kjambunathan at gmail dot com>
 ;; Keywords: outlines, hypermedia, calendar, wp
@@ -2857,11 +2857,12 @@ information."
   "Transcode a TIMESTAMP object from Org to HTML.
 CONTENTS is nil.  INFO is a plist holding contextual
 information."
-  (let ((value (org-translate-time (org-element-property :value timestamp)))
-	(range-end (org-element-property :range-end timestamp)))
+  (let* ((f (if (eq (org-element-property :type timestamp) 'inactive) "[%s]" "<%s>"))
+	 (value (org-translate-time (format f (org-element-property :value timestamp))))
+	 (range-end (org-element-property :range-end timestamp)))
     (format "<span class=\"timestamp-wrapper\"><span class=\"timestamp\">%s</span></span>"
 	    (if (not range-end) value
-	      (concat value "&ndash;" (org-translate-time range-end))))))
+	      (concat value "&ndash;" (org-translate-time (format f range-end)))))))
 
 
 ;;;; Underline
@@ -2914,7 +2915,7 @@ contextual information."
 (defun org-e-html-final-function (contents backend info)
   (if (not org-e-html-pretty-output) contents
     (with-temp-buffer
-      (nxml-mode)
+      (html-mode)
       (insert contents)
       (indent-region (point-min) (point-max))
       (buffer-substring-no-properties (point-min) (point-max)))))

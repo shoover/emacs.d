@@ -1,6 +1,6 @@
 ;;; org-gnus.el --- Support for links to Gnus groups and messages from within Org-mode
 
-;; Copyright (C) 2004-2012 Free Software Foundation, Inc.
+;; Copyright (C) 2004-2013 Free Software Foundation, Inc.
 
 ;; Author: Carsten Dominik <carsten at orgmode dot org>
 ;;         Tassilo Horn <tassilo at member dot fsf dot org>
@@ -32,6 +32,7 @@
 ;;; Code:
 
 (require 'org)
+(require 'gnus-util)
 (eval-when-compile (require 'gnus-sum))
 
 ;; Declare external functions and variables
@@ -206,7 +207,7 @@ If `org-store-link' was called with a prefix arg the meaning of
               desc link
               newsgroup xarchive)       ; those are always nil for gcc
           (and (not gcc)
-               (error "Can not create link: No Gcc header found."))
+               (error "Can not create link: No Gcc header found"))
           (org-store-link-props :type "gnus" :from from :subject subject
                                 :message-id id :group gcc :to to)
           (setq desc (org-email-link-description)

@@ -1,6 +1,6 @@
 ;;; ob-sh.el --- org-babel functions for shell evaluation
 
-;; Copyright (C) 2009-2012  Free Software Foundation, Inc.
+;; Copyright (C) 2009-2013 Free Software Foundation, Inc.
 
 ;; Author: Eric Schulte
 ;; Keywords: literate programming, reproducible research
@@ -190,7 +190,8 @@ return the value of the last statement in BODY."
 	    (list org-babel-sh-eoe-indicator))))
 	2)) "\n"))
     ('otherwise				; external shell script
-     (if (cdr (assoc :shebang params))
+     (if (and (cdr (assoc :shebang params))
+	      (> (length (cdr (assoc :shebang params))) 0))
 	 (let ((script-file (org-babel-temp-file "sh-script-"))
 	       (shebang (cdr (assoc :shebang params)))
 	       (padline (not (string= "no" (cdr (assoc :padline params))))))

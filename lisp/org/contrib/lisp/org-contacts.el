@@ -1,6 +1,6 @@
 ;;; org-contacts.el --- Contacts management
 
-;; Copyright (C) 2010-2012 Julien Danjou <julien@danjou.info>
+;; Copyright (C) 2010-2013 Julien Danjou <julien@danjou.info>
 
 ;; Author: Julien Danjou <julien@danjou.info>
 ;; Keywords: outlines, hypermedia, calendar
@@ -41,6 +41,8 @@
 
 (eval-and-compile
   (require 'org))
+(require 'gnus-util)
+(require 'org-agenda)
 
 (defgroup org-contacts nil
   "Options concerning contacts management."
@@ -608,7 +610,7 @@ Org-contacts does not specify how to encode the name. So we try to do our best."
   "Show contacts on a map. Requires google-maps-el."
   (interactive)
   (unless (fboundp 'google-maps-static-show)
-    (error "org-contacts-show-map requires google-maps-el."))
+    (error "`org-contacts-show-map' requires `google-maps-el'"))
   (google-maps-static-show
    :markers
    (loop

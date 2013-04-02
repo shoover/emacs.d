@@ -1,6 +1,6 @@
 ;;; org-freemind.el --- Export Org files to freemind
 
-;; Copyright (C) 2009-2012 Free Software Foundation, Inc.
+;; Copyright (C) 2009-2013 Free Software Foundation, Inc.
 
 ;; Author: Lennart Borgman (lennart O borgman A gmail O com)
 ;; Keywords: outlines, hypermedia, calendar, wp
@@ -275,12 +275,6 @@ will also unescape &#nn;."
 			 )))
 		   org-str))))
 
-;; (let* ((str1 "a quote: \", an amp: &, lt: <; over 256: öåäÖÅÄ")
-;;        (str2 (org-freemind-escape-str-from-org str1))
-;;        (str3 (org-freemind-unescape-str-to-org str2)))
-;;     (unless (string= str1 str3)
-;;       (error "Error str3=%s" str3)))
-
 (defun org-freemind-convert-links-helper (matched)
   "Helper for `org-freemind-convert-links-from-org'.
 MATCHED is the link just matched."
@@ -527,6 +521,7 @@ DRAWERS-REGEXP are converted to freemind notes."
 					  next-has-some-visible-child)
   (let* (this-icons
          this-bg-color
+	 this-m2-link
          this-m2-escaped
          this-rich-node
          this-rich-note
@@ -559,6 +554,10 @@ DRAWERS-REGEXP are converted to freemind notes."
             (add-to-list 'this-icons "full-7"))
            ))))
     (setq this-m2 (org-trim this-m2))
+    (when (string-match org-bracket-link-analytic-regexp this-m2)
+      (setq this-m2-link (concat "link=\"" (match-string 1 this-m2)
+				 (match-string 3 this-m2) "\" ")
+	    this-m2 (replace-match "\\5" nil nil this-m2 0)))
     (setq this-m2-escaped (org-freemind-escape-str-from-org this-m2))
     (let ((node-notes (org-freemind-org-text-to-freemind-subnode/note
                        this-m2-escaped
@@ -568,7 +567,8 @@ DRAWERS-REGEXP are converted to freemind notes."
       (setq this-rich-node (nth 0 node-notes))
       (setq this-rich-note (nth 1 node-notes)))
     (with-current-buffer mm-buffer
-      (insert "<node text=\"" this-m2-escaped "\"")
+      (insert "<node " (if this-m2-link this-m2-link "")
+	      "text=\"" this-m2-escaped "\"")
       (org-freemind-get-node-style this-m2)
       (when (> next-level current-level)
         (unless (or this-children-visible
@@ -1213,8 +1213,8 @@ PATH should be a list of steps, where each step has the form
 
 (provide 'org-freemind)
 
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Local variables:
+;; generated-autoload-file: "org-loaddefs.el"
+;; End:
 
 ;;; org-freemind.el ends here

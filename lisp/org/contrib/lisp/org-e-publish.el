@@ -1,5 +1,5 @@
 ;;; org-e-publish.el --- publish related org-mode files as a website
-;; Copyright (C) 2006-2012 Free Software Foundation, Inc.
+;; Copyright (C) 2006-2013 Free Software Foundation, Inc.
 
 ;; Author: David O'Toole <dto@gnu.org>
 ;; Maintainer: Carsten Dominik <carsten DOT dominik AT gmail DOT com>
@@ -600,7 +600,7 @@ is the property list for the given project.  PUB-DIR is the
 publishing directory.
 
 Return output file name."
-  (org-e-publish-org-to 'e-html filename "html" plist pub-dir))
+  (org-e-publish-org-to 'e-html filename ".html" plist pub-dir))
 
 ;; TODO: Not implemented yet.
 ;; (defun org-e-publish-org-to-org (plist filename pub-dir)

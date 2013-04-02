@@ -1,6 +1,6 @@
 ;;; ob.el --- working with code blocks in org-mode
 
-;; Copyright (C) 2009-2012  Free Software Foundation, Inc.
+;; Copyright (C) 2009-2013 Free Software Foundation, Inc.
 
 ;; Authors: Eric Schulte
 ;;	Dan Davison
@@ -39,7 +39,6 @@
 (declare-function show-all "outline" ())
 (declare-function org-reduce "org" (CL-FUNC CL-SEQ &rest CL-KEYS))
 (declare-function org-mark-ring-push "org" (&optional pos buffer))
-(declare-function org-strip-protective-commas "org" (beg end))
 (declare-function tramp-compat-make-temp-file "tramp-compat"
                   (filename &optional dir-flag))
 (declare-function tramp-dissect-file-name "tramp" (name &optional nodefault))
@@ -64,7 +63,6 @@
 (declare-function org-cycle "org" (&optional arg))
 (declare-function org-uniquify "org" (list))
 (declare-function org-current-level "org" ())
-(declare-function org-strip-protective-commas "org" (beg end))
 (declare-function org-table-import "org-table" (file arg))
 (declare-function org-add-hook "org-compat"
 		  (hook function &optional append local))
@@ -87,9 +85,11 @@
 (declare-function org-list-struct "org-list" ())
 (declare-function org-list-prevs-alist "org-list" (struct))
 (declare-function org-list-get-list-end "org-list" (item struct prevs))
-(declare-function org-strip-protective-commas "org" (beg end))
 (declare-function org-remove-if "org" (predicate seq))
 (declare-function org-completing-read "org" (&rest args))
+(declare-function org-escape-code-in-region "org-src" (beg end))
+(declare-function org-unescape-code-in-string "org-src" (s))
+(declare-function org-table-to-lisp "org-table" (&optional txt))
 
 (defgroup org-babel nil
   "Code block evaluation and management in `org-mode' documents."
@@ -420,7 +420,7 @@ then run `org-babel-pop-to-session'."
     (noweb-sep  . :any)
     (padline	. ((yes no)))
     (results	. ((file list vector table scalar verbatim)
-		   (raw org html latex code pp wrap)
+		   (raw html latex org code pp drawer)
 		   (replace silent append prepend)
 		   (output value)))
     (rownames	. ((no yes)))
@@ -493,8 +493,8 @@ can not be resolved.")
 
 ;;; functions
 (defvar call-process-region)
-;;;###autoload
 
+;;;###autoload
 (defun org-babel-execute-src-block (&optional arg info params)
   "Execute the current source code block.
 Insert the results of execution into the buffer.  Source code
@@ -837,6 +837,7 @@ evaluation mechanisms."
     (key-binding (or key (read-key-sequence nil))))))
 
 (defvar org-bracket-link-regexp)
+
 ;;;###autoload
 (defun org-babel-open-src-block-result (&optional re-run)
   "If `point' is on a src block then open the results of the
@@ -943,6 +944,7 @@ buffer."
 (def-edebug-spec org-babel-map-inline-src-blocks (form body))
 
 (defvar org-babel-lob-one-liner-regexp)
+
 ;;;###autoload
 (defmacro org-babel-map-call-lines (file &rest body)
   "Evaluate BODY forms on each call line in FILE.
@@ -1240,7 +1242,7 @@ may be specified in the properties of the current outline entry."
           ;; get block body less properties, protective commas, and indentation
           (with-temp-buffer
             (save-match-data
-              (insert (org-babel-strip-protective-commas body lang))
+              (insert (org-unescape-code-in-string body))
 	      (unless preserve-indentation (org-do-remove-indentation))
               (buffer-string)))
 	  (org-babel-merge-params
@@ -1257,8 +1259,7 @@ may be specified in the properties of the current outline entry."
   (let* ((lang (org-no-properties (match-string 2)))
          (lang-headers (intern (concat "org-babel-default-header-args:" lang))))
     (list lang
-          (org-babel-strip-protective-commas
-           (org-no-properties (match-string 5)) lang)
+          (org-unescape-code-in-string (org-no-properties (match-string 5)))
           (org-babel-merge-params
            org-babel-default-inline-header-args
            (org-babel-params-from-properties lang)
@@ -1850,7 +1851,7 @@ If the path of the link is a file path it is expanded using
 By default RESULT is inserted after the end of the
 current source block.  With optional argument RESULT-PARAMS
 controls insertion of results in the org-mode file.
-RESULT-PARAMS can take the following values...
+RESULT-PARAMS can take the following values:
 
 replace - (default option) insert results after the source block
           replacing any previously inserted results
@@ -1866,16 +1867,13 @@ raw ----- results are added directly to the Org-mode file.  This
           is a good option if you code block will output org-mode
           formatted text.
 
-wrap ---- results are added directly to the Org-mode file as with
+drawer -- results are added directly to the Org-mode file as with
           \"raw\", but are wrapped in a RESULTS drawer, allowing
           them to later be replaced or removed automatically.
 
-org ----- similar in effect to raw, only the results are wrapped
-          in an org code block.  Similar to the raw option, on
-          export the results will be interpreted as org-formatted
-          text, however by wrapping the results in an org code
-          block they can be replaced upon re-execution of the
-          code block.
+org ----- results are added inside of a \"#+BEGIN_SRC org\" block.
+          They are not comma-escaped when inserted, but Org syntax
+          here will be discarded when exporting the file.
 
 html ---- results are added inside of a #+BEGIN_HTML block.  This
           is a good option if you code block will output html
@@ -1942,6 +1940,7 @@ code ---- the results are extracted in the syntax of the source
 	(let ((wrap (lambda (start finish)
 		      (goto-char end) (insert (concat finish "\n"))
 		      (goto-char beg) (insert (concat start "\n"))
+		      (org-escape-code-in-region (point) end)
 		      (goto-char end) (goto-char (point-at-eol))
 		      (setq end (point-marker))))
 	      (proper-list-p (lambda (it) (and (listp it) (null (cdr (last it)))))))
@@ -1987,14 +1986,16 @@ code ---- the results are extracted in the syntax of the source
 	    (funcall wrap "#+BEGIN_HTML" "#+END_HTML"))
 	   ((member "latex" result-params)
 	    (funcall wrap "#+BEGIN_LaTeX" "#+END_LaTeX"))
+	   ((member "org" result-params)
+	    (funcall wrap "#+BEGIN_SRC org" "#+END_SRC"))
 	   ((member "code" result-params)
 	    (funcall wrap (format "#+BEGIN_SRC %s%s" (or lang "none") results-switches)
 		     "#+END_SRC"))
-	   ((member "org" result-params)
-	    (funcall wrap "#+BEGIN_ORG" "#+END_ORG"))
 	   ((member "raw" result-params)
 	    (goto-char beg) (if (org-at-table-p) (org-cycle)))
-	   ((member "wrap" result-params)
+	   ((or (member "drawer" result-params)
+		;; Stay backward compatible with <7.9.2
+		(member "wrap" result-params))
 	    (funcall wrap ":RESULTS:" ":END:"))
 	   ((and (not (funcall proper-list-p result))
 		 (not (member "file" result-params)))
@@ -2369,17 +2370,6 @@ block but are passed literally to the \"example-block\"."
       (funcall nb-add (buffer-substring index (point-max))))
     new-body))
 
-(defun org-babel-strip-protective-commas (body &optional lang)
-  "Strip protective commas from bodies of source blocks."
-  (with-temp-buffer
-    (insert body)
-    (if (and lang (string= lang "org"))
-	(progn (goto-char (point-min))
-	       (while (re-search-forward "^[ \t]*\\(,\\)" nil t)
-		 (replace-match "" nil nil nil 1)))
-      (org-strip-protective-commas (point-min) (point-max)))
-    (buffer-string)))
-
 (defun org-babel-script-escape (str &optional force)
   "Safely convert tables into elisp lists."
   (let (in-single in-double out)
@@ -2557,18 +2547,14 @@ Emacs shutdown."))
 Passes PREFIX and SUFFIX directly to `make-temp-file' with the
 value of `temporary-file-directory' temporarily set to the value
 of `org-babel-temporary-directory'."
-  (if (file-remote-p default-directory)
-      (make-temp-file
-       (concat (file-remote-p default-directory)
-	       (expand-file-name
-		prefix temporary-file-directory)
-	       nil suffix))
-    (let ((temporary-file-directory
+  (let ((temporary-file-directory
+	 (if (file-remote-p default-directory)
+	     (concat (file-remote-p default-directory) "/tmp")
 	   (or (and (boundp 'org-babel-temporary-directory)
 		    (file-exists-p org-babel-temporary-directory)
 		    org-babel-temporary-directory)
-	       temporary-file-directory)))
-      (make-temp-file prefix nil suffix))))
+	       temporary-file-directory))))
+      (make-temp-file prefix nil suffix)))
 
 (defun org-babel-remove-temporary-directory ()
   "Remove `org-babel-temporary-directory' on Emacs shutdown."
@@ -2598,6 +2584,8 @@ of `org-babel-temporary-directory'."
 
 (provide 'ob)
 
-
+;; Local variables:
+;; generated-autoload-file: "org-loaddefs.el"
+;; End:
 
 ;;; ob.el ends here

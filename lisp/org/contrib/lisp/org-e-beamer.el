@@ -1,6 +1,6 @@
 ;;; org-e-beamer.el --- Beamer Back-End for Org Export Engine
 
-;; Copyright (C) 2007-2012  Free Software Foundation, Inc.
+;; Copyright (C) 2007-2013  Free Software Foundation, Inc.
 
 ;; Author: Carsten Dominik <carsten.dominik AT gmail DOT com>
 ;;         Nicolas Goaziou <n.goaziou AT gmail DOT com>
@@ -1050,8 +1050,8 @@ aid, but the tag does not have any semantic meaning."
       (progn
 	(org-back-to-heading t)
 	(org-reveal)
-	(org-entry-put nil "LaTeX_CLASS" "beamer")
-	(org-entry-put nil "LaTeX_CLASS_OPTIONS" "[presentation]")
+	(org-entry-put nil "EXPORT_LaTeX_CLASS" "beamer")
+	(org-entry-put nil "EXPORT_LaTeX_CLASS_OPTIONS" "[presentation]")
 	(org-entry-put nil "EXPORT_FILE_NAME" "presentation.pdf")
 	(when org-e-beamer-column-view-format
 	  (org-entry-put nil "COLUMNS" org-e-beamer-column-view-format))
