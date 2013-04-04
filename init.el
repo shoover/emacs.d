@@ -398,6 +398,8 @@ sized for something other than reading code or logs."
 ;; Shift+(left|right|up|down) to get to a window quicker than with C-x o
 (windmove-default-keybindings)
 
+(global-set-key "\C-xx" 'w32shell-explorer-here)
+
 ;; Snippets
 (yas/load-directory (concat emacs-root "snippets"))
 
@@ -459,7 +461,7 @@ line instead."
                  )) 
                ("ERC"   (mode . erc-mode))))))
 
-; eshell prompt
+                                        ; eshell prompt
 (setq eshell-prompt-function (lambda nil (concat "\n" (eshell/pwd) "\n$ "))
       eshell-prompt-regexp "^\$ ")
 
@@ -502,6 +504,19 @@ line instead."
       (set-buffer-modified-p nil))
     (message "Renamed to %s." new-name)))
 
+;; http://emacsredux.com/blog/2013/04/03/delete-file-and-buffer/
+(defun delete-file-and-buffer ()
+  "Kill the current buffer and deletes the file it is visiting."
+  (interactive)
+  (let ((filename (buffer-file-name)))
+    (when filename
+      (if (vc-backend filename)
+          (vc-delete-file filename)
+        (progn
+          (delete-file filename)
+          (message "Deleted file %s" filename)
+          (kill-buffer))))))
+
 ;; emacsredux.com buffer file goodies
 (defun copy-file-name-to-clipboard ()
   "Copy the current buffer file name to the clipboard."
@@ -532,8 +547,8 @@ file of a buffer in an external program."
    (concat
     "http://www.google.com/search?ie=utf-8&oe=utf-8&q="
     (url-hexify-string (if mark-active
-         (buffer-substring (region-beginning) (region-end))
-       (read-string "Google: "))))))
+                           (buffer-substring (region-beginning) (region-end))
+                         (read-string "Google: "))))))
 
 ;; C
 (add-hook 'c-mode-hook
@@ -726,8 +741,8 @@ running, raises the most recently updated ERC buffer."
             (setq org-agenda-custom-commands
                   '(("A" "30 day agenda" agenda "" ((org-agenda-ndays 30)))))
             (setq org-refile-targets '((org-agenda-files :maxlevel . 1))
-      org-refile-use-outline-path 'file
-      org-refile-allow-creating-parent-nodes 'confirm)))
+                  org-refile-use-outline-path 'file
+                  org-refile-allow-creating-parent-nodes 'confirm)))
 (setq org-mobile-inbox-for-pull (concat my-org-dir "/flagged.org")
       org-mobile-directory (concat my-org-dir "/../MobileOrg"))
 
@@ -834,10 +849,10 @@ running, raises the most recently updated ERC buffer."
 ;;   Emacs.toolBar: 0
 ;;   Emacs.full
 (custom-set-variables
-  ;; custom-set-variables was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  '(ansi-color-for-comint-mode t)
  '(aquamacs-additional-fontsets nil t)
  '(aquamacs-customization-version-id 190 t)
@@ -879,10 +894,10 @@ running, raises the most recently updated ERC buffer."
 
 ;;; Faces
 (custom-set-faces
-  ;; custom-set-faces was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  '(org-level-2 ((t (:inherit font-lock-keyword-face))))
  '(org-level-3 ((t (:inherit font-lock-type-face))))
  '(org-level-4 ((t (:inherit font-lock-variable-name-face)))))
