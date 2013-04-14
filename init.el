@@ -114,6 +114,11 @@
   (interactive)
   (find-file my-work-org))
 
+(defun banjo ()
+  "Find my work org file"
+  (interactive)
+  (find-file (concat my-org-dir "/../banjo/banjo.org")))
+
 (defun next-slide ()
   "org-mode slideware, jumps to next subtree with automatic
 narrowing and widening."
