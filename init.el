@@ -749,7 +749,7 @@ running, raises the most recently updated ERC buffer."
                   org-refile-use-outline-path 'file
                   org-refile-allow-creating-parent-nodes 'confirm)))
 (setq org-mobile-inbox-for-pull (concat my-org-dir "/flagged.org")
-      org-mobile-directory (concat my-org-dir "/../MobileOrg"))
+      org-mobile-directory (concat my-org-dir "/../Apps/MobileOrg"))
 
 ;; Store to org file from remember-mode
 (org-remember-insinuate)
@@ -759,10 +759,9 @@ running, raises the most recently updated ERC buffer."
 (setq org-directory my-org-dir)
 (setq org-default-notes-file my-action-org)
 (setq org-remember-templates
-      `(("Home" ?h
-         "* %^{headline}\n  %i%?\n  %a\n  %U" ,my-action-org)
-        ("Work" ?w
-         "* %^{headline}\n  %i%?\n  %a\n  %U" ,my-work-org)))
+      `(("Home" ?h "* %^{headline}  %i%?" ,my-action-org)
+        ("Work" ?w "* %^{headline}  %i%?" ,my-work-org)
+        ("Clipboard" ?c "* %^{headline}  %c%?")))
 (setq org-reverse-note-order t) ;; new notes at top
 
 ;; remember frames adapted from
