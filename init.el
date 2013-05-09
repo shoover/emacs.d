@@ -1,7 +1,7 @@
 ;; I keep all my emacs-related stuff under ~/emacs. ~/.emacs should be pretty
 ;; thin. It can contain machine-specific settings, but mainly it exists to
 ;; load this file. Something like this:
-;; (defvar my-org-dir "~/Dropbox/action")
+;; (setq org-directory "~/Dropbox/action")
 ;; (defvar clojure-path "~/clojure-svn/")
 ;; (setq custom-file "~/emacs/init.el")
 ;; (load custom-file)
@@ -50,9 +50,8 @@
   ;; look for wildcards in the path you specify.
   (setenv "PATH" (concat "c:/bin" path-separator (getenv "PATH"))))
 
-(defvar my-org-dir "~/action")
-(defvar my-action-org (concat my-org-dir "/action.org"))
-(defvar my-work-org (concat my-org-dir "/work.org"))
+(defvar my-action-org (concat org-directory "/action.org"))
+(defvar my-work-org (concat org-directory "/work.org"))
 
 ;; Tab defaults
 (setq-default indent-tabs-mode nil)
@@ -117,7 +116,7 @@
 (defun banjo ()
   "Find my work org file"
   (interactive)
-  (find-file (concat my-org-dir "/../banjo/banjo.org")))
+  (find-file (concat org-directory "/../banjo/banjo.org")))
 
 (defun next-slide ()
   "org-mode slideware, jumps to next subtree with automatic
@@ -692,19 +691,35 @@ running, raises the most recently updated ERC buffer."
 ;; org-mode
 (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
 (require 'org-install)
+
 (defun my-org-todo-done ()
   (interactive)
   (org-todo 'done))
+
+(defun my-org-promote-subtree (&optional n)
+  "Cut the current subtree and paste it one heading level up.
+With prefix arg N, cut this many sequential subtrees."
+  (interactive)
+  (save-excursion
+    (org-cut-subtree n)
+    (outline-up-heading 1)
+    (org-paste-subtree))
+
+  ;; Work around so repeated calls don't append to the previous promoted text
+  ;; and paste duplicate info. org-cut-subtree leaves last-command set to
+  ;; kill-region but org-paste-subtree doesn't set it.
+  (setq this-command 'my-org-promote-subtree))
+
 (setq org-publish-project-alist
       `(("workorg"
-         :base-directory ,my-org-dir
+         :base-directory ,org-directory
          :exclude ".org"
          :include ("apps.org")
          :publishing-directory "z:/users/shawn/html"
          :section-numbers t
          :table-of-contents t)
         ("workdocs"
-         :base-directory ,my-org-dir
+         :base-directory ,org-directory
          :base-extension "docx\\|pptx"
          :publishing-directory "z:/users/shawn/html"
          :publishing-function org-publish-attachment)
@@ -733,6 +748,7 @@ running, raises the most recently updated ERC buffer."
             (define-key org-mode-map "\M-," 'org-mark-ring-goto)
 
             (define-key org-mode-map "\C-\M-a" 'org-archive-subtree)
+            (define-key org-mode-map "\C-\M-p" 'my-org-promote-subtree)
             (define-key org-mode-map "\C-cd" 'my-org-todo-done)
 
             ;; clear this so next- previous-buffer works
@@ -742,21 +758,20 @@ running, raises the most recently updated ERC buffer."
                   (append
                    (list my-action-org
                          my-work-org)
-                   (directory-files (concat my-org-dir "/../banjo") t "\\.org$")))
+                   (directory-files (concat org-directory "/../banjo") t "\\.org$")))
             (setq org-agenda-custom-commands
                   '(("A" "30 day agenda" agenda "" ((org-agenda-ndays 30)))))
             (setq org-refile-targets '((org-agenda-files :maxlevel . 1))
                   org-refile-use-outline-path 'file
                   org-refile-allow-creating-parent-nodes 'confirm)))
-(setq org-mobile-inbox-for-pull (concat my-org-dir "/flagged.org")
-      org-mobile-directory (concat my-org-dir "/../Apps/MobileOrg"))
+(setq org-mobile-inbox-for-pull (concat org-directory "/flagged.org")
+      org-mobile-directory (concat org-directory "/../Apps/MobileOrg"))
 
 ;; Store to org file from remember-mode
 (org-remember-insinuate)
 (setq remember-annotation-functions '(org-remember-annotation))
 (setq remember-handler-functions '(org-remember-handler))
 (add-hook 'remember-mode-hook 'org-remember-apply-template)
-(setq org-directory my-org-dir)
 (setq org-default-notes-file my-action-org)
 (setq org-remember-templates
       `(("Home" ?h "* %^{headline}  %i%?" ,my-action-org)
