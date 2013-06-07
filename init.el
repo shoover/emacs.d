@@ -558,8 +558,8 @@ file of a buffer in an external program."
 (add-hook 'c-mode-hook
           (lambda ()
             (setq indent-tabs-mode nil)
-            (setq tab-width 2)
-            (setq c-basic-offset 2)))
+            (setq tab-width 4)
+            (setq c-basic-offset 4)))
 (add-to-list 'auto-mode-alist '("\\.rl$" . c-mode))
 
 ;; C#
@@ -823,6 +823,7 @@ With prefix arg N, cut this many sequential subtrees."
 (add-to-list 'auto-mode-alist '("\\.py$"     . python-mode))
 (add-to-list 'auto-mode-alist '("SConstruct" . python-mode))
 (add-to-list 'auto-mode-alist '("SConscript" . python-mode))
+(add-to-list 'auto-mode-alist '("\\.scons$" . python-mode))
 
 ;; Ruby
 ;; .rb is set up by elpa
