@@ -823,7 +823,8 @@ With prefix arg N, cut this many sequential subtrees."
 (add-to-list 'auto-mode-alist '("\\.py$"     . python-mode))
 (add-to-list 'auto-mode-alist '("SConstruct" . python-mode))
 (add-to-list 'auto-mode-alist '("SConscript" . python-mode))
-(add-to-list 'auto-mode-alist '("\\.scons$" . python-mode))
+(add-to-list 'auto-mode-alist '("SConscript" . python-mode))
+(add-to-list 'auto-mode-alist '("wscript" . python-mode))
 
 ;; Ruby
 ;; .rb is set up by elpa
