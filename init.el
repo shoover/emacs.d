@@ -538,6 +538,13 @@ line instead."
                            (buffer-substring (region-beginning) (region-end))
                          (read-string "Google: "))))))
 
+;; Basic
+(autoload 'visual-basic-mode "visual-basic-mode" "Visual Basic mode." t)
+(add-to-list 'auto-mode-alist '("\\.frm$"  . visual-basic-mode))
+(add-to-list 'auto-mode-alist '("\\.bas$"  . visual-basic-mode))
+(add-to-list 'auto-mode-alist '("\\.cls$"  . visual-basic-mode))
+(add-to-list 'auto-mode-alist '("\\.vbs$"  . visual-basic-mode))
+
 ;; C
 (add-hook 'c-mode-hook
           (lambda ()
@@ -741,7 +748,7 @@ With prefix arg N, cut this many sequential subtrees."
             (setq org-agenda-files
                   (append
                    (list my-action-org
-                         my-work-org)
+                        my-work-org)
                    (directory-files (concat org-directory "/../banjo") t "\\.org$")))
             (setq org-agenda-custom-commands
                   '(("A" "30 day agenda" agenda "" ((org-agenda-ndays 30)))))
@@ -806,7 +813,6 @@ With prefix arg N, cut this many sequential subtrees."
 (autoload 'python-mode "python-mode" "Edit Python source" t)
 (add-to-list 'auto-mode-alist '("\\.py$"     . python-mode))
 (add-to-list 'auto-mode-alist '("SConstruct" . python-mode))
-(add-to-list 'auto-mode-alist '("SConscript" . python-mode))
 (add-to-list 'auto-mode-alist '("SConscript" . python-mode))
 (add-to-list 'auto-mode-alist '("wscript" . python-mode))
 

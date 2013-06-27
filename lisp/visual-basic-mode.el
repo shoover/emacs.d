@@ -1,22 +1,20 @@
-
-<!-- saved from url=(0060)http://www.emacswiki.org/emacs/download/visual-basic-mode.el -->
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head><body><pre style="word-wrap: break-word; white-space: pre-wrap;">;;; visual-basic-mode.el --- A mode for editing Visual Basic programs.
+;;; visual-basic-mode.el --- A mode for editing Visual Basic programs.
 
 ;; This is free software.
 ;; Modified version of Fred White's visual-basic-mode.el
 
 
-;; Copyright (C) 1996 Fred White &lt;fwhite@alum.mit.edu&gt;
+;; Copyright (C) 1996 Fred White <fwhite@alum.mit.edu>
 ;; Copyright (C) 1998 Free Software Foundation, Inc.
 ;;   (additions by Dave Love)
 ;; Copyright (C) 2008-2009 Free Software Foundation, Inc.
 ;;   (additions by Randolph Fritz and Vincent Belaiche (VB1) )
 
-;; Author: Fred White &lt;fwhite@alum.mit.edu&gt;
-;; Adapted-by: Dave Love &lt;d.love@dl.ac.uk&gt;
-;;           : Kevin Whitefoot &lt;kevin.whitefoot@nopow.abb.no&gt;
-;;           : Randolph Fritz &lt;rfritz@u.washington.edu&gt;
-;;           : Vincent Belaiche (VB1) &lt;vincentb1@users.sourceforge.net&gt;
+;; Author: Fred White <fwhite@alum.mit.edu>
+;; Adapted-by: Dave Love <d.love@dl.ac.uk>
+;;           : Kevin Whitefoot <kevin.whitefoot@nopow.abb.no>
+;;           : Randolph Fritz <rfritz@u.washington.edu>
+;;           : Vincent Belaiche (VB1) <vincentb1@users.sourceforge.net>
 ;; Version: 1.4.12 (2010-10-18)
 ;; Serial Version: %Id: 39%
 ;; Keywords: languages, basic, Evil
@@ -78,7 +76,7 @@
 ;; Revisions:
 ;; 1.0 18-Apr-96  Initial version
 ;; 1.1 Accomodate Emacs 19.29+ font-lock-defaults
-;;     Simon Marshall &lt;Simon.Marshall@esrin.esa.it&gt;
+;;     Simon Marshall <Simon.Marshall@esrin.esa.it>
 ;; 1.2 Rename to visual-basic-mode
 ;; 1.3 Fix some indentation bugs.
 ;; 1.3+ Changes by Dave Love: [No attempt at compatibility with
@@ -99,10 +97,10 @@
 ;;     that forms are formatted correctly.
 ;; 1.4.1 KJW Merged Dave Love and KJW versions.
 ;;     Added keywords suggested by Mickey Ferguson
-;;     &lt;MFerguson@peinc.com&gt;
+;;     <MFerguson@peinc.com>
 ;;     Fixed imenu variable to find private variables and enums
 
-;;     Changed syntax class of =, &lt;, &gt; to punctuation to allow dynamic
+;;     Changed syntax class of =, <, > to punctuation to allow dynamic
 ;;     abbreviations to pick up only the word at point rather than the
 ;;     whole expression.
 
@@ -117,7 +115,7 @@
 ;;     1) function visual-basic-if-not-on-single-line to recognize single line
 ;;      if statements, even when line is broken.  variable
 ;;      visual-basic-allow-single-line-if default set to t again.
-;;     2) use of 'words in calling regexp-opt rather than concat \\&lt; ...\\&gt;
+;;     2) use of 'words in calling regexp-opt rather than concat \\< ...\\>
 ;;     3) new keywords Preserve and Explicit
 ;; 1.4.4 VB1 added function visual-basic-close-block
 ;; 1.4.5 VB1, (expand-abbrev) within (save-excusion...)
@@ -150,17 +148,17 @@
 ;; BTW, here's a script for making tags tables that I (Dave Love) have
 ;; used with reasonable success.  It assumes a hacked version of etags
 ;; with support for case-folded regexps.  I think this is now in the
-;; development version at &lt;URL:ftp://fly.cnuce.cnr.it/pub/&gt; and should
+;; development version at <URL:ftp://fly.cnuce.cnr.it/pub/> and should
 ;; make it into Emacs after 20.4.
 
 ;; #! /bin/sh
 
 ;; # etags-vb: (so-called) Visual (so-called) Basic TAGS generation.
-;; # Dave Love &lt;d.love@dl.ac.uk&gt;.  Public domain.
+;; # Dave Love <d.love@dl.ac.uk>.  Public domain.
 ;; # 1997-11-21
 
 ;; if [ $# -lt 1 ]; then
-;;     echo "Usage: `basename $0` [etags options] VBfile ... [etags options] " 1&gt;&amp;2
+;;     echo "Usage: `basename $0` [etags options] VBfile ... [etags options] " 1>&2
 ;;     exit 1
 ;; fi
 
@@ -293,13 +291,13 @@ Note: shall not contain any \\( \\) (use \\(?: if need be)."
   "*List of function templates though which `visual-basic-new-sub' cycles.")
 
 (defvar visual-basic-imenu-generic-expression
-  '((nil "^\\s-*\\(public\\|private\\)*\\s-*\\(declare\\s-+\\)*\\(sub\\|function\\)\\s-+\\(\\(?:\\sw\\|\\s_\\)+\\&gt;\\)"
+  '((nil "^\\s-*\\(public\\|private\\)*\\s-*\\(declare\\s-+\\)*\\(sub\\|function\\)\\s-+\\(\\(?:\\sw\\|\\s_\\)+\\>\\)"
          4)
     ("Constants"
-     "^\\s-*\\(private\\|public\\|global\\)*\\s-*\\(const\\s-+\\)\\(\\(?:\\sw\\|\\s_\\)+\\&gt;\\s-*=\\s-*.+\\)\\($\\|'\\)"
+     "^\\s-*\\(private\\|public\\|global\\)*\\s-*\\(const\\s-+\\)\\(\\(?:\\sw\\|\\s_\\)+\\>\\s-*=\\s-*.+\\)\\($\\|'\\)"
      3)
     ("Variables"
-     "^\\(private\\|public\\|global\\|dim\\)+\\s-+\\(\\(?:\\sw\\|\\s_\\)+\\&gt;\\s-+as\\s-+\\(?:\\sw\\|\\s_\\)+\\&gt;\\)"
+     "^\\(private\\|public\\|global\\|dim\\)+\\s-+\\(\\(?:\\sw\\|\\s_\\)+\\>\\s-+as\\s-+\\(?:\\sw\\|\\s_\\)+\\>\\)"
      2)
     ("Types" "^\\(public\\s-+\\)*type\\s-+\\(\\(?:\\sw\\|\\s_\\)+\\)" 2)))
 
@@ -309,11 +307,11 @@ Note: shall not contain any \\( \\) (use \\(?: if need be)."
 (if visual-basic-mode-syntax-table
     ()
   (setq visual-basic-mode-syntax-table (make-syntax-table))
-  (modify-syntax-entry ?\' "\&lt;" visual-basic-mode-syntax-table) ; Comment starter
-  (modify-syntax-entry ?\n "&gt;" visual-basic-mode-syntax-table)
+  (modify-syntax-entry ?\' "\<" visual-basic-mode-syntax-table) ; Comment starter
+  (modify-syntax-entry ?\n ">" visual-basic-mode-syntax-table)
   (modify-syntax-entry ?\\ "w" visual-basic-mode-syntax-table)
   (modify-syntax-entry ?_ "_" visual-basic-mode-syntax-table)
-  ; Make operators puncutation so that regexp search \_&lt; and \_&gt; works properly
+  ; Make operators puncutation so that regexp search \_< and \_> works properly
   (modify-syntax-entry ?+ "." visual-basic-mode-syntax-table)
   (modify-syntax-entry ?- "." visual-basic-mode-syntax-table)
   (modify-syntax-entry ?* "." visual-basic-mode-syntax-table)
@@ -321,8 +319,8 @@ Note: shall not contain any \\( \\) (use \\(?: if need be)."
   (modify-syntax-entry ?\\ "." visual-basic-mode-syntax-table)
   ; Make =, etc., punctuation so that dynamic abbreviations work properly
   (modify-syntax-entry ?\= "." visual-basic-mode-syntax-table)
-  (modify-syntax-entry ?\&lt; "." visual-basic-mode-syntax-table)
-  (modify-syntax-entry ?\&gt; "." visual-basic-mode-syntax-table))
+  (modify-syntax-entry ?\< "." visual-basic-mode-syntax-table)
+  (modify-syntax-entry ?\> "." visual-basic-mode-syntax-table))
 
 
 (defvar visual-basic-mode-map nil)
@@ -371,7 +369,7 @@ Note: shall not contain any \\( \\) (use \\(?: if need be)."
   "^[ \t]*[Ee]nd \\([Ss]ub\\|[Ff]unction\\|[Pp]roperty\\|[Tt]ype\\|[Ee]num\\|[Cc]lass\\)")
 
 (defconst visual-basic-dim-regexp
-  "^[ \t]*\\([Cc]onst\\|[Dd]im\\|[Pp]rivate\\|[Pp]ublic\\)\\_&gt;"  )
+  "^[ \t]*\\([Cc]onst\\|[Dd]im\\|[Pp]rivate\\|[Pp]ublic\\)\\_>"  )
 
 (defconst visual-basic-lettable-type-regexp 
   (concat "\\`" 
@@ -392,7 +390,7 @@ Note: shall not contain any \\( \\) (use \\(?: if need be)."
 (defconst visual-basic-if-regexp
   "^[ \t]*#?[Ii]f[ \t]+.*[ \t_]+")
 
-(defconst visual-basic-ifthen-regexp "^[ \t]*#?[Ii]f.+\\&lt;[Tt]hen\\&gt;\\s-\\S-+")
+(defconst visual-basic-ifthen-regexp "^[ \t]*#?[Ii]f.+\\<[Tt]hen\\>\\s-\\S-+")
 
 (defconst visual-basic-else-regexp "^[ \t]*#?[Ee]lse\\([Ii]f\\)?")
 (defconst visual-basic-endif-regexp "[ \t]*#?[Ee]nd[ \t]*[Ii]f")
@@ -405,10 +403,10 @@ Note: shall not contain any \\( \\) (use \\(?: if need be)."
 (eval-and-compile
   (defconst visual-basic-label-regexp "^[ \t]*[a-zA-Z0-9_]+:$"))
 
-(defconst visual-basic-select-regexp "^[ \t]*[Ss]elect[ \t]+[Cc]ase\\_&gt;")
-(defconst visual-basic-case-regexp "^\\([ \t]*\\)[Cc]ase\\_&gt;")
-(defconst visual-basic-case-else-regexp "^\\([ \t]*\\)[Cc]ase\\(\\s-+[Ee]lse\\)\\_&gt;")
-(defconst visual-basic-select-end-regexp "^\\([ \t]*\\)[Ee]nd[ \t]+[Ss]elect\\_&gt;")
+(defconst visual-basic-select-regexp "^[ \t]*[Ss]elect[ \t]+[Cc]ase\\_>")
+(defconst visual-basic-case-regexp "^\\([ \t]*\\)[Cc]ase\\_>")
+(defconst visual-basic-case-else-regexp "^\\([ \t]*\\)[Cc]ase\\(\\s-+[Ee]lse\\)\\_>")
+(defconst visual-basic-select-end-regexp "^\\([ \t]*\\)[Ee]nd[ \t]+[Ss]elect\\_>")
 
 
 (defconst visual-basic-for-regexp "^[ \t]*[Ff]or\\b")
@@ -431,7 +429,7 @@ Note: shall not contain any \\( \\) (use \\(?: if need be)."
 (defconst visual-basic-end-with-regexp "^[ \t]*[Ee]nd[ \t]+[Ww]ith\\b")
 
 (defconst visual-basic-blank-regexp "^[ \t]*$")
-(defconst visual-basic-comment-regexp "^[ \t]*\\s&lt;.*$")
+(defconst visual-basic-comment-regexp "^[ \t]*\\s<.*$")
 
 
 ;; This is some approximation of the set of reserved words in Visual Basic.
@@ -579,7 +577,7 @@ Commands:
              (font-lock-mode 1))
 
          ;; Accomodate emacs 19.29+
-         ;; From: Simon Marshall &lt;Simon.Marshall@esrin.esa.it&gt;
+         ;; From: Simon Marshall <Simon.Marshall@esrin.esa.it>
          (cond ((boundp 'font-lock-defaults)
                 (make-local-variable 'font-lock-defaults)
                 (setq font-lock-defaults
@@ -657,7 +655,7 @@ Commands:
   (funcall expand-fun))
 
 
-(defun visual-basic-newline-and-indent (&amp;optional count)
+(defun visual-basic-newline-and-indent (&optional count)
   "Insert a newline, updating indentation.  Argument COUNT is ignored."
   (interactive)
   (save-excursion
@@ -700,7 +698,7 @@ Commands:
   (interactive)
   (save-excursion
     (beginning-of-line)
-    (let ((comment-re "^[ \t]*\\s&lt;+[ \t]*"))
+    (let ((comment-re "^[ \t]*\\s<+[ \t]*"))
       (if (looking-at comment-re)
           (let ((fill-prefix
                  (buffer-substring
@@ -825,7 +823,7 @@ changed files."
     (goto-char start)
     (beginning-of-line)
     (while (and (not (eobp))
-                (&lt; (point) end))
+                (< (point) end))
       (if (not (looking-at visual-basic-blank-regexp))
           (visual-basic-indent-line))
       (forward-line 1)))
@@ -874,7 +872,7 @@ any line satifying OPEN-P but for which a matching line
 statifying CLOSE-P was visited before during this search."
   ;; Searching backwards
   (let ((level 0))
-    (while (and (&gt;= level 0) (not (bobp)))
+    (while (and (>= level 0) (not (bobp)))
       (visual-basic-previous-line-of-code)
       (visual-basic-find-original-statement)
       (cond ((funcall close-p)
@@ -1079,7 +1077,7 @@ be folded over several code lines."
                              (beginning-of-line)
                              (backward-up-list 1)
                              ;; Only if point is now w/in cont. block.
-                             (if (&lt;= orig-stmt (point))
+                             (if (<= orig-stmt (point))
                                  (current-column)))
                          (error nil))))
                  (cond (matching-open-paren
@@ -1126,7 +1124,7 @@ be folded over several code lines."
                 (beginning-of-line)
                 (point)))
          (point-in-whitespace
-          (&lt;= (point) (+ bol (current-indentation))))
+          (<= (point) (+ bol (current-indentation))))
          (blank-line-p
           (save-excursion
             (beginning-of-line)
@@ -1340,8 +1338,8 @@ Interting an item means:
   (interactive)
   ;; possible cases are
 
-  ;; dim-split-before =&gt; pointer remains before `Dim' inserted by split
-  ;; dim-split-after =&gt; pointer goes after `Dim' inserted by split
+  ;; dim-split-before => pointer remains before `Dim' inserted by split
+  ;; dim-split-after => pointer goes after `Dim' inserted by split
   ;; if-with-else
   ;; if-without-else
   ;; select-with-else
@@ -1371,7 +1369,7 @@ Interting an item means:
 			      (point)
 			      (goto-char (setq split-point (match-end 0)
 					       org-split-point split-point)))
-		      is-const (string-match "\\_&lt;Const\\_&gt;" prefix)
+		      is-const (string-match "\\_<Const\\_>" prefix)
 		      item-case ':dim-split-after)
 		;; determine split-point, which is the point at which a new
 		;; Dim item is to be inserted. To that purpose the line is gone through
@@ -1379,9 +1377,9 @@ Interting an item means:
 		(while
                     (if
 			(looking-at "\\(\\s-*\\)\\(?:\\sw\\|\\s_\\)+\\s-*"); some symbol
-			(if (&gt;  (setq tentative-split-point (match-end 0)) cur-point)
+			(if (>  (setq tentative-split-point (match-end 0)) cur-point)
                             (progn
-			      (setq item-case (if (&gt;= cur-point (match-end 1))
+			      (setq item-case (if (>= cur-point (match-end 1))
 						  ':dim-split-after
                                                 ':dim-split-before))
 			      nil;; stop loop
@@ -1393,7 +1391,7 @@ Interting an item means:
 				(or
 				 ;; array variable
 				 (when (looking-at "\\(([^)\n]+)\\)\\s-*")
-                                   (if (&lt; cur-point (match-end 1))
+                                   (if (< cur-point (match-end 1))
                                        (setq item-case ':dim-split-after
                                              loop-again nil)
                                      t))
@@ -1614,8 +1612,8 @@ This function is under construction"
 	     (null (or
 		    (and (stringp str--1)
 			 (string= str--1 ":="))
-		    (string-match "[&lt;=&gt;]" next-char ))) ))));
-       (replace-by-&amp;
+		    (string-match "[<=>]" next-char ))) ))));
+       (replace-by-&
 	()
 	(goto-char (1- (point)))
 	(let* ((p1 (point))
@@ -1626,7 +1624,7 @@ This function is under construction"
 	  (when (looking-at "\\s-+")
 	    (setq p2 (match-end 0)))
 	  (delete-region p1 p2)
-	  (insert " &amp; ")));
+	  (insert " & ")));
        (check-string-concatenation-by-+
 	()
 	(save-match-data
@@ -1654,13 +1652,13 @@ This function is under construction"
 	       insert-space-at-point
 	       check-plus-or-minus-not-preceded-by-space-p
 	       0 ]
-	     [ "\\(\\s\)\\|\\sw\\|\\s_\\)[/\\*&amp;]"
+	     [ "\\(\\s\)\\|\\sw\\|\\s_\\)[/\\*&]"
 	       "Operator not preceded by space"
 	       match-end 1
 	       insert-space-at-point
 	       visual-basic-in-code-context-p
 	       0 ]
-	     [ "[/\\*&amp;]\\(\\s\(\\|\\sw\\|\\s_\\|\\s.\\)"
+	     [ "[/\\*&]\\(\\s\(\\|\\sw\\|\\s_\\|\\s.\\)"
 	       "Operator not followed by space"
 	       match-beginning 1
 	       insert-space-at-point
@@ -1672,13 +1670,13 @@ This function is under construction"
 	       insert-space-at-point
 	       check-plus-or-minus-not-followed-by-space-p
 	       0 ]
-	     [ "\\(\\s\)\\|\\sw\\|\\s_\\)\\(=\\|&lt;\\|&gt;\\)"
+	     [ "\\(\\s\)\\|\\sw\\|\\s_\\)\\(=\\|<\\|>\\)"
 	       "Comparison sign not preceded by space"
 	       match-end 1
 	       insert-space-at-point
 	       visual-basic-in-code-context-p
 	       0 ]
-	     [ "\\(=\\|&lt;\\|&gt;\\)\\(\\s\(\\|\\sw\\|\\s_\\|\\s.\\)"
+	     [ "\\(=\\|<\\|>\\)\\(\\s\(\\|\\sw\\|\\s_\\|\\s.\\)"
 	       "Comparison sign not followed by space"
 	       match-end 1
 	       insert-space-at-point
@@ -1691,9 +1689,9 @@ This function is under construction"
 	       visual-basic-in-code-context-p
 	       0 ]
 	     [ "\\+"
-	       "String should be concatenated with &amp; rather than with +"
+	       "String should be concatenated with & rather than with +"
 	       match-end 0
-	       replace-by-&amp;
+	       replace-by-&
 	       check-string-concatenation-by-+
 	       0 ]
 	     )); end of style error types
@@ -1737,12 +1735,12 @@ This function is under construction"
 					(match-beginning 0) 
 					(match-end 0)
 					(aref se 1)
-					(and (&gt; (aref se 6) visual-basic-auto-check-style-level)
+					(and (> (aref se 6) visual-basic-auto-check-style-level)
 					     (aref se 4)))
 				  next-se-list))))
 		      (when next-se-list
 			(setq next-se-list
-			      (sort next-se-list (lambda (x y) (&lt; (car x) (car y))))
+			      (sort next-se-list (lambda (x y) (< (car x) (car y))))
 			      next-se (pop next-se-list))
 			(goto-char (pop next-se))
 			(move-overlay hl-style-error (pop next-se) (pop next-se))
@@ -1766,4 +1764,3 @@ This function is under construction"
 ;External Links
 ;[http://visualbasic.freetutes.com/ Visual Basic tutorials]
 ;[http://en.wikibooks.org/wiki/Visual_Basic/Coding_Standards]
-</pre></body></html>
