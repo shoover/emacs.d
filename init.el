@@ -1,11 +1,12 @@
 ;; I keep all my emacs-related stuff under ~/emacs. ~/.emacs should be pretty
-;; thin. It can contain machine-specific settings, but mainly it exists to
-;; load this file. Something like this:
+;; thin. It contains machine-specific settings, but mainly it exists to load
+;; this file. Something like this:
+;;
 ;; (setq org-directory "~/Dropbox/action")
-;; (defvar clojure-path "~/clojure-svn/")
 ;; (setq custom-file "~/emacs/init.el")
 ;; (load custom-file)
-
+;;
+;; Run this occasionally: C-u 0 M-x byte-recompile-directory
 
 (defvar nix (or (eq system-type 'cygwin)
                 (eq system-type 'gnu/linux)
@@ -35,10 +36,6 @@
       (add-to-list 'Info-default-directory-list
                    (expand-file-name "info" emacs-root)))
 
-;; No need to put this before initializing `package' because it byte-compiles
-;; everything on install anyway.
-;;(require 'byte-code-cache)
-
 (when (eq system-type 'windows-nt)
   ;; Load emacsw32 here instead of site-start.el so it finds my org
   ;; installation.  You still have to remove it from site-start.el, though,
@@ -63,7 +60,6 @@
 (setq-default scroll-down-aggressively 0.25
               scroll-up-aggressively 0.25)
 
-(blink-cursor-mode 1)
 
 ;; Whitespace mode was much less subtle in 22 and used other variables
 (when (>= emacs-major-version 23)
@@ -71,8 +67,8 @@
         whitespace-style '(tabs trailing lines-tail space-before-tab empty
                                 space-after-tab)))
 
-;; Allow "y or n" instead of "yes or no"
-(fset 'yes-or-no-p 'y-or-n-p)
+(blink-cursor-mode 1)
+(fset 'yes-or-no-p 'y-or-n-p) ; Allow "y or n" instead of "yes or no"
 (setq inhibit-splash-screen t)
 (setq ring-bell-function (lambda () (message "")))
 
@@ -95,9 +91,6 @@
 (setq backup-directory-alist
       `(("." . ,(expand-file-name "~/.emacs.d/auto-save"))))
 
-(setq scpaste-http-destination "http://paste.bighugh.com"
-      scpaste-scp-destination "dh:paste.bighugh.com")
-
 (defun init ()
   "Find my init file"
   (interactive)
@@ -117,16 +110,6 @@
   "Find my work org file"
   (interactive)
   (find-file (concat org-directory "/../banjo/banjo.org")))
-
-(defun next-slide ()
-  "org-mode slideware, jumps to next subtree with automatic
-narrowing and widening."
-  (interactive)
-  (outline-up-heading 1)
-  (widen)
-  (outline-forward-same-level 1)
-  (show-subtree)
-  (org-narrow-to-subtree))
 
 (defun indent-buffer ()
   "Indent the entire buffer. Seems like emacs should have this."
@@ -390,14 +373,14 @@ sized for something other than reading code or logs."
 (when (eq system-type 'darwin)
   (global-set-key "\M-`" 'other-frame))
 
+(global-set-key "\C-x\C-f" 'my-ido-find-file)
 (global-set-key [f5] 'revert-buffer)
 (global-set-key [f6] 'kill-this-buffer)
 
 (global-set-key [C-up] 'move-text-up)
 (global-set-key [C-down] 'move-text-down)
 
-;; Indent region or whole buffer
-(global-set-key "\C-c/" 'my-indent-region)
+(global-set-key "\C-c/" 'my-indent-region) ; Indent region or whole buffer
 
 ;; Shift+(left|right|up|down) to get to a window quicker than with C-x o
 (windmove-default-keybindings)
@@ -428,11 +411,17 @@ line instead."
 ;; Fancy buffer and everything else switching
 (setq ido-enable-flex-matching t
       ido-everywhere t
-      ido-use-filename-at-point 'guess
       ido-create-new-buffer 'always
       ido-file-extensions-order '(".org" t))
-
 (ido-mode 1)
+
+(defun my-ido-find-file (arg)
+  "ido-find-file, but only use filename at point if prefix arg is non-nil."
+  (interactive "P")
+  (let ((ido-use-filename-at-point (if arg
+                                       'guess
+                                     nil)))
+    (ido-find-file)))
 
 ;; Unique buffer names
 (require 'uniquify)
@@ -445,13 +434,10 @@ line instead."
       (quote (("default"      
                ("Org" ;; all org-related buffers
                 (mode . org-mode))  
-               ("CounterMeasure"
-                (filename . "/dev/counter/"))
-               ("Handel"
-                (filename . "/dev/handel/"))
-               ("Programming"
+               ("Work"
+                (filename . "/dev/"))
+               ("Code"
                 (or
-                 (filename . "/dev/")
                  (name . "repl")
                  (name . "\\*inf\\(erior\\)?-")
                  (mode . c-mode)
@@ -462,10 +448,9 @@ line instead."
                  (mode . perl-mode)
                  (mode . python-mode)
                  (mode . ruby-mode)
-                 )) 
-               ("ERC"   (mode . erc-mode))))))
+                 ))))))
 
-                                        ; eshell prompt
+;; eshell prompt
 (setq eshell-prompt-function (lambda nil (concat "\n" (eshell/pwd) "\n$ "))
       eshell-prompt-regexp "^\$ ")
 
@@ -533,8 +518,7 @@ line instead."
       (message "Copied buffer file name '%s' to the clipboard." filename))))
 
 (defun open-with ()
-  "Simple function that allows us to open the underlying
-file of a buffer in an external program."
+  "Open the buffer file file in an external program."
   (interactive)
   (when buffer-file-name
     (shell-command (concat
