@@ -363,6 +363,21 @@ sized for something other than reading code or logs."
       (select-frame-set-input-focus frame)
       (switch-to-buffer buf))))
 
+;; Fancy buffer and everything else switching
+(setq ido-enable-flex-matching t
+      ido-everywhere t
+      ido-create-new-buffer 'always
+      ido-file-extensions-order '(".org" t))
+(ido-mode 1)
+
+(defun my-ido-find-file (arg)
+  "ido-find-file, but only use filename at point if prefix arg is non-nil."
+  (interactive "P")
+  (let ((ido-use-filename-at-point (if arg
+                                       'guess
+                                     nil)))
+    (ido-find-file)))
+
 ;;; Custom keybindings
 (global-set-key "\M-s" 'isearch-forward-regexp)
 (global-set-key "\M-r" 'isearch-backward-regexp)
@@ -387,6 +402,10 @@ sized for something other than reading code or logs."
 
 (global-set-key "\C-xx" 'w32shell-explorer-here)
 
+(load "inc")
+(global-set-key (kbd "C-c +") 'increment-integer-at-point)
+(global-set-key (kbd "C-c -") 'decrement-integer-at-point)
+
 ;; Snippets
 (yas/load-directory (concat emacs-root "snippets"))
 
@@ -407,21 +426,6 @@ line instead."
    (if mark-active
        (list (region-beginning) (region-end))
      (list (line-beginning-position) (line-beginning-position 2)))))
-
-;; Fancy buffer and everything else switching
-(setq ido-enable-flex-matching t
-      ido-everywhere t
-      ido-create-new-buffer 'always
-      ido-file-extensions-order '(".org" t))
-(ido-mode 1)
-
-(defun my-ido-find-file (arg)
-  "ido-find-file, but only use filename at point if prefix arg is non-nil."
-  (interactive "P")
-  (let ((ido-use-filename-at-point (if arg
-                                       'guess
-                                     nil)))
-    (ido-find-file)))
 
 ;; Unique buffer names
 (require 'uniquify)
