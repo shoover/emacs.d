@@ -21,11 +21,8 @@
                    (add-to-list 'load-path
                                 (concat emacs-root p))))
   (add-path "lisp")
-  (add-path "lisp/org/lisp")
   (add-path "lisp/auto-complete")
-  (add-path "lisp/fsharp")
-  (when (< emacs-major-version 23)
-    (add-path "lisp/remember-2.0")))
+  (add-path "lisp/fsharp"))
 
 (setq custom-theme-directory (concat emacs-root "themes"))
 
@@ -682,9 +679,6 @@ running, raises the most recently updated ERC buffer."
   (fsharp-eval-region (point-at-bol) (point-at-eol)))
 
 ;; org-mode
-(add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
-(require 'org-install)
-
 (defun my-org-todo-done ()
   (interactive)
   (org-todo 'done))
@@ -759,43 +753,6 @@ With prefix arg N, cut this many sequential subtrees."
                   org-refile-allow-creating-parent-nodes 'confirm)))
 (setq org-mobile-inbox-for-pull (concat org-directory "/flagged.org")
       org-mobile-directory (concat org-directory "/../Apps/MobileOrg"))
-
-;; Store to org file from remember-mode
-(org-remember-insinuate)
-(setq remember-annotation-functions '(org-remember-annotation))
-(setq remember-handler-functions '(org-remember-handler))
-(add-hook 'remember-mode-hook 'org-remember-apply-template)
-(setq org-default-notes-file my-action-org)
-(setq org-remember-templates
-      `(("Home" ?h "* %^{headline}  %i%?" ,my-action-org)
-        ("Work" ?w "* %^{headline}  %i%?" ,my-work-org)
-        ("Clipboard" ?c "* %^{headline}  %c%?")))
-(setq org-reverse-note-order t) ;; new notes at top
-
-;; remember frames adapted from
-;; http://github.com/LauJensen/Configs/blob/master/emacs
-(defun remember-frame-p ()
-  (equal "*Remember*" (frame-parameter nil 'name)))
-;; Org-remember splits windows, force it to a single window
-(add-hook 'remember-mode-hook
-          (lambda ()
-            (when (remember-frame-p)
-              (delete-other-windows))))
-;; Automatic closing of remember frames
-(defadvice remember-finalize (after delete-remember-frame activate)
-  "Advise remember-finalize to close the frame if it is the remember frame"
-  (when (remember-frame-p)
-    (delete-frame)))
-(defadvice remember-destroy (after delete-remember-frame activate)
-  "Advise remember-destroy to close the frame if it is the remember frame"
-  (when (remember-frame-p)
-    (delete-frame)))
-(defun make-remember-frame ()
-  "Create a new frame and run org-remember"
-  (interactive)
-  (make-frame '((name . "*Remember*") (width . 80) (height . 20)))
-  (select-frame-by-name "*Remember*")
-  (org-remember))
 
 ;; Make
 (setq compile-command "make ")
@@ -892,8 +849,8 @@ With prefix arg N, cut this many sequential subtrees."
  '(hg-outgoing-repository "")
  '(indent-tabs-mode nil)
  '(ns-alternate-modifier (quote alt))
- '(org-cycle-include-plain-lists t)
- '(org-tags-column 67)
+; '(org-cycle-include-plain-lists t)
+; '(org-tags-column 67)
  '(show-paren-mode t)
  '(show-paren-style (quote mixed))
  '(special-display-regexps (quote (".*SPEEDBAR.*")))
