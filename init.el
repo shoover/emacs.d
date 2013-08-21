@@ -21,12 +21,13 @@
                    (add-to-list 'load-path
                                 (concat emacs-root p))))
   (add-path "lisp")
-  (add-path "lisp/color-theme-6.6.0") ;; my color preferences
   (add-path "lisp/org/lisp")
   (add-path "lisp/auto-complete")
   (add-path "lisp/fsharp")
   (when (< emacs-major-version 23)
     (add-path "lisp/remember-2.0")))
+
+(setq custom-theme-directory (concat emacs-root "themes"))
 
 ;; I install some info files here.
 ;; makeinfo blah.texi
@@ -871,6 +872,7 @@ With prefix arg N, cut this many sequential subtrees."
  '(c-doc-comment-style (quote set-from-style))
  '(column-number-mode t)
  '(completion-ignored-extensions (quote (".obj" ".pdb" ".svn/" "CVS/" ".o" "~" ".bin" ".bak" ".obj" ".map" ".ico" ".pif" ".lnk" ".a" ".ln" ".blg" ".bbl" ".dll" ".drv" ".vxd" ".386" ".elc" ".lof" ".glo" ".idx" ".lot" ".fmt" ".tfm" ".class" ".fas" ".lib" ".mem" ".x86f" ".sparcf" ".fasl" ".ufsl" ".fsl" ".dxl" ".pfsl" ".dfsl" ".p64fsl" ".d64fsl" ".dx64fsl" ".lo" ".la" ".gmo" ".mo" ".toc" ".aux" ".cp" ".fn" ".ky" ".pg" ".tp" ".vr" ".cps" ".fns" ".kys" ".pgs" ".tps" ".vrs" ".pyc" ".pyo")))
+ '(custom-safe-themes (quote ("a60644e5e1985b8c42f1136964622642d16f15bf326e19da8e3da0b86c57409b" "5f12823ed58284102bf6e251c253da34e5737c266e98c0dee44d6944d74e4b34" "3cc0de5a00ef9666ad183e6e0bbf4a524529984faf03cd0d52dd5963c7410bd3" "c7fc32be2df7e03f65b8ceab449be9965f7dfdf5ff96b18d29f89dc78c2a0c67" "087c10544c64e24f6131ae274659d927da966a5347d1976eb372f2d289a1b234" "a6eaff310d2280cacfc92b18fbb37fa89c87b49cd6070d984f83528c2409f535" "fc6e906a0e6ead5747ab2e7c5838166f7350b958d82e410257aeeb2820e8a07a" default)))
  '(default-frame-alist (quote ((tool-bar-lines . 0) (fringe) (right-fringe) (left-fringe . 1) (vertical-scroll-bars . right) (menu-bar-lines . 1) (cursor-color . "#dcdccc") (scroll-bar-background . "#5f5f5f") (background-color . "gray11") (background-mode . dark) (border-color . "gray11") (foreground-color . "#dcdccc") (mouse-color . "#dcdccc"))))
  '(erc-fill-column 68)
  '(erc-fill-function (quote erc-fill-static))
@@ -904,47 +906,15 @@ With prefix arg N, cut this many sequential subtrees."
  '(w32shell-cygwin-bin "C:\\bin")
  '(x-select-enable-clipboard t))
 
-;;; Faces
+;; Subtle face for parens in lisp modes
+(require 'parenface)
+
+(load-theme 'Shawn)
+
+(cd "~")
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(org-level-2 ((t (:inherit font-lock-keyword-face))))
- '(org-level-3 ((t (:inherit font-lock-type-face))))
- '(org-level-4 ((t (:inherit font-lock-variable-name-face)))))
-
-;; Subtle face for parens in lisp modes
-(require 'parenface)
-
-;; Pretty black background color theme.
-;; Call this after all the other useless color settings so none of its
-;; beauty gets overwritten by them.
-;;
-;; Other decent themes are Charcoal black, Goldenrod (in a brownish sort
-;; of way), Calm forest, Blue sea (for a blue background), and Classic.
-(require 'color-theme)
-;; For load time efficiency, only my theme is loaded. Run
-;; color-theme-initialize at any time to see the rest of the themes.
-(cond
- ((< emacs-major-version 22)
-  (color-theme-initialize)
-  (declare-function color-theme-calm-forest
-                    "~/emacs/color/color-theme-6.6.0/themes/color-theme-library.el" nil)
-  (color-theme-calm-forest)
-  (global-font-lock-mode 1)
-  (global-hl-line-mode nil)
-  ;; Lest we get black on black parens
-  (set-face-foreground 'paren-face "green"))
- (t
-  ;;(load "~/emacs/lisp/color-theme-6.6.0/themes/zenburn-shawn")
-  ;;(zenburn-shawn)
-  ;;(load "~/emacs/lisp/color-theme-6.6.0/themes/zenburn")
-  ;;(zenburn)
-
-  (load "~/emacs/lisp/color-theme-6.6.0/themes/blackboard")
-  (color-theme-blackboard)
-  (set-face-foreground 'font-lock-type-face "#aDd6ff")
-  ))
-
-(cd "~")
+ )
