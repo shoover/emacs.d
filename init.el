@@ -405,7 +405,7 @@ sized for something other than reading code or logs."
 (global-set-key (kbd "C-c -") 'decrement-integer-at-point)
 
 ;; Snippets
-(yas/load-directory (concat emacs-root "snippets"))
+;(yas/load-directory (concat emacs-root "snippets"))
 
 ;; Line killing goodness from emacs-fu
 (defadvice kill-ring-save (before slick-copy activate compile)
