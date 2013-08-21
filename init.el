@@ -550,7 +550,8 @@ line instead."
           (lambda ()
             (setq indent-tabs-mode nil)
             (setq tab-width 4)
-            (setq c-basic-offset 4)))
+            (setq c-basic-offset 4)
+            (define-key c-mode-map "\C-c\C-c" 'compile)))
 (add-to-list 'auto-mode-alist '("\\.rl$" . c-mode))
 
 ;; C#
@@ -898,7 +899,7 @@ With prefix arg N, cut this many sequential subtrees."
  '(tab-width 2)
  '(transient-mark-mode t)
  '(user-full-name "Shawn Hoover")
- '(user-mail-address "shawn@bighugh.com")
+ '(user-mail-address "shawn.hoover@gmail.com")
  '(visual-scroll-margin 0)
  '(w32shell-cygwin-bin "C:\\bin")
  '(x-select-enable-clipboard t))
