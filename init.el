@@ -365,7 +365,9 @@ sized for something other than reading code or logs."
 (setq ido-enable-flex-matching t
       ido-everywhere t
       ido-create-new-buffer 'always
-      ido-file-extensions-order '(".org" t))
+      ido-file-extensions-order '(".org" t)
+      ido-max-directory-size 60000 ; avoid "too big" errors on some dirs
+      )
 (ido-mode 1)
 
 (defun my-ido-find-file (arg)
@@ -833,7 +835,7 @@ With prefix arg N, cut this many sequential subtrees."
  '(c-doc-comment-style (quote set-from-style))
  '(column-number-mode t)
  '(completion-ignored-extensions (quote (".obj" ".pdb" ".svn/" "CVS/" ".o" "~" ".bin" ".bak" ".obj" ".map" ".ico" ".pif" ".lnk" ".a" ".ln" ".blg" ".bbl" ".dll" ".drv" ".vxd" ".386" ".elc" ".lof" ".glo" ".idx" ".lot" ".fmt" ".tfm" ".class" ".fas" ".lib" ".mem" ".x86f" ".sparcf" ".fasl" ".ufsl" ".fsl" ".dxl" ".pfsl" ".dfsl" ".p64fsl" ".d64fsl" ".dx64fsl" ".lo" ".la" ".gmo" ".mo" ".toc" ".aux" ".cp" ".fn" ".ky" ".pg" ".tp" ".vr" ".cps" ".fns" ".kys" ".pgs" ".tps" ".vrs" ".pyc" ".pyo")))
- '(custom-safe-themes (quote ("a60644e5e1985b8c42f1136964622642d16f15bf326e19da8e3da0b86c57409b" "5f12823ed58284102bf6e251c253da34e5737c266e98c0dee44d6944d74e4b34" "3cc0de5a00ef9666ad183e6e0bbf4a524529984faf03cd0d52dd5963c7410bd3" "c7fc32be2df7e03f65b8ceab449be9965f7dfdf5ff96b18d29f89dc78c2a0c67" "087c10544c64e24f6131ae274659d927da966a5347d1976eb372f2d289a1b234" "a6eaff310d2280cacfc92b18fbb37fa89c87b49cd6070d984f83528c2409f535" "fc6e906a0e6ead5747ab2e7c5838166f7350b958d82e410257aeeb2820e8a07a" default)))
+ '(custom-safe-themes (quote ("5cc46ad4422547c3b2aa361c484e37162bb2890add12150a4161bb26f2441e13" "a60644e5e1985b8c42f1136964622642d16f15bf326e19da8e3da0b86c57409b" "5f12823ed58284102bf6e251c253da34e5737c266e98c0dee44d6944d74e4b34" "3cc0de5a00ef9666ad183e6e0bbf4a524529984faf03cd0d52dd5963c7410bd3" "c7fc32be2df7e03f65b8ceab449be9965f7dfdf5ff96b18d29f89dc78c2a0c67" "087c10544c64e24f6131ae274659d927da966a5347d1976eb372f2d289a1b234" "a6eaff310d2280cacfc92b18fbb37fa89c87b49cd6070d984f83528c2409f535" "fc6e906a0e6ead5747ab2e7c5838166f7350b958d82e410257aeeb2820e8a07a" default)))
  '(default-frame-alist (quote ((tool-bar-lines . 0) (fringe) (right-fringe) (left-fringe . 1) (vertical-scroll-bars . right) (menu-bar-lines . 1) (cursor-color . "#dcdccc") (scroll-bar-background . "#5f5f5f") (background-color . "gray11") (background-mode . dark) (border-color . "gray11") (foreground-color . "#dcdccc") (mouse-color . "#dcdccc"))))
  '(erc-fill-column 68)
  '(erc-fill-function (quote erc-fill-static))
@@ -853,8 +855,6 @@ With prefix arg N, cut this many sequential subtrees."
  '(hg-outgoing-repository "")
  '(indent-tabs-mode nil)
  '(ns-alternate-modifier (quote alt))
-; '(org-cycle-include-plain-lists t)
-; '(org-tags-column 67)
  '(show-paren-mode t)
  '(show-paren-style (quote mixed))
  '(special-display-regexps (quote (".*SPEEDBAR.*")))
