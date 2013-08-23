@@ -366,7 +366,7 @@ sized for something other than reading code or logs."
       ido-everywhere t
       ido-create-new-buffer 'always
       ido-file-extensions-order '(".org" t)
-      ido-max-directory-size 60000 ; avoid "too big" errors on some dirs
+      ido-max-directory-size 100000 ; avoid "too big" errors on some dirs
       )
 (ido-mode 1)
 
