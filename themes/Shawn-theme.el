@@ -29,7 +29,7 @@
  '(font-lock-variable-name-face ((t (:foreground "#DFAF8F"))))
  '(font-lock-warning-face ((t (:weight bold :foreground "#D0BF8F" :inherit (error)))))
  '(button ((t (:underline (:color foreground-color :style line) :inherit (link)))))
- '(link ((t (:weight bold :underline (:color foreground-color :style line) :foreground "#F0DFAF"))))
+ '(link  ((t (:weight normal :underline (:color foreground-color :style line) :inherit (font-lock-function-name-face)))))
  '(link-visited ((t (:weight normal :underline (:color foreground-color :style line) :foreground "#D0BF8F" :inherit (link)))))
  '(fringe ((t (:foreground "#DCDCCC" :background "#4F4F4F"))))
  '(header-line ((t (:box (:line-width -1 :color nil :style released-button) :foreground "#F0DFAF" :background "#2B2B2B" :inherit (mode-line)))))
@@ -45,6 +45,15 @@
  '(match ((t (:weight bold :foreground "#DFAF8F" :background "#2B2B2B"))))
  '(next-error ((t (:inherit (region)))))
  '(query-replace ((t (:inherit (isearch)))))
+ '(outline-1 ((t (:inherit font-lock-function-name-face :weight bold :foreground "#73C0C3"))))
+ '(outline-2 ((t (:inherit font-lock-variable-name-face :weight bold))))
+ '(outline-3 ((t (:inherit font-lock-keyword-face :weight bold))))
  '(default ((t (:inherit nil :stipple nil :background "gray16" :foreground "#DCDCCC" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 98 :width normal :foundry "outline" :family "Monaco")))))
 
 (provide-theme 'Shawn)
+
+
+
+
+
+
