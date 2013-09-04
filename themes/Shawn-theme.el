@@ -50,6 +50,13 @@
  '(outline-3 ((t (:inherit font-lock-keyword-face :weight bold))))
  '(default ((t (:inherit nil :stipple nil :background "gray16" :foreground "#DCDCCC" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 98 :width normal :foundry "outline" :family "Monaco")))))
 
+(when (eq system-type 'darwin)
+  (custom-theme-set-faces
+   'Shawn
+   ;; need to tweak the height so it's not tiny on OS X
+   '(default ((t (:family "Monaco" :foundry "apple" :width normal :height 120 :weight normal :slant normal :underline nil :overline nil :strike-through nil :box nil :inverse-video nil :foreground "#dcdccc" :background "gray11" :stipple nil :inherit nil))))
+   ))
+
 (provide-theme 'Shawn)
 
 

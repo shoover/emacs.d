@@ -826,6 +826,15 @@ With prefix arg N, cut this many sequential subtrees."
 (add-to-list 'auto-mode-alist '("\\.rake$"  . ruby-mode))
 (add-to-list 'auto-mode-alist '("\\.rxml$"  . ruby-mode))
 
+(defun my-ruby-load-line ()
+  (interactive)
+  (ruby-send-region (point-at-bol) (point-at-eol)))
+
+(add-hook 'ruby-mode-hook
+          (lambda ()
+            ;;(define-key fsharp-mode-map "\C-c\C-b" 'my-fsharp-load-buffer)
+            (define-key ruby-mode-map "\C-c\C-l" 'my-ruby-load-line)))
+
 ;; Subversion
 (require 'psvn)
 (add-hook 'svn-log-edit-mode-hook
