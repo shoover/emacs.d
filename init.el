@@ -151,13 +151,17 @@ other Clojure programmers. Mostly cribbed from `lisp-indent-line'."
   (indent-region (point-min) (point-max))
   (delete-trailing-whitespace))
 
+(defmacro loop-paragraphs (&rest body)
+  `(save-excursion
+     (goto-char (point-min))
+     (while (not (eobp))
+       ,@body
+       (forward-paragraph))))
+
 (defun fill-buffer ()
   (interactive)
-  (save-excursion
-    (goto-char (point-min))
-    (while (not (eobp))
-      (fill-paragraph)
-      (forward-paragraph))))
+  (loop-paragraphs
+   (fill-paragraph)))
 
 ;;; From Stefan Monnier. It is the opposite of fill-paragraph. Takes a
 ;;; multi-line paragraph and makes it into a single line of text.
@@ -168,19 +172,13 @@ other Clojure programmers. Mostly cribbed from `lisp-indent-line'."
 
 (defun unfill-buffer ()
   (interactive)
-  (save-excursion
-    (goto-char (point-min))
-    (while (not (eobp))
-      (unfill-paragraph)
-      (forward-paragraph))))
+  (loop-paragraphs
+   (unfill-paragraph)))
 
 (defun unfill-paragraph-html ()
   "Unfills the current paragraph and inserts HTML breaks at the end."
   (interactive)
-  (let ((beg (point)))
-    (forward-paragraph)
-    (let ((fill-column (point-max)))
-      (fill-region beg (point))))
+  (unfill-paragraph)
   (when (looking-at-p "\n[^\\`]")
     (insert "<br><br>")
     (forward-char)))
@@ -189,12 +187,10 @@ other Clojure programmers. Mostly cribbed from `lisp-indent-line'."
   "Like the function from edit-server.el but instead of wrapping
 text in <pre>, this unfills paragraphs and inserts <br>."
   (interactive)
-  (save-excursion
-    (edit-server-htmlize-replace edit-server-htmlize-regexp
-                                 edit-server-htmlize-replacements)
-    (goto-char (point-min))
-    (while (not (eobp))
-      (unfill-paragraph-html))))
+  (edit-server-htmlize-replace edit-server-htmlize-regexp
+                               edit-server-htmlize-replacements)
+  (loop-paragraphs
+   (unfill-paragraph-html)))
 
 ;;; From http://www.emacswiki.org/emacs/basic-edit-toolkit.el
 (defun move-text-internal (arg)
@@ -900,7 +896,7 @@ With prefix arg N, cut this many sequential subtrees."
  '(c-doc-comment-style (quote set-from-style))
  '(column-number-mode t)
  '(completion-ignored-extensions (quote (".obj" ".pdb" ".svn/" "CVS/" ".o" "~" ".bin" ".bak" ".obj" ".map" ".ico" ".pif" ".lnk" ".a" ".ln" ".blg" ".bbl" ".dll" ".drv" ".vxd" ".386" ".elc" ".lof" ".glo" ".idx" ".lot" ".fmt" ".tfm" ".class" ".fas" ".lib" ".mem" ".x86f" ".sparcf" ".fasl" ".ufsl" ".fsl" ".dxl" ".pfsl" ".dfsl" ".p64fsl" ".d64fsl" ".dx64fsl" ".lo" ".la" ".gmo" ".mo" ".toc" ".aux" ".cp" ".fn" ".ky" ".pg" ".tp" ".vr" ".cps" ".fns" ".kys" ".pgs" ".tps" ".vrs" ".pyc" ".pyo")))
- '(custom-safe-themes (quote ("851cd3ca7947f73662e038835e032db962c134e9694781d9eb981452d0f4845a" "6f104d157c79835223276a215c03c3933ed6a03d85a44123f6baa53172d77bbe" "5cc46ad4422547c3b2aa361c484e37162bb2890add12150a4161bb26f2441e13" "a60644e5e1985b8c42f1136964622642d16f15bf326e19da8e3da0b86c57409b" "5f12823ed58284102bf6e251c253da34e5737c266e98c0dee44d6944d74e4b34" "3cc0de5a00ef9666ad183e6e0bbf4a524529984faf03cd0d52dd5963c7410bd3" "c7fc32be2df7e03f65b8ceab449be9965f7dfdf5ff96b18d29f89dc78c2a0c67" "087c10544c64e24f6131ae274659d927da966a5347d1976eb372f2d289a1b234" "a6eaff310d2280cacfc92b18fbb37fa89c87b49cd6070d984f83528c2409f535" "fc6e906a0e6ead5747ab2e7c5838166f7350b958d82e410257aeeb2820e8a07a" default)))
+ '(custom-safe-themes (quote ("c334c0c90b4177c93e1b27f786ae292672e5e568c6f8f42f973f4663ca20602a" "851cd3ca7947f73662e038835e032db962c134e9694781d9eb981452d0f4845a" "6f104d157c79835223276a215c03c3933ed6a03d85a44123f6baa53172d77bbe" "5cc46ad4422547c3b2aa361c484e37162bb2890add12150a4161bb26f2441e13" "a60644e5e1985b8c42f1136964622642d16f15bf326e19da8e3da0b86c57409b" "5f12823ed58284102bf6e251c253da34e5737c266e98c0dee44d6944d74e4b34" "3cc0de5a00ef9666ad183e6e0bbf4a524529984faf03cd0d52dd5963c7410bd3" "c7fc32be2df7e03f65b8ceab449be9965f7dfdf5ff96b18d29f89dc78c2a0c67" "087c10544c64e24f6131ae274659d927da966a5347d1976eb372f2d289a1b234" "a6eaff310d2280cacfc92b18fbb37fa89c87b49cd6070d984f83528c2409f535" "fc6e906a0e6ead5747ab2e7c5838166f7350b958d82e410257aeeb2820e8a07a" default)))
  '(default-frame-alist (quote ((tool-bar-lines . 0) (fringe) (right-fringe) (left-fringe . 1) (vertical-scroll-bars . right) (menu-bar-lines . 1) (cursor-color . "#dcdccc") (scroll-bar-background . "#5f5f5f") (background-color . "gray11") (background-mode . dark) (border-color . "gray11") (foreground-color . "#dcdccc") (mouse-color . "#dcdccc"))))
  '(erc-fill-column 68)
  '(erc-fill-function (quote erc-fill-static))
