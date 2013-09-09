@@ -48,6 +48,7 @@
  '(outline-1 ((t (:inherit font-lock-function-name-face :weight bold :foreground "#73C0C3"))))
  '(outline-2 ((t (:inherit font-lock-variable-name-face :weight bold))))
  '(outline-3 ((t (:inherit font-lock-keyword-face :weight bold))))
+ '(org-done ((t (:weight bold :foreground "DarkKhaki"))))
  '(default ((t (:inherit nil :stipple nil :background "gray16" :foreground "#DCDCCC" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 98 :width normal :foundry "outline" :family "Monaco")))))
 
 (when (eq system-type 'darwin)

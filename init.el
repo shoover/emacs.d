@@ -179,6 +179,10 @@ other Clojure programmers. Mostly cribbed from `lisp-indent-line'."
   "Unfills the current paragraph and inserts HTML breaks at the end."
   (interactive)
   (unfill-paragraph)
+
+  ;; Only insert breaks if we're not at the end of the buffer (last
+  ;; paragraph). I couldn't get a standard looking-at/replace-match to work
+  ;; without consuming the next character.
   (when (looking-at-p "\n[^\\`]")
     (insert "<br><br>")
     (forward-char)))
