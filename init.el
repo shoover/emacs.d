@@ -470,28 +470,6 @@ line instead."
 (setq uniquify-buffer-name-style 'post-forward
       uniquify-separator ":")
 
-;; Fancy buffer listing
-(require 'ibuffer) 
-(setq ibuffer-saved-filter-groups
-      (quote (("default"      
-               ("Org" ;; all org-related buffers
-                (mode . org-mode))  
-               ("Work"
-                (filename . "/dev/"))
-               ("Code"
-                (or
-                 (name . "repl")
-                 (name . "\\*inf\\(erior\\)?-")
-                 (mode . c-mode)
-                 (mode . clojure-mode)
-                 (mode . cs-mode)
-                 (mode . emacs-lisp-mode)
-                 (mode . java-mode)
-                 (mode . perl-mode)
-                 (mode . python-mode)
-                 (mode . ruby-mode)
-                 ))))))
-
 ;; eshell prompt
 (setq eshell-prompt-function (lambda nil (concat "\n" (eshell/pwd) "\n$ "))
       eshell-prompt-regexp "^\$ ")
