@@ -21,7 +21,6 @@
                    (add-to-list 'load-path
                                 (concat emacs-root p))))
   (add-path "lisp")
-  (add-path "lisp/auto-complete")
   (add-path "lisp/fsharp"))
 
 (setq custom-theme-directory (concat emacs-root "themes"))
@@ -80,11 +79,6 @@
 
 (setq ispell-program-name "aspell"
       ispell-extra-args '("--sug-mode=ultra"))
-
-(require 'auto-complete-config)
-(add-to-list 'ac-dictionary-directories
-             (concat emacs-root "lisp/auto-complete/ac-dict"))
-(ac-config-default)
 
 (setq backup-directory-alist
       `(("." . ,(expand-file-name "~/.emacs.d/auto-save"))))
