@@ -155,7 +155,7 @@ other Clojure programmers. Mostly cribbed from `lisp-indent-line'."
 (defun fill-buffer ()
   (interactive)
   (loop-paragraphs
-   (fill-paragraph)))
+   (fill-paragraph nil)))
 
 ;;; From Stefan Monnier. It is the opposite of fill-paragraph. Takes a
 ;;; multi-line paragraph and makes it into a single line of text.
