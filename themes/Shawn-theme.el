@@ -1,6 +1,9 @@
 (deftheme Shawn
   "Created 2013-08-21.")
 
+(defvar custom-theme-shawn-default
+  '((t (:inherit nil :stipple nil :background "gray12" :foreground "#DCDCCC" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 98 :width normal :foundry "outline" :family "Monaco"))))
+
 (custom-theme-set-faces
  'Shawn
  '(cursor ((t (:foreground "#DCDCCC" :background "white"))))
@@ -49,7 +52,7 @@
  '(outline-2 ((t (:inherit font-lock-variable-name-face :weight bold))))
  '(outline-3 ((t (:inherit font-lock-keyword-face :weight bold))))
  '(org-done ((t (:weight bold :foreground "DarkKhaki"))))
- '(default ((t (:inherit nil :stipple nil :background "gray12" :foreground "#DCDCCC" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 98 :width normal :foundry "outline" :family "Monaco")))))
+ `(default ,custom-theme-shawn-default))
 
 (when (eq system-type 'darwin)
   (custom-theme-set-faces
