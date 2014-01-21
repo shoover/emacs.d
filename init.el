@@ -914,6 +914,8 @@ With prefix arg N, cut this many sequential subtrees."
  '(hg-outgoing-repository "")
  '(indent-tabs-mode nil)
  '(ns-alternate-modifier (quote alt))
+ '(rst-level-face-base-light 20)
+ '(rst-level-face-step-light 7)
  '(show-paren-mode t)
  '(show-paren-style (quote mixed))
  '(special-display-regexps (quote (".*SPEEDBAR.*")))
