@@ -155,7 +155,7 @@ other Clojure programmers. Mostly cribbed from `lisp-indent-line'."
 (defun fill-buffer ()
   (interactive)
   (loop-paragraphs
-   (fill-paragraph)))
+   (fill-paragraph nil)))
 
 ;;; From Stefan Monnier. It is the opposite of fill-paragraph. Takes a
 ;;; multi-line paragraph and makes it into a single line of text.
@@ -897,7 +897,7 @@ With prefix arg N, cut this many sequential subtrees."
  '(c-doc-comment-style (quote set-from-style))
  '(column-number-mode t)
  '(completion-ignored-extensions (quote (".obj" ".pdb" ".svn/" "CVS/" ".o" "~" ".bin" ".bak" ".obj" ".map" ".ico" ".pif" ".lnk" ".a" ".ln" ".blg" ".bbl" ".dll" ".drv" ".vxd" ".386" ".elc" ".lof" ".glo" ".idx" ".lot" ".fmt" ".tfm" ".class" ".fas" ".lib" ".mem" ".x86f" ".sparcf" ".fasl" ".ufsl" ".fsl" ".dxl" ".pfsl" ".dfsl" ".p64fsl" ".d64fsl" ".dx64fsl" ".lo" ".la" ".gmo" ".mo" ".toc" ".aux" ".cp" ".fn" ".ky" ".pg" ".tp" ".vr" ".cps" ".fns" ".kys" ".pgs" ".tps" ".vrs" ".pyc" ".pyo")))
- '(custom-safe-themes (quote ("47372e349f9fee5ce5350c03358628f36ccfc25e7a4e73d1a0473511d295c2f8" default)))
+ '(custom-safe-themes (quote ("1218df7ba75a7d9d51199866d9d7bf1861e54122863366cf097c4cae9c2a625c" "47372e349f9fee5ce5350c03358628f36ccfc25e7a4e73d1a0473511d295c2f8" default)))
  '(default-frame-alist (quote ((width . 95) (height . 55))))
  '(erc-fill-column 68)
  '(erc-fill-function (quote erc-fill-static))
