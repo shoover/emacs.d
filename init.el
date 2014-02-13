@@ -21,7 +21,6 @@
                    (add-to-list 'load-path
                                 (concat emacs-root p))))
   (add-path "lisp")
-  (add-path "lisp/auto-complete")
   (add-path "lisp/fsharp"))
 
 (setq custom-theme-directory (concat emacs-root "themes"))
@@ -80,11 +79,6 @@
 
 (setq ispell-program-name "aspell"
       ispell-extra-args '("--sug-mode=ultra"))
-
-(require 'auto-complete-config)
-(add-to-list 'ac-dictionary-directories
-             (concat emacs-root "lisp/auto-complete/ac-dict"))
-(ac-config-default)
 
 (setq backup-directory-alist
       `(("." . ,(expand-file-name "~/.emacs.d/auto-save"))))
@@ -719,30 +713,6 @@ With prefix arg N, cut this many sequential subtrees."
   ;; kill-region but org-paste-subtree doesn't set it.
   (setq this-command 'my-org-promote-subtree))
 
-(setq org-publish-project-alist
-      `(("workorg"
-         :base-directory ,org-directory
-         :exclude ".org"
-         :include ("apps.org")
-         :publishing-directory "z:/users/shawn/html"
-         :section-numbers t
-         :table-of-contents t)
-        ("workdocs"
-         :base-directory ,org-directory
-         :base-extension "docx\\|pptx"
-         :publishing-directory "z:/users/shawn/html"
-         :publishing-function org-publish-attachment)
-        ("work" :components ("workorg" "workdocs"))
-        ("clojure-box-org"
-         :base-directory "c:/users/shawn/dev/clojure-box/web"
-         :publishing-directory "/plinkx:dh:clojure.bighugh.com")
-        ("clojure-box-extra"
-         :base-directory "c:/users/shawn/dev/clojure-box/web"
-         :base-extension "css"
-         :publishing-function org-publish-attachment
-         :publishing-directory "/plinkx:dh:clojure.bighugh.com")
-        ("clojure-box" :components ("clojure-box-org" "clojure-box-extra"))
-        ))
 (add-hook 'org-mode-hook
           (lambda ()
             (turn-on-auto-fill)))
@@ -775,7 +745,56 @@ With prefix arg N, cut this many sequential subtrees."
                   org-refile-allow-creating-parent-nodes 'confirm)))
 (setq org-mobile-inbox-for-pull (concat org-directory "/flagged.org")
       org-mobile-directory (concat org-directory "/../Apps/MobileOrg"))
+(setq org-default-notes-file (concat org-directory "/action.org"))
 
+;; org-capture frames, adapted from Lau's remember frames:
+;; http://github.com/LauJensen/Configs/blob/master/emacs
+(defun capture-frame-p ()
+  (equal "*Capture*" (frame-parameter nil 'name)))
+
+;; Automatic closing of capture frames
+(defadvice org-capture-finalize (after delete-capture-frame activate)
+  "Advise to close the frame if it is the remember frame"
+  (when (capture-frame-p)
+    (delete-frame)))
+(defadvice org-capture-kill (after delete-capture-frame activate)
+  "Advise remember-destroy to close the frame if it is the remember frame"
+  (when (capture-frame-p)
+    (delete-frame)))
+
+(defun make-capture-frame ()
+  "Create a new frame and run org capture."
+  (interactive)
+  (make-frame '((name . "*Capture*") (width . 80) (height . 20)))
+  (select-frame-by-name "*Capture*")
+
+  ;; Capture template selection uses org-mks, which insists on using a
+  ;; separate window to pick the template. This looks weird when we already
+  ;; are making a separate frame, so hack it to use the same window.
+  (letf (((symbol-function 'org-switch-to-buffer-other-window)
+          #'switch-to-buffer))
+    (org-capture)))
+
+;; Patch org-get-x-clipboard to work on Windows:
+;; http://lists.gnu.org/archive/html/emacs-orgmode/2013-11/msg00675.html
+(defun org-get-x-clipboard (value)
+  "Get the value of the x or Windows clipboard, compatible with XEmacs, and GNU Emacs 21."
+  (cond ((eq window-system 'x)
+         (let ((x (org-get-x-clipboard-compat value)))
+           (if x (org-no-properties x))))
+        ((and (eq window-system 'w32) (fboundp 'w32-get-clipboard-data))
+         (w32-get-clipboard-data))))
+
+(setq org-capture-templates
+      '(("a" "Action" entry (file org-default-notes-file)
+         "* %?\n%i" :prepend t)
+        ("w" "Work" entry (file my-work-org)
+         "* %?\n%i" :prepend t)
+        ("v" "Templates for pasting the OS clipboard")
+        ("va" "Action, paste clipboard" entry (file org-default-notes-file)
+         "* %?\n%x" :prepend t)
+        ("vw" "Work, paste clipboard" entry (file my-work-org)
+         "* %?\n%x" :prepend t)))
 ;; Make
 (setq compile-command "make ")
 
