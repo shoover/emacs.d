@@ -132,10 +132,13 @@ other Clojure programmers. Mostly cribbed from `lisp-indent-line'."
         (delete-region beg (point))
         (indent-to indent)))))
 
-(defun my-comment-sexp ()
-  (interactive)
+(defun my-comment-sexp (&optional arg allow-extend)
+  "Comment ARG sexps from point. If a region is active, that
+region is commented instead."
+  (interactive "P\np")
   (save-excursion
-    (mark-sexp)
+    (when (not mark-active)
+      (mark-sexp arg allow-extend))
     (comment-region (region-beginning) (region-end))))
 
 ;; cleanup, from Tim Dysinger
@@ -753,14 +756,10 @@ With prefix arg N, cut this many sequential subtrees."
   (equal "*Capture*" (frame-parameter nil 'name)))
 
 ;; Automatic closing of capture frames
-(defadvice org-capture-finalize (after delete-capture-frame activate)
-  "Advise to close the frame if it is the remember frame"
-  (when (capture-frame-p)
-    (delete-frame)))
-(defadvice org-capture-kill (after delete-capture-frame activate)
-  "Advise remember-destroy to close the frame if it is the remember frame"
-  (when (capture-frame-p)
-    (delete-frame)))
+(add-hook 'org-capture-after-finalize-hook
+          (lambda ()
+            (when (capture-frame-p)
+              (delete-frame))))
 
 (defun make-capture-frame ()
   "Create a new frame and run org capture."
@@ -773,7 +772,7 @@ With prefix arg N, cut this many sequential subtrees."
   ;; are making a separate frame, so hack it to use the same window.
   (letf (((symbol-function 'org-switch-to-buffer-other-window)
           #'switch-to-buffer))
-    (org-capture)))
+        (org-capture)))
 
 ;; Patch org-get-x-clipboard to work on Windows:
 ;; http://lists.gnu.org/archive/html/emacs-orgmode/2013-11/msg00675.html
@@ -795,6 +794,7 @@ With prefix arg N, cut this many sequential subtrees."
          "* %?\n%x" :prepend t)
         ("vw" "Work, paste clipboard" entry (file my-work-org)
          "* %?\n%x" :prepend t)))
+
 ;; Make
 (setq compile-command "make ")
 
@@ -928,7 +928,7 @@ With prefix arg N, cut this many sequential subtrees."
  '(visual-scroll-margin 0)
  '(w32shell-cygwin-bin "C:\\bin")
  '(x-select-enable-clipboard t))
- 
+
 
 ;; Subtle face for parens in lisp modes
 (require 'parenface)
