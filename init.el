@@ -15,13 +15,8 @@
 
 (defvar emacs-root "~/emacs/" "emacs load path root")
 
-;; Add elisp directories under ~/emacs to my load path.
-(require 'cl)
-(labels ((add-path (p)
-                   (add-to-list 'load-path
-                                (concat emacs-root p))))
-  (add-path "lisp")
-  (add-path "lisp/fsharp"))
+;; Add a smattering of elisp under ~/emacs to my load path.
+(add-to-list 'load-path (concat emacs-root "lisp"))
 
 (setq custom-theme-directory (concat emacs-root "themes"))
 
@@ -39,7 +34,7 @@
   ;; because that happens before this.
   (require 'emacsw32 nil t)
 
-  ;; Put cygwin ahead for system32 for emacs and things it shells out to.
+  ;; Put cygwin ahead of system32 for emacs and things it shells out to.
   ;; The gnuwin32 find.exe that comes with emacsw32 has a bug and doesn't
   ;; look for wildcards in the path you specify.
   (setenv "PATH" (concat "c:/bin" path-separator (getenv "PATH"))))
@@ -65,7 +60,7 @@
                                 space-after-tab)))
 
 (blink-cursor-mode 1)
-(fset 'yes-or-no-p 'y-or-n-p) ; Allow "y or n" instead of "yes or no"
+(fset 'yes-or-no-p 'y-or-n-p) ; "y or n" instead of "yes or no"
 (setq inhibit-splash-screen t)
 (setq ring-bell-function (lambda () (message "")))
 
@@ -116,7 +111,7 @@
         (indent-region (region-beginning) (region-end))
       (indent-buffer))))
 
-(defun my-indent-line ()
+(defun indent-line ()
   "Indent ;-comments like ;;-comments for compatibility with
 other Clojure programmers. Mostly cribbed from `lisp-indent-line'."
   (interactive)
@@ -132,18 +127,14 @@ other Clojure programmers. Mostly cribbed from `lisp-indent-line'."
         (delete-region beg (point))
         (indent-to indent)))))
 
-(defun my-comment-sexp ()
-  (interactive)
+(defun my-comment-sexp (&optional arg allow-extend)
+  "Comment ARG sexps from point. If a region is active, that
+region is commented instead."
+  (interactive "P\np")
   (save-excursion
-    (mark-sexp)
+    (when (not mark-active)
+      (mark-sexp arg allow-extend))
     (comment-region (region-beginning) (region-end))))
-
-;; cleanup, from Tim Dysinger
-(defun cleanup-whitespace ()
-  (interactive)
-  (untabify (point-min) (point-max))
-  (indent-region (point-min) (point-max))
-  (delete-trailing-whitespace))
 
 (defmacro loop-paragraphs (&rest body)
   `(save-excursion
@@ -271,7 +262,7 @@ table determines which characters these are."
               "The region has %d words." count))))))
 
 ;; adapted from http://blog.bookworm.at/2007/03/pretty-print-xml-with-emacs.html
-(defun my-nxml-format-region (begin end)
+(defun nxml-format-region (begin end)
   "Formats XML markup in the region with line breaks and indentation."
   (interactive
    (if mark-active
@@ -291,7 +282,7 @@ table determines which characters these are."
             (when (and (boundp 'archive-superior-buffer)
                        archive-superior-buffer
                        (eq 'nxml-mode major-mode))
-              (my-nxml-format-region (point-min) (point-max))
+              (nxml-format-region (point-min) (point-max))
               (setq buffer-undo-list nil)
               (set-buffer-modified-p nil))))
 
@@ -321,7 +312,7 @@ table determines which characters these are."
   (pop-to-buffer 
    (make-comint "sqlite" "sqlite3" nil "-interactive" db)))
 
-(defun my-eval-print ()
+(defun eval-print ()
   (interactive)
   (let ((standard-output (current-buffer)))
     (terpri)
@@ -372,14 +363,14 @@ scan-error if not."
        'paredit-backward-maybe-delete-region)
      (define-key paredit-mode-map (kbd ";") 'self-insert-command)))
 
-(defun my-next-previous-buffer (arg)
+(defun next-previous-buffer (arg)
   "next-buffer, or previous- with prefix arg"
   (interactive "P")
   (if arg
       (previous-buffer)
     (next-buffer)))
 
-(defun my-move-buffer-other-frame ()
+(defun move-buffer-other-frame ()
   "Moves the current buffer to another frame. If there's another
 frame, it is used. Otherwise a new frame is created. This is
 mainly useful when emacsclient opens a file in a frame that's
@@ -416,7 +407,7 @@ sized for something other than reading code or logs."
 
 (global-set-key [f1] 'toggle-selective-display)
 
-(global-set-key [C-tab] 'my-next-previous-buffer)
+(global-set-key [C-tab] 'next-previous-buffer)
 (when (eq system-type 'darwin)
   (global-set-key "\M-`" 'other-frame))
 
@@ -439,7 +430,7 @@ sized for something other than reading code or logs."
 (global-set-key (kbd "C-c -") 'decrement-integer-at-point)
 
 ;; Snippets
-                                        ;(yas/load-directory (concat emacs-root "snippets"))
+;(yas/load-directory (concat emacs-root "snippets"))
 
 ;; Line killing goodness from emacs-fu
 (defadvice kill-ring-save (before slick-copy activate compile)
@@ -463,28 +454,6 @@ line instead."
 (require 'uniquify)
 (setq uniquify-buffer-name-style 'post-forward
       uniquify-separator ":")
-
-;; Fancy buffer listing
-(require 'ibuffer) 
-(setq ibuffer-saved-filter-groups
-      (quote (("default"      
-               ("Org" ;; all org-related buffers
-                (mode . org-mode))  
-               ("Work"
-                (filename . "/dev/"))
-               ("Code"
-                (or
-                 (name . "repl")
-                 (name . "\\*inf\\(erior\\)?-")
-                 (mode . c-mode)
-                 (mode . clojure-mode)
-                 (mode . cs-mode)
-                 (mode . emacs-lisp-mode)
-                 (mode . java-mode)
-                 (mode . perl-mode)
-                 (mode . python-mode)
-                 (mode . ruby-mode)
-                 ))))))
 
 ;; eshell prompt
 (setq eshell-prompt-function (lambda nil (concat "\n" (eshell/pwd) "\n$ "))
@@ -591,8 +560,6 @@ line instead."
 (add-to-list 'auto-mode-alist '("\\.rl$" . c-mode))
 
 ;; C#
-(autoload 'csharp-mode "csharp-mode" "Edit C# files" t)
-(add-to-list 'auto-mode-alist '("\\.cs$" . csharp-mode))
 (add-hook 'csharp-mode-hook
           (lambda ()
             (setq tab-width 4)
@@ -603,9 +570,9 @@ line instead."
 (add-hook 'clojure-mode-hook 'lisp-enable-paredit-hook)
 (add-hook 'clojure-mode-hook
           (lambda ()
-            (define-key clojure-mode-map "\C-c\C-l" 'my-load-buffer)
+            (define-key clojure-mode-map "\C-c\C-l" 'lisp-load-buffer)
             (set (make-local-variable 'indent-line-function)
-                 'my-indent-line)
+                 'indent-line)
             (define-clojure-indent (defmethod 'defun))))
 (add-hook 'inferior-lisp-mode-hook
           (lambda ()
@@ -617,14 +584,14 @@ line instead."
 (add-hook 'slime-repl-mode-hook 'set-up-slime-ac)
 
 ;; From nakkaya.com
-(defun my-load-buffer ()
+(defun lisp-load-buffer ()
   (interactive)
   (point-to-register 5)
   (mark-whole-buffer)
   (lisp-eval-region (point) (mark) nil)
   (jump-to-register 5))
 
-(defun my-slime (clojure-jar)
+(defun slime-clojure-jar (clojure-jar)
   "Set up the classpath with a custom clojure jar."
   (interactive (list (read-string "Clojure jar:")))
   ;; (setq swank-clojure-classpath (swank-clojure-default-classpath))
@@ -648,80 +615,34 @@ line instead."
             (turn-on-eldoc-mode)
             (paredit-mode 1)))
 
-;; erc
-(setq erc-autojoin-channels-alist '(("freenode.net" "#clojure")))
-(defvar my-erc-frame nil "Cache the frame where ERC lives to raise later")
-(defvar my-erc-buffer nil "Cache the buffer ERC to see if it's alive later")
-(defun my-erc (&optional server nick pass)
-  "Starts ERC in a new frame with Georgia font. If ERC is
-running, raises the most recently updated ERC buffer."
-  (interactive)
-
-  ;; Make a frame if the one isn't there
-  (unless (frame-live-p my-erc-frame)
-    (setq my-erc-frame (select-frame (make-frame)))
-    (unless nix
-      ;;(set-frame-font "Georgia-12")
-      ;; Widen a bit to correct timestamp display at right edge.
-      ;; (set-frame-width my-erc-frame (+ (frame-width my-erc-frame) 2))
-      ;; No, narrow it!
-      (set-frame-width my-erc-frame (- (frame-width my-erc-frame) 8))
-      ))
-
-  ;; Open ERC if the buffer is dead
-  (unless (buffer-live-p my-erc-buffer)
-    (load "~/.emacs.d/.ercpass")
-    (select-frame my-erc-frame)
-    (setq my-erc-buffer (erc :server server :nick (or nick erc-nick)
-                             :password (or pass erc-password))))
-
-  (raise-frame (select-frame my-erc-frame))
-  (switch-to-buffer my-erc-buffer))
-
-;; Update my-erc-buffer so my-erc always displays the most recently updated
-;; erc buffer.
-(add-hook 'erc-insert-post-hook
-          (lambda () (setq my-erc-buffer (current-buffer))))
-
-(defun my-erc-scroll-to-bottom ()
-  (interactive)
-  (end-of-buffer)
-  (previous-line)
-  (recenter 0))
-(eval-after-load 'erc
-  '(progn
-     (define-key erc-mode-map "\M->" 'my-erc-scroll-to-bottom)))
-
 ;; F#
-(setq auto-mode-alist (cons '("\\.fs[iylx]?$" . fsharp-mode) auto-mode-alist))
-(autoload 'fsharp-mode "fsharp" "Major mode for editing F# code." t)
-(autoload 'run-fsharp "inf-fsharp" "Run an inferior F# process." t)
 (defvar inferior-fsharp-program "\"c:\\Program Files (x86)\\Microsoft F#\\v4.0\\Fsi.exe\"")
 (defvar fsharp-compiler "\"c:\\Program Files (x86)\\Microsoft F#\\v4.0\\Fsc.exe\"")
 (add-hook 'fsharp-mode-hook
           (lambda ()
-            (define-key fsharp-mode-map "\C-c\C-b" 'my-fsharp-load-buffer)
-            (define-key fsharp-mode-map "\C-c\C-l" 'my-fsharp-load-line)))
+            (define-key fsharp-mode-map "\C-c\C-b" 'fsharp-load-buffer)
+            (define-key fsharp-mode-map "\C-c\C-l" 'fsharp-load-line)))
 (add-hook 'inferior-fsharp-mode-hooks
           (lambda ()
             (add-to-list 'comint-output-filter-functions
                          'comint-truncate-buffer)
             (setq comint-buffer-maximum-size 5000)))
 
-(defun my-fsharp-load-buffer ()
+(defun fsharp-load-buffer ()
   (interactive)
   (fsharp-eval-region (point-min) (point-max)))
 
-(defun my-fsharp-load-line ()
+(defun fsharp-load-line ()
   (interactive)
   (fsharp-eval-region (point-at-bol) (point-at-eol)))
 
 ;; org-mode
-(defun my-org-todo-done ()
+(defun org-todo-done ()
+  "Change the TODO state of an item to ""done""."
   (interactive)
   (org-todo 'done))
 
-(defun my-org-promote-subtree (&optional n)
+(defun org-promote-subtree (&optional n)
   "Cut the current subtree and paste it one heading level up.
 With prefix arg N, cut this many sequential subtrees."
   (interactive)
@@ -733,32 +654,8 @@ With prefix arg N, cut this many sequential subtrees."
   ;; Work around so repeated calls don't append to the previous promoted text
   ;; and paste duplicate info. org-cut-subtree leaves last-command set to
   ;; kill-region but org-paste-subtree doesn't set it.
-  (setq this-command 'my-org-promote-subtree))
+  (setq this-command 'org-promote-subtree))
 
-(setq org-publish-project-alist
-      `(("workorg"
-         :base-directory ,org-directory
-         :exclude ".org"
-         :include ("apps.org")
-         :publishing-directory "z:/users/shawn/html"
-         :section-numbers t
-         :table-of-contents t)
-        ("workdocs"
-         :base-directory ,org-directory
-         :base-extension "docx\\|pptx"
-         :publishing-directory "z:/users/shawn/html"
-         :publishing-function org-publish-attachment)
-        ("work" :components ("workorg" "workdocs"))
-        ("clojure-box-org"
-         :base-directory "c:/users/shawn/dev/clojure-box/web"
-         :publishing-directory "/plinkx:dh:clojure.bighugh.com")
-        ("clojure-box-extra"
-         :base-directory "c:/users/shawn/dev/clojure-box/web"
-         :base-extension "css"
-         :publishing-function org-publish-attachment
-         :publishing-directory "/plinkx:dh:clojure.bighugh.com")
-        ("clojure-box" :components ("clojure-box-org" "clojure-box-extra"))
-        ))
 (add-hook 'org-mode-hook
           (lambda ()
             (turn-on-auto-fill)))
@@ -773,8 +670,8 @@ With prefix arg N, cut this many sequential subtrees."
             (define-key org-mode-map "\M-," 'org-mark-ring-goto)
 
             (define-key org-mode-map "\C-\M-a" 'org-archive-subtree)
-            (define-key org-mode-map "\C-\M-p" 'my-org-promote-subtree)
-            (define-key org-mode-map "\C-cd" 'my-org-todo-done)
+            (define-key org-mode-map "\C-\M-p" 'org-promote-subtree)
+            (define-key org-mode-map "\C-cd" 'org-todo-done)
 
             ;; clear this so next- previous-buffer works
             (define-key org-mode-map [C-tab] nil)
@@ -791,6 +688,52 @@ With prefix arg N, cut this many sequential subtrees."
                   org-refile-allow-creating-parent-nodes 'confirm)))
 (setq org-mobile-inbox-for-pull (concat org-directory "/flagged.org")
       org-mobile-directory (concat org-directory "/../Apps/MobileOrg"))
+(setq org-default-notes-file (concat org-directory "/action.org"))
+
+;; org-capture frames, adapted from Lau's remember frames:
+;; http://github.com/LauJensen/Configs/blob/master/emacs
+(defun capture-frame-p ()
+  (equal "*Capture*" (frame-parameter nil 'name)))
+
+;; Automatic closing of capture frames
+(add-hook 'org-capture-after-finalize-hook
+          (lambda ()
+            (when (capture-frame-p)
+              (delete-frame))))
+
+(defun make-capture-frame ()
+  "Create a new frame and run org capture."
+  (interactive)
+  (make-frame '((name . "*Capture*") (width . 80) (height . 20)))
+  (select-frame-by-name "*Capture*")
+
+  ;; Capture template selection uses org-mks, which insists on using a
+  ;; separate window to pick the template. This looks weird when we already
+  ;; are making a separate frame, so hack it to use the same window.
+  (letf (((symbol-function 'org-switch-to-buffer-other-window)
+          #'switch-to-buffer))
+        (org-capture)))
+
+;; Patch org-get-x-clipboard to work on Windows:
+;; http://lists.gnu.org/archive/html/emacs-orgmode/2013-11/msg00675.html
+(defun org-get-x-clipboard (value)
+  "Get the value of the x or Windows clipboard, compatible with XEmacs, and GNU Emacs 21."
+  (cond ((eq window-system 'x)
+         (let ((x (org-get-x-clipboard-compat value)))
+           (if x (org-no-properties x))))
+        ((and (eq window-system 'w32) (fboundp 'w32-get-clipboard-data))
+         (w32-get-clipboard-data))))
+
+(setq org-capture-templates
+      '(("a" "Action" entry (file org-default-notes-file)
+         "* %?\n%i" :prepend t)
+        ("w" "Work" entry (file my-work-org)
+         "* %?\n%i" :prepend t)
+        ("v" "Templates for pasting the OS clipboard")
+        ("va" "Action, paste clipboard" entry (file org-default-notes-file)
+         "* %?\n%x" :prepend t)
+        ("vw" "Work, paste clipboard" entry (file my-work-org)
+         "* %?\n%x" :prepend t)))
 
 ;; Make
 (setq compile-command "make ")
@@ -820,22 +763,13 @@ With prefix arg N, cut this many sequential subtrees."
 (add-to-list 'auto-mode-alist '("\\.rake$"  . ruby-mode))
 (add-to-list 'auto-mode-alist '("\\.rxml$"  . ruby-mode))
 
-(defun my-ruby-load-line ()
+(defun ruby-load-line ()
   (interactive)
   (ruby-send-region (point-at-bol) (point-at-eol)))
 
 (add-hook 'ruby-mode-hook
           (lambda ()
-            ;;(define-key fsharp-mode-map "\C-c\C-b" 'my-fsharp-load-buffer)
-            (define-key ruby-mode-map "\C-c\C-l" 'my-ruby-load-line)))
-
-;; Subversion
-(require 'psvn)
-(add-hook 'svn-log-edit-mode-hook
-          '(lambda ()
-             (turn-on-auto-fill)
-             (setq tab-width 2)
-             (setq indent-tabs-mode nil)))
+            (define-key ruby-mode-map "\C-c\C-l" 'ruby-load-line)))
 
 ;; Text
 (add-hook 'text-mode-hook 'turn-on-auto-fill)
@@ -927,7 +861,7 @@ With prefix arg N, cut this many sequential subtrees."
  '(visual-scroll-margin 0)
  '(w32shell-cygwin-bin "C:\\bin")
  '(x-select-enable-clipboard t))
- 
+
 
 ;; Subtle face for parens in lisp modes
 (require 'parenface)
