@@ -523,15 +523,17 @@ line instead."
       (message "Copied buffer file name '%s' to the clipboard." filename))))
 
 (defun open-with ()
-  "Open the buffer file file in an external program."
+  "Open the buffer file file in an external program or shell default."
   (interactive)
   (when buffer-file-name
-    (shell-command (concat
-                    (if (eq system-type 'darwin)
-                        "open"
-                      (read-shell-command "Open current file with: "))
-                    " "
-                    buffer-file-name))))
+    (let* ((open (cond
+                 ((eq system-type 'darwin) "open")
+                 (nix "xdg-open")
+                 ((eq system-type 'windows-nt) "start")
+                 (t "")))
+          (prompt (concat  "Open current file with (default " open "):")))
+      (shell-command
+       (concat (read-shell-command prompt nil nil open) " " buffer-file-name)))))
 
 (defun google ()
   "Google the selected region if any, display a query prompt otherwise."
