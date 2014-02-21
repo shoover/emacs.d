@@ -531,7 +531,7 @@ line instead."
                  (nix "xdg-open")
                  ((eq system-type 'windows-nt) "start")
                  (t "")))
-          (prompt (concat  "Open current file with (default " open "):")))
+          (prompt (format "Open current file with (default %s):" open)))
       (shell-command
        (concat (read-shell-command prompt nil nil open) " " buffer-file-name)))))
 
