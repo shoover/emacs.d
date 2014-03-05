@@ -6,8 +6,10 @@
 ;; - provides a function to reload a script
 ;;
 ;; Setup:
-;; (autoload 'autohotkey-mode "autohotkey-mode" "Edit AutoHotkey scripts" t)
-;; (add-to-list 'auto-mode-alist '("\\.ahk$" . autohotkey-mode))
+;;   (autoload 'autohotkey-mode "autohotkey-mode" "Edit AutoHotkey scripts" t)
+;;   (add-to-list 'auto-mode-alist '("\\.ahk$" . autohotkey-mode))
+;;   ; optionally override the exe
+;;   (setq autohotkey-exe "c:/bin/autohotkey.exe")
 
 (require 'generic-x)
 
