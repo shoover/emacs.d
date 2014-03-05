@@ -28,7 +28,7 @@
     (define-key map "\C-c\C-r" 'autohotkey-reload)
     map))
 
-(defvar authotkey-exe "c:/program files/autohotkey/autohotkey.exe")
+(defvar autohotkey-exe "c:/program files/autohotkey/autohotkey.exe")
 
 (defun autohotkey-reload ()
   "Reloads the current buffer file AutoHotkey script."
