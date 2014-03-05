@@ -522,17 +522,19 @@ line instead."
       (kill-new filename)
       (message "Copied buffer file name '%s' to the clipboard." filename))))
 
-(defun open-with ()
-  "Open the buffer file file in an external program or shell default."
-  (interactive)
+(defun open-with (arg)
+  "Open the buffer file file in an external program or shell
+default. Uses async-shell-command if a prefix arg is given."
+  (interactive "P")
   (when buffer-file-name
     (let* ((open (cond
                  ((eq system-type 'darwin) "open")
                  (nix "xdg-open")
                  ((eq system-type 'windows-nt) "start")
                  (t "")))
-          (prompt (format "Open current file with (default %s):" open)))
-      (shell-command
+          (prompt (format "Open current file with (default %s):" open))
+          (f (if arg 'async-shell-command 'shell-command)))
+      (funcall f
        (concat (read-shell-command prompt nil nil open) " " buffer-file-name)))))
 
 (defun google ()
