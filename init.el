@@ -430,7 +430,7 @@ sized for something other than reading code or logs."
 (global-set-key (kbd "C-c -") 'decrement-integer-at-point)
 
 ;; Snippets
-;(yas/load-directory (concat emacs-root "snippets"))
+                                        ;(yas/load-directory (concat emacs-root "snippets"))
 
 ;; Line killing goodness from emacs-fu
 (defadvice kill-ring-save (before slick-copy activate compile)
@@ -528,14 +528,14 @@ default. Uses async-shell-command if a prefix arg is given."
   (interactive "P")
   (when buffer-file-name
     (let* ((open (cond
-                 ((eq system-type 'darwin) "open")
-                 (nix "xdg-open")
-                 ((eq system-type 'windows-nt) "start")
-                 (t "")))
-          (prompt (format "Open current file with (default %s):" open))
-          (f (if arg 'async-shell-command 'shell-command)))
+                  ((eq system-type 'darwin) "open")
+                  (nix "xdg-open")
+                  ((eq system-type 'windows-nt) "start")
+                  (t "")))
+           (prompt (format "Open current file with (default %s):" open))
+           (f (if arg 'async-shell-command 'shell-command)))
       (funcall f
-       (concat (read-shell-command prompt nil nil open) " " buffer-file-name)))))
+               (concat (read-shell-command prompt nil nil open) " " buffer-file-name)))))
 
 (defun google ()
   "Google the selected region if any, display a query prompt otherwise."
@@ -547,12 +547,16 @@ default. Uses async-shell-command if a prefix arg is given."
                            (buffer-substring (region-beginning) (region-end))
                          (read-string "Google: "))))))
 
+;; AutoHotkey
+(autoload 'autohotkey-mode "autohotkey-mode" "Edit AutoHotkey scripts" t)
+(add-to-list 'auto-mode-alist '("\\.ahk$" . autohotkey-mode))
+
 ;; Basic
 (autoload 'visual-basic-mode "visual-basic-mode" "Visual Basic mode." t)
-(add-to-list 'auto-mode-alist '("\\.frm$"  . visual-basic-mode))
-(add-to-list 'auto-mode-alist '("\\.bas$"  . visual-basic-mode))
-(add-to-list 'auto-mode-alist '("\\.cls$"  . visual-basic-mode))
-(add-to-list 'auto-mode-alist '("\\.vbs$"  . visual-basic-mode))
+(add-to-list 'auto-mode-alist '("\\.frm$" . visual-basic-mode))
+(add-to-list 'auto-mode-alist '("\\.bas$" . visual-basic-mode))
+(add-to-list 'auto-mode-alist '("\\.cls$" . visual-basic-mode))
+(add-to-list 'auto-mode-alist '("\\.vbs$" . visual-basic-mode))
 
 ;; C
 (add-hook 'c-mode-hook
