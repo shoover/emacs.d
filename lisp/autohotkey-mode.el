@@ -16,9 +16,29 @@
 (define-generic-mode
     'autohotkey-mode
   '(";")
-  '("return" "Run" "Send" "SendMode" "Sleep")
-  '(("::" . 'font-lock-builtin-face)
-    ("[#^!]" . 'font-lock-builtin-face))
+  '("if" "else" "return")                        ; keywords
+  `(("::" . 'font-lock-keyword-face)
+    ("[!^#~*+][!^#!*+a-z]" . 'font-lock-builtin-face) ; Ctrl/Alt/Shift/Win modifiers
+    (,(regexp-opt
+       '("EndKey"
+         "ErrorLevel"
+         "Max"
+         "NewInput"
+         "Timeout"
+         "UserInput"))
+     . 'font-lock-builtin-face)                        ; builtin variables/constants
+    (,(regexp-opt
+       '("IfInString"
+         "Input"
+         "KeyWait"
+         "Run"
+         "Send"
+         "SendMode"
+         "SetKeyDelay"
+         "Sleep"))
+     . 'font-lock-function-name-face)                      ; builtin commands
+    ("^[#][A-Z][A-Za-z]+" . 'font-lock-preprocessor-face)  ; #IfWinActive
+    ("{[A-Z][a-zA-Z_]*}" . 'font-lock-variable-name-face)) ; keys, ex: {Delete}
   '("\\.ahk$")
   '(list
     (lambda ()
