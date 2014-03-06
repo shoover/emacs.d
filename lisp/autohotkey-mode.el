@@ -2,7 +2,7 @@
 ;;
 ;; Features:
 ;; - associates with .ahk files
-;; - highlights a few commands
+;; - highlights a few commands and bits of syntax
 ;; - provides a function to reload a script
 ;;
 ;; Setup:
@@ -13,20 +13,21 @@
 
 (require 'generic-x)
 
-(define-generic-mode
-    'autohotkey-mode
-  '(";")
-  '("if" "else" "return")                        ; keywords
+(define-generic-mode 'autohotkey-mode
+  '(";")                  ; comment char
+  '("if" "else" "return") ; keywords
+
+  ; other highlighting
   `(("::" . 'font-lock-keyword-face)
-    ("[!^#~*+][!^#!*+a-z]" . 'font-lock-builtin-face) ; Ctrl/Alt/Shift/Win modifiers
+    ("[!^#~*+&][ !^#!*+&a-z]" . 'font-lock-builtin-face) ; Ctrl/Alt/Shift/Win modifiers
+    ("^[#][A-Z][A-Za-z]+" . 'font-lock-preprocessor-face)  ; #IfWinActive
     (,(regexp-opt
        '("EndKey"
          "ErrorLevel"
          "Max"
          "NewInput"
          "Timeout"
-         "UserInput"))
-     . 'font-lock-builtin-face)                        ; builtin variables/constants
+         "UserInput")) . 'font-lock-builtin-face)          ; builtin variables/constants
     (,(regexp-opt
        '("IfInString"
          "Input"
@@ -35,12 +36,13 @@
          "Send"
          "SendMode"
          "SetKeyDelay"
-         "Sleep"))
-     . 'font-lock-function-name-face)                      ; builtin commands
-    ("^[#][A-Z][A-Za-z]+" . 'font-lock-preprocessor-face)  ; #IfWinActive
+         "Sleep"
+         "WinActive"
+         "WinMinimize")) . 'font-lock-function-name-face)  ; builtin commands
     ("{[A-Z][a-zA-Z_]*}" . 'font-lock-variable-name-face)) ; keys, ex: {Delete}
-  '("\\.ahk$")
-  '(list
+
+  '("\\.ahk$") ; file assocation
+  '(list       ; mode setup
     (lambda ()
       (use-local-map autohotkey-mode-map)))
   "Major mode for editing AutoHotkey scripts.")
