@@ -26,6 +26,7 @@
          "ErrorLevel"
          "Max"
          "NewInput"
+         "Tab"
          "Timeout"
          "UserInput")) . 'font-lock-builtin-face)          ; builtin variables/constants
     (,(regexp-opt
@@ -38,6 +39,7 @@
          "SetKeyDelay"
          "Sleep"
          "WinActive"
+         "WinClose"
          "WinMinimize")) . 'font-lock-function-name-face)  ; builtin commands
     ("{[A-Z][a-zA-Z_]*}" . 'font-lock-variable-name-face)) ; keys, ex: {Delete}
 

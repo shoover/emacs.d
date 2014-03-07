@@ -127,7 +127,7 @@ other Clojure programmers. Mostly cribbed from `lisp-indent-line'."
         (delete-region beg (point))
         (indent-to indent)))))
 
-(defun my-comment-sexp (&optional arg allow-extend)
+(defun comment-sexp (&optional arg allow-extend)
   "Comment ARG sexps from point. If a region is active, that
 region is commented instead."
   (interactive "P\np")
@@ -401,9 +401,32 @@ sized for something other than reading code or logs."
                                      nil)))
     (ido-find-file)))
 
+(require 'switch-to-new-buffer)
+(defun my-switch-to-buffer ()
+  "ido-switch-buffer plus installing hooks to offer to save new buffers on kill."
+  (interactive)
+  (let ((buf (ido-switch-buffer)))
+    (with-current-buffer buf
+      ; cheap newly created, fileless buffer detection
+      (unless (or buffer-offer-save
+                  (buffer-file-name)
+                  (buffer-modified-p)
+                  (> (buffer-size) 0))
+        (switch-to-install-offer-save buf)))))
+
 ;;; Custom keybindings
+
+; Paste with one hand
+; todo: reuse C-y
+(global-set-key "\C-r" 'yank)
+
+(global-set-key "\M-r" 'isearch-backward)
 (global-set-key "\M-s" 'isearch-forward-regexp)
-(global-set-key "\M-r" 'isearch-backward-regexp)
+(global-set-key "\M-R" 'isearch-backward-regexp)
+
+; remap transpose so C-t is available to create a buffer like Chrome tabs
+(global-set-key "\M-t" 'transpose-chars)
+(global-set-key "\M-T" 'transpose-words)
 
 (global-set-key [f1] 'toggle-selective-display)
 
@@ -412,8 +435,11 @@ sized for something other than reading code or logs."
   (global-set-key "\M-`" 'other-frame))
 
 (global-set-key "\C-x\C-f" 'my-ido-find-file)
+(global-set-key "\C-xf" 'my-ido-find-file)
+(global-set-key "\C-xb" 'my-switch-to-buffer)
 (global-set-key [f5] 'revert-buffer)
 (global-set-key [f6] 'kill-this-buffer)
+(global-set-key "\C-t" 'switch-to-new-untitled-buffer)
 
 (global-set-key [C-up] 'move-text-up)
 (global-set-key [C-down] 'move-text-down)
@@ -720,7 +746,7 @@ With prefix arg N, cut this many sequential subtrees."
   ;; are making a separate frame, so hack it to use the same window.
   (letf (((symbol-function 'org-switch-to-buffer-other-window)
           #'switch-to-buffer))
-        (org-capture)))
+    (org-capture)))
 
 ;; Patch org-get-x-clipboard to work on Windows:
 ;; http://lists.gnu.org/archive/html/emacs-orgmode/2013-11/msg00675.html
