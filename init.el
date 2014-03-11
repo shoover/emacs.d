@@ -417,7 +417,7 @@ sized for something other than reading code or logs."
 ;;; Custom keybindings
 
 ; Paste with one hand
-; todo: reuse C-y
+; todo: reuse C-y elsewhere
 (global-set-key "\C-r" 'yank)
 
 (global-set-key "\M-r" 'isearch-backward)
@@ -863,19 +863,6 @@ With prefix arg N, cut this many sequential subtrees."
  '(completion-ignored-extensions (quote (".obj" ".pdb" ".svn/" "CVS/" ".o" "~" ".bin" ".bak" ".obj" ".map" ".ico" ".pif" ".lnk" ".a" ".ln" ".blg" ".bbl" ".dll" ".drv" ".vxd" ".386" ".elc" ".lof" ".glo" ".idx" ".lot" ".fmt" ".tfm" ".class" ".fas" ".lib" ".mem" ".x86f" ".sparcf" ".fasl" ".ufsl" ".fsl" ".dxl" ".pfsl" ".dfsl" ".p64fsl" ".d64fsl" ".dx64fsl" ".lo" ".la" ".gmo" ".mo" ".toc" ".aux" ".cp" ".fn" ".ky" ".pg" ".tp" ".vr" ".cps" ".fns" ".kys" ".pgs" ".tps" ".vrs" ".pyc" ".pyo")))
  '(custom-safe-themes (quote ("1218df7ba75a7d9d51199866d9d7bf1861e54122863366cf097c4cae9c2a625c" "47372e349f9fee5ce5350c03358628f36ccfc25e7a4e73d1a0473511d295c2f8" default)))
  '(default-frame-alist (quote ((width . 95) (height . 55))))
- '(erc-fill-column 68)
- '(erc-fill-function (quote erc-fill-static))
- '(erc-fill-static-center 10)
- '(erc-fill-variable-maximum-indentation 5)
- '(erc-hide-list (quote ("JOIN" "NICK" "PART" "QUIT")))
- '(erc-nick "shoover")
- '(erc-nick-uniquifier "_")
- '(erc-port 6667)
- '(erc-server "irc.freenode.net")
- '(erc-server-reconnect-attempts 4)
- '(erc-server-reconnect-timeout 30)
- '(erc-timestamp-use-align-to t)
- '(erc-user-full-name "Shawn Hoover")
  '(fill-column 78)
  '(frame-title-format '("" invocation-name "@" system-name " - " "%b"))
  '(global-hl-line-mode t)
