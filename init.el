@@ -431,8 +431,7 @@ sized for something other than reading code or logs."
 (global-set-key [f1] 'toggle-selective-display)
 
 (global-set-key [C-tab] 'next-previous-buffer)
-(when (eq system-type 'darwin)
-  (global-set-key "\M-`" 'other-frame))
+(global-set-key "\M-`" 'other-frame)
 
 (global-set-key "\C-x\C-f" 'my-ido-find-file)
 (global-set-key "\C-xf" 'my-ido-find-file)
@@ -446,7 +445,7 @@ sized for something other than reading code or logs."
 
 (global-set-key "\C-c/" 'my-indent-region) ; Indent region or whole buffer
 
-;; Shift+(left|right|up|down) to get to a window quicker than with C-x o
+; Shift+(left|right|up|down) to get to a window quicker than with C-x o
 (windmove-default-keybindings)
 
 (global-set-key "\C-xx" 'w32shell-explorer-here)
@@ -878,6 +877,7 @@ With prefix arg N, cut this many sequential subtrees."
  '(erc-timestamp-use-align-to t)
  '(erc-user-full-name "Shawn Hoover")
  '(fill-column 78)
+ '(frame-title-format '("" invocation-name "@" system-name " - " "%b"))
  '(global-hl-line-mode t)
  '(hg-outgoing-repository "")
  '(indent-tabs-mode nil)
