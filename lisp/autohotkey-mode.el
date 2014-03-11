@@ -14,11 +14,11 @@
 (require 'generic-x)
 
 (define-generic-mode 'autohotkey-mode
-  '(";")                  ; comment char
-  '("if" "else" "return") ; keywords
+  '(";" ("/*" . "*/"))            ; comment char
+  '("if" "class" "else" "return") ; keywords
 
   ; other highlighting
-  `(("::" . 'font-lock-keyword-face)
+  `((,(regexp-opt '("::" ":=" ".=" "=")) . 'font-lock-keyword-face)
     ("[!^#~*+&][ !^#!*+&a-z]" . 'font-lock-builtin-face) ; Ctrl/Alt/Shift/Win modifiers
     ("^[#][A-Z][A-Za-z]+" . 'font-lock-preprocessor-face)  ; #IfWinActive
     (,(regexp-opt
@@ -26,18 +26,24 @@
          "ErrorLevel"
          "Max"
          "NewInput"
+         "Regex"
          "Tab"
-         "Timeout"
-         "UserInput")) . 'font-lock-builtin-face)          ; builtin variables/constants
+         "Timeout")) . 'font-lock-builtin-face)          ; builtin variables/constants
     (,(regexp-opt
-       '("IfInString"
-         "Input"
+       '("GroupAdd"
+         "IfInString"
+         "IsFunc"
+         "\\bInput\\b"
          "KeyWait"
+         "ListVars"
+         "Pause"
          "Run"
          "Send"
          "SendMode"
          "SetKeyDelay"
+         "SetTitleMatchMode"
          "Sleep"
+         "StringTrimRight"
          "WinActive"
          "WinClose"
          "WinMinimize")) . 'font-lock-function-name-face)  ; builtin commands
@@ -52,6 +58,7 @@
 (defvar autohotkey-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map "\C-c\C-r" 'autohotkey-reload)
+    (define-key map "\C-c\C-c" 'autohotkey-reload)
     map))
 
 (defvar autohotkey-exe "c:/program files/autohotkey/autohotkey.exe")
