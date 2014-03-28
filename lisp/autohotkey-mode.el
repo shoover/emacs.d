@@ -19,10 +19,12 @@
 
   ; other highlighting
   `((,(regexp-opt '("::" ":=" ".=" "=")) . 'font-lock-keyword-face)
-    ("[!^#~*+&][ !^#!*+&a-z]" . 'font-lock-builtin-face) ; Ctrl/Alt/Shift/Win modifiers
-    ("^[#][A-Z][A-Za-z]+" . 'font-lock-preprocessor-face)  ; #IfWinActive
+    ("[!^#~*+&][ !^#!*+&a-z]" . 'font-lock-builtin-face)     ; Ctrl/Alt/Shift/Win modifiers
+    ("^[#][A-Z][A-Za-z]+" . 'font-lock-preprocessor-face)    ; #IfWinActive
+    ("{[A-Z][0-9a-zA-Z_]*}" . 'font-lock-variable-name-face) ; keys, ex: {Delete}
     (,(regexp-opt
-       '("EndKey"
+       '("ahk_class" "ahk_exe" "ahk_group"
+         "EndKey"
          "ErrorLevel"
          "Max"
          "NewInput"
@@ -30,7 +32,7 @@
          "Tab"
          "Timeout")) . 'font-lock-builtin-face)          ; builtin variables/constants
     (,(regexp-opt
-       '("GroupAdd"
+       '("GroupActivate" "GroupAdd"
          "IfInString"
          "IsFunc"
          "\\bInput\\b"
@@ -39,15 +41,17 @@
          "Pause"
          "Run"
          "Send"
+         "SendMessage"
          "SendMode"
          "SetKeyDelay"
+         "SetTimer"
          "SetTitleMatchMode"
          "Sleep"
-         "StringTrimRight"
-         "WinActive"
-         "WinClose"
-         "WinMinimize")) . 'font-lock-function-name-face)  ; builtin commands
-    ("{[A-Z][a-zA-Z_]*}" . 'font-lock-variable-name-face)) ; keys, ex: {Delete}
+         "StringReplace" "StringTrimRight"
+         "Suspend"
+         "WinActive" "WinClose" "WinHide" "WinMinimize" "WinShow"))
+     . 'font-lock-function-name-face)  ; builtin commands
+    )
 
   '("\\.ahk$") ; file assocation
   '(list       ; mode setup
