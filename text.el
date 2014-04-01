@@ -367,7 +367,8 @@ default. Uses async-shell-command if a prefix arg is given."
            (prompt (format "Open current file with (default %s):" open))
            (f (if arg 'async-shell-command 'shell-command)))
       (funcall f
-               (concat (read-shell-command prompt nil nil open) " " buffer-file-name)))))
+               (concat (read-shell-command prompt nil nil open) " \""
+  buffer-file-name "\"")))))
 
 (defun google ()
   "Google the selected region if any, display a query prompt otherwise."
