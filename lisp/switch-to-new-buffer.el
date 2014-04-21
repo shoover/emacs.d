@@ -71,8 +71,8 @@ See `set-buffer-major-mode'."
 
 (defun switch-to-new-buffer-kill-buffer-query-function ()
   (when (and (buffer-modified-p)
-             (yes-or-no-p (format "Buffer %s is modified; save? "
-                                  (buffer-name))))
+             (not (yes-or-no-p (format "Buffer %s is modified; kill anyway? "
+                                       (buffer-name)))))
     (save-buffer))
   ;; don't abort kill-buffer:
   t)
