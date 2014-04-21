@@ -111,12 +111,15 @@
 ;;; Custom keybindings
 
 ; Paste with one hand
-; todo: reuse C-y elsewhere
+; todo: reuse C-y
 (global-set-key "\C-r" 'yank)
+(global-set-key "\M-r" 'yank-pop)
 
-(global-set-key "\M-r" 'isearch-backward)
-(global-set-key "\M-s" 'isearch-forward-regexp)
-(global-set-key "\M-R" 'isearch-backward-regexp)
+(global-set-key "\C-s" 'isearch-forward)
+(global-set-key "\M-s" 'isearch-backward)
+(define-key isearch-mode-map "\M-s" 'isearch-repeat-backward)
+(global-set-key (kbd "C-S-S") 'isearch-forward-regexp)
+(global-set-key (kbd "M-S-S") 'isearch-backward-regexp)
 
 ; remap transpose so C-t is available to create a buffer like Chrome tabs
 (global-set-key "\M-t" 'transpose-chars)

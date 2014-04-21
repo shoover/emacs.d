@@ -145,6 +145,9 @@ With prefix arg N, cut this many sequential subtrees."
             (define-key org-mode-map "\C-\M-p" 'org-promote-subtree-x)
             (define-key org-mode-map "\C-cd" 'org-todo-done)
 
+            ;; Compatibility with my isearch keys
+            (define-key org-mode-map "\C-c\C-x\C-r" 'org-paste-special)
+
             ;; clear this so next- previous-buffer works
             (define-key org-mode-map [C-tab] nil)
 
@@ -154,13 +157,16 @@ With prefix arg N, cut this many sequential subtrees."
                          my-work-org)
                    (directory-files (concat org-directory "/../banjo") t "\\.org$")))
             (setq org-agenda-custom-commands
-                  '(("A" "30 day agenda" agenda "" ((org-agenda-ndays 30)))))
+                  '(("A" "30 day agenda" agenda "" ((org-agenda-ndays 30)))
+                    ("P" "Project list" tags "prj" ((org-use-tag-inheritance nil)))
+                    ("p" "Project list, current buffer" tags-tree "prj" ((org-use-tag-inheritance nil)))))
             (setq org-refile-targets '((org-agenda-files :maxlevel . 1))
                   org-refile-use-outline-path 'file
                   org-refile-allow-creating-parent-nodes 'confirm)))
 (setq org-mobile-inbox-for-pull (concat org-directory "/flagged.org")
       org-mobile-directory (concat org-directory "/../Apps/MobileOrg"))
 (setq org-default-notes-file (concat org-directory "/action.org"))
+(setq org-tags-column -85)
 
 ;; org-capture frames, adapted from Lau's remember frames:
 ;; http://github.com/LauJensen/Configs/blob/master/emacs
@@ -249,7 +255,11 @@ scan-error if not."
        'paredit-forward-maybe-delete-region)
      (define-key paredit-mode-map (kbd "DEL")
        'paredit-backward-maybe-delete-region)
-     (define-key paredit-mode-map (kbd ";") 'self-insert-command)))
+     (define-key paredit-mode-map (kbd ";") 'self-insert-command)
+
+     (define-key paredit-mode-map "\M-s" nil) ; override splice
+     (define-key paredit-mode-map "\M-S" nil)
+     ))
 
 ;; PHP
 (add-to-list 'auto-mode-alist '("\\.php$" . html-mode))
