@@ -15,7 +15,7 @@
 
 (define-generic-mode 'autohotkey-mode
   '(";" ("/*" . "*/"))            ; comment char
-  '("if" "class" "else" "return") ; keywords
+  '("catch" "class" "else" "finally" "for" "if" "in" "return" "try") ; keywords
 
   ; other highlighting
   `((,(regexp-opt '("::" ":=" ".=" "=")) . 'font-lock-keyword-face)
@@ -24,20 +24,24 @@
     ("{[A-Z][0-9a-zA-Z_]*}" . 'font-lock-variable-name-face) ; keys, ex: {Delete}
     (,(regexp-opt
        '("ahk_class" "ahk_exe" "ahk_group"
+         "Clipboard"
          "EndKey"
          "ErrorLevel"
          "Max"
          "NewInput"
          "Regex"
          "Tab"
-         "Timeout")) . 'font-lock-builtin-face)          ; builtin variables/constants
+         "Timeout")) . 'font-lock-builtin-face) ; builtin variables/constants
     (,(regexp-opt
-       '("GroupActivate" "GroupAdd"
+       '("ClipWait"
+         "GroupActivate" "GroupAdd"
          "IfInString"
          "IsFunc"
+         "IfWinExist"
          "\\bInput\\b"
          "KeyWait"
          "ListVars"
+         "MsgBox"
          "Pause"
          "Run"
          "Send"
@@ -47,10 +51,10 @@
          "SetTimer"
          "SetTitleMatchMode"
          "Sleep"
-         "StringReplace" "StringTrimRight"
+         "StringLower" "StringReplace" "StringTrimRight" "StringUpper"
          "Suspend"
          "WinActive" "WinClose" "WinHide" "WinMinimize" "WinShow"))
-     . 'font-lock-function-name-face)  ; builtin commands
+     . 'font-lock-function-name-face)   ; builtin commands
     )
 
   '("\\.ahk$") ; file assocation
@@ -72,7 +76,8 @@
   (interactive)
   (if (not (buffer-file-name))
       (error "Buffer '%s' is not visiting a file!" (buffer-name)))
-  (save-buffer)
+  (if (buffer-modified-p)
+      (save-buffer))
   (start-process "AutoHotkey" nil autohotkey-exe "/restart" (buffer-file-name)))
 
 (provide 'autohotkey-mode)
