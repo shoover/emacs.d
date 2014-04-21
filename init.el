@@ -172,24 +172,6 @@
               (require 'server)
               (server-start))))
 
-;; Chrome edit server
-;; http://www.emacswiki.org/emacs/Edit_with_Emacs
-(when (require 'edit-server nil t)
-  (add-hook 'edit-server-start-hook 'my-edit-server-start-hook)
-  (add-hook 'edit-server-done-hook 'my-edit-server-done-hook)
-  (edit-server-start))
-
-;; Use edit-server's HTML URL matching but my htmlize function.
-;; Just unfill for regular non-HTML textareas.
-(defun my-edit-server-done-hook ()
-  (if (string-match edit-server-htmlize-url-regexp edit-server-url)
-      (my-htmlize-buffer)
-    (unfill-buffer)))
-
-(defun my-edit-server-start-hook ()
-  (edit-server-maybe-dehtmlize-buffer)
-  (fill-buffer))
-
 ;; Assumed registry settings (HKLM/Software/GNU/Emacs):
 ;;   Emacs.toolBar: 0
 ;;   Emacs.full

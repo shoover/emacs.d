@@ -112,15 +112,6 @@ region is commented instead."
     (insert "<br><br>")
     (forward-char)))
 
-(defun my-htmlize-buffer ()
-  "Like the function from edit-server.el but instead of wrapping
-text in <pre>, this unfills paragraphs and inserts <br>."
-  (interactive)
-  (edit-server-htmlize-replace edit-server-htmlize-regexp
-                               edit-server-htmlize-replacements)
-  (loop-paragraphs
-   (unfill-paragraph-html)))
-
 ;;; From http://www.emacswiki.org/emacs/basic-edit-toolkit.el
 (defun move-text-internal (arg)
   "Move region (transient-mark-mode active) or current line."
