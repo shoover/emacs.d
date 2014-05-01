@@ -97,6 +97,11 @@
   (interactive)
   (fsharp-eval-region (point-at-bol) (point-at-eol)))
 
+;; Lisp
+(require 'lisp-mode)
+(define-key lisp-mode-shared-map "\M-a" 'backward-sexp)
+(define-key lisp-mode-shared-map "\M-e" 'forward-sexp)
+
 ;; Make
 (setq compile-command "make ")
 
