@@ -153,8 +153,9 @@ With prefix arg N, cut this many sequential subtrees."
 
             (setq org-agenda-files
                   (append
-                   (list my-action-org
-                         my-work-org)
+                   (directory-files org-directory t "\\.org$")
+                   ;; (list my-action-org
+                   ;;       my-work-org)
                    (directory-files (concat org-directory "/../banjo") t "\\.org$")))
             (setq org-agenda-custom-commands
                   '(("A" "30 day agenda" agenda "" ((org-agenda-ndays 30)))
@@ -205,13 +206,18 @@ With prefix arg N, cut this many sequential subtrees."
 (setq org-capture-templates
       '(("a" "Action" entry (file org-default-notes-file)
          "* %?\n%i" :prepend t)
+        ("n" "Notes" entry (file+datetree my-notes-org)
+         "* %?\n  %i\n Entered %U")
         ("w" "Work" entry (file my-work-org)
          "* %?\n%i" :prepend t)
         ("v" "Templates for pasting the OS clipboard")
         ("va" "Action, paste clipboard" entry (file org-default-notes-file)
          "* %?\n%x" :prepend t)
         ("vw" "Work, paste clipboard" entry (file my-work-org)
-         "* %?\n%x" :prepend t)))
+         "* %?\n%x" :prepend t)
+        ("vn" "Notes, paste clipboard" entry
+         (file+datetree (concat org-directory "/notes.org"))
+         "* %?\n  %x" :empty-lines 1)))
 
 ;; paredit keyboard tweaks--from Bill Clementson
 (require 'paredit)
@@ -265,8 +271,6 @@ scan-error if not."
 (add-to-list 'auto-mode-alist '("\\.php$" . html-mode))
 
 ;; Python
-(autoload 'python-mode "python-mode" "Edit Python source" t)
-(add-to-list 'auto-mode-alist '("\\.py$"     . python-mode))
 (add-to-list 'auto-mode-alist '("SConstruct" . python-mode))
 (add-to-list 'auto-mode-alist '("SConscript" . python-mode))
 (add-to-list 'auto-mode-alist '("wscript" . python-mode))

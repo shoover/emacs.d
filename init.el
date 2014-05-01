@@ -39,6 +39,7 @@
 
 (defvar my-action-org (concat org-directory "/action.org"))
 (defvar my-work-org (concat org-directory "/work.org"))
+(defvar my-notes-org (concat org-directory "/notes.org"))
 
 ;;; Settings
 
