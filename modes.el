@@ -169,8 +169,6 @@ With prefix arg N, cut this many sequential subtrees."
             (setq org-refile-targets '((org-agenda-files :maxlevel . 1))
                   org-refile-use-outline-path 'file
                   org-refile-allow-creating-parent-nodes 'confirm)))
-(setq org-mobile-inbox-for-pull (concat org-directory "/flagged.org")
-      org-mobile-directory (concat org-directory "/../Apps/MobileOrg"))
 (setq org-default-notes-file (concat org-directory "/action.org"))
 (setq org-tags-column -85)
 
@@ -188,7 +186,7 @@ With prefix arg N, cut this many sequential subtrees."
 (defun make-capture-frame ()
   "Create a new frame and run org capture."
   (interactive)
-  (make-frame '((name . "*Capture*") (width . 80) (height . 20)))
+  (make-frame '((name . "*Capture*") (width . 95) (height . 20)))
   (select-frame-by-name "*Capture*")
 
   ;; Capture template selection uses org-mks, which insists on using a
@@ -212,7 +210,7 @@ With prefix arg N, cut this many sequential subtrees."
       '(("a" "Action" entry (file org-default-notes-file)
          "* %?\n%i" :prepend t)
         ("n" "Notes" entry (file+datetree my-notes-org)
-         "* %?\n  %i\n Entered %U")
+         "* %?\n%i\nEntered %U")
         ("w" "Work" entry (file my-work-org)
          "* %?\n%i" :prepend t)
         ("v" "Templates for pasting the OS clipboard")
@@ -222,7 +220,7 @@ With prefix arg N, cut this many sequential subtrees."
          "* %?\n%x" :prepend t)
         ("vn" "Notes, paste clipboard" entry
          (file+datetree (concat org-directory "/notes.org"))
-         "* %?\n  %x" :empty-lines 1)))
+         "* %?\n%x" :empty-lines 1)))
 
 ;; paredit keyboard tweaks--from Bill Clementson
 (require 'paredit)
