@@ -51,6 +51,7 @@
  '(outline-1 ((t (:inherit font-lock-function-name-face :weight bold :foreground "#73C0C3"))))
  '(outline-2 ((t (:inherit font-lock-variable-name-face :weight bold))))
  '(outline-3 ((t (:inherit font-lock-keyword-face :weight bold))))
+ '(outline-4 ((t (:inherit outline-3  :foreground "#EAD0A0"))))
  '(org-done ((t (:weight bold :foreground "DarkKhaki"))))
  `(default ,custom-theme-shawn-default))
 

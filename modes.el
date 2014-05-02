@@ -114,6 +114,17 @@
 (add-to-list 'auto-mode-alist '("\\.nsh$"  . nsis-mode))
 
 ;; org-mode
+(defun org-agenda-match-subtree (&optional arg)
+  "Org Agenda tag/todo match restricted to the current subtree."
+  (interactive "P")
+  (org-agenda arg "m" 'subtree))
+
+(defun org-agenda-restrict-subtree (&optional arg)
+  "Dispatch agenda commands restricted to current subtree."
+  (interactive "P")
+  (let ((org-agenda-overriding-restriction 'subtree))
+    (org-agenda arg)))
+
 (defun org-todo-done ()
   "Change the TODO state of an item to ""done""."
   (interactive)
@@ -139,6 +150,8 @@ With prefix arg N, cut this many sequential subtrees."
 (add-hook 'org-load-hook
           (lambda ()
             (define-key org-mode-map "\C-ca" 'org-agenda)
+            (define-key org-mode-map "\C-cm" 'org-agenda-match-subtree)
+            (define-key org-mode-map "\C-cs" 'org-agenda-restrict-subtree)
             (define-key org-mode-map "\C-cl" 'org-store-link)
             (define-key org-mode-map "\C-cb" 'org-iswitchb)
 
@@ -163,9 +176,10 @@ With prefix arg N, cut this many sequential subtrees."
                    ;;       my-work-org)
                    (directory-files (concat org-directory "/../banjo") t "\\.org$")))
             (setq org-agenda-custom-commands
-                  '(("A" "30 day agenda" agenda "" ((org-agenda-ndays 30)))
-                    ("P" "Project list" tags "prj" ((org-use-tag-inheritance nil)))
-                    ("p" "Project list, current buffer" tags-tree "prj" ((org-use-tag-inheritance nil)))))
+                  '(("P" "Project list" tags "prj"
+                     ((org-use-tag-inheritance nil)))
+                    ("p" "Project list, current buffer" tags-tree "prj"
+                     ((org-use-tag-inheritance nil)))))
             (setq org-refile-targets '((org-agenda-files :maxlevel . 1))
                   org-refile-use-outline-path 'file
                   org-refile-allow-creating-parent-nodes 'confirm)))
@@ -210,7 +224,7 @@ With prefix arg N, cut this many sequential subtrees."
       '(("a" "Action" entry (file org-default-notes-file)
          "* %?\n%i" :prepend t)
         ("n" "Notes" entry (file+datetree my-notes-org)
-         "* %?\n%i\nEntered %U")
+         "* %?\n%i%U")
         ("w" "Work" entry (file my-work-org)
          "* %?\n%i" :prepend t)
         ("v" "Templates for pasting the OS clipboard")
@@ -218,8 +232,7 @@ With prefix arg N, cut this many sequential subtrees."
          "* %?\n%x" :prepend t)
         ("vw" "Work, paste clipboard" entry (file my-work-org)
          "* %?\n%x" :prepend t)
-        ("vn" "Notes, paste clipboard" entry
-         (file+datetree (concat org-directory "/notes.org"))
+        ("vn" "Notes, paste clipboard" entry (file+datetree my-notes-org)
          "* %?\n%x" :empty-lines 1)))
 
 ;; paredit keyboard tweaks--from Bill Clementson
