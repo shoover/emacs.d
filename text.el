@@ -235,6 +235,7 @@ table determines which characters these are."
                                      (cdr cmdlist)))))
     (pop-to-buffer new-buf)))
 
+;; see also: built in DB access
 (defun sqlite (db)
   "Opens an interactive sqlite session in a comint buffer."
   (interactive
@@ -346,14 +347,14 @@ sized for something other than reading code or logs."
       (message "Copied buffer file name '%s' to the clipboard." filename))))
 
 (defun open-with (arg)
-  "Open the buffer file file in an external program or shell
-default. Uses async-shell-command if a prefix arg is given."
+  "Open the buffer file in an external program or shell default.
+Uses async-shell-command if a prefix arg is given."
   (interactive "P")
   (when buffer-file-name
     (let* ((open (cond
                   ((eq system-type 'darwin) "open")
                   (nix "xdg-open")
-                  ((eq system-type 'windows-nt) "start")
+                  ((eq system-type 'windows-nt) "start") ; see also: built in w32-shell-execute
                   (t "")))
            (prompt (format "Open current file with (default %s):" open))
            (f (if arg 'async-shell-command 'shell-command)))

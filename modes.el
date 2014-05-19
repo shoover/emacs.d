@@ -304,7 +304,7 @@ scan-error if not."
 
 (add-hook 'ruby-mode-hook
           (lambda ()
-            (define-key ruby-mode-map "\C-c\C-l" 'ruby-load-line)))
+            (define-key inf-ruby-minor-mode-map "\C-c\C-l" 'ruby-load-line)))
 
 ;; Text
 (add-hook 'text-mode-hook 'turn-on-auto-fill)
