@@ -200,14 +200,17 @@ With prefix arg N, cut this many sequential subtrees."
 (defun make-capture-frame ()
   "Create a new frame and run org capture."
   (interactive)
-  (make-frame '((name . "*Capture*") (width . 95) (height . 20)))
-  (select-frame-by-name "*Capture*")
+  (require 'frame-center)
+  (let ((f (make-frame '((name . "*Capture*") (width . 95) (height . 20)))))
+    (frame-center f)
+    (select-frame f)
+    (raise-frame f))
 
   ;; Capture template selection uses org-mks, which insists on using a
   ;; separate window to pick the template. This looks weird when we already
   ;; are making a separate frame, so hack it to use the same window.
   (letf (((symbol-function 'org-switch-to-buffer-other-window)
-          #'switch-to-buffer))
+          (symbol-function 'switch-to-buffer)))
     (org-capture)))
 
 ;; Patch org-get-x-clipboard to work on Windows:
