@@ -362,6 +362,15 @@ Uses async-shell-command if a prefix arg is given."
                (concat (read-shell-command prompt nil nil open) " \""
   buffer-file-name "\"")))))
 
+;; http://arunrocks.com/emacs-tip-a-key-to-open-the-current-folder-in-windows/
+(defun w32-explore-here ()
+  "Launch the windows explorer in the current directory and selects current file"
+  (interactive)
+  (w32-shell-execute
+   "open"
+   "explorer"
+   (concat "/e,/select," (convert-standard-filename buffer-file-name))))
+
 (defun google ()
   "Google the selected region if any, display a query prompt otherwise."
   (interactive)

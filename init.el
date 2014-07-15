@@ -146,7 +146,7 @@
 ; Shift+(left|right|up|down) to get to a window quicker than with C-x o
 (windmove-default-keybindings)
 
-(global-set-key "\C-xx" 'w32shell-explorer-here)
+(global-set-key "\C-xx" 'w32-explore-here)
 
 (require 'inc)
 (global-set-key (kbd "C-c +") 'increment-integer-at-point)
