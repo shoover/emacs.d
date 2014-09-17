@@ -36,7 +36,7 @@ line instead."
 (defun banjo ()
   "Find my work org file"
   (interactive)
-  (find-file (concat org-directory "/../banjo/banjo.org")))
+  (find-file (expand-file-name (concat org-directory "/../banjo/banjo.org"))))
 
 (defun indent-buffer ()
   "Indent the entire buffer. Seems like emacs should have this."

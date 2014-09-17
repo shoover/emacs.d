@@ -1,5 +1,11 @@
 ;;; Modes setup and mode-specific functions
 
+(defmacro define-keys (map &rest pairs)
+  "Define multiple keys at once in keymap MAP. PAIRS are associations, for example
+(\"C-l\" . 'load)."
+  (let ((forms (mapcar (lambda (pair) `(define-key ,map ,(car pair) ,(cdr pair))) pairs)))
+    `(progn ,@forms)))
+
 ;; AutoHotkey
 (autoload 'autohotkey-mode "autohotkey-mode" "Edit AutoHotkey scripts" t)
 (add-to-list 'auto-mode-alist '("\\.ahk$" . autohotkey-mode))
@@ -81,8 +87,10 @@
 (defvar fsharp-compiler "\"c:\\Program Files (x86)\\Microsoft F#\\v4.0\\Fsc.exe\"")
 (add-hook 'fsharp-mode-hook
           (lambda ()
-            (define-key fsharp-mode-map "\C-c\C-b" 'fsharp-load-buffer)
-            (define-key fsharp-mode-map "\C-c\C-l" 'fsharp-load-line)))
+            (define-keys fsharp-mode-map
+              ("\C-c\C-b" . 'fsharp-load-buffer)
+              ("\C-c\C-l" . 'fsharp-load-line)
+              ("\C-c\C-u" . 'fsharp-goto-block-up))))
 (add-hook 'inferior-fsharp-mode-hooks
           (lambda ()
             (add-to-list 'comint-output-filter-functions
@@ -125,11 +133,6 @@
   (let ((org-agenda-overriding-restriction 'subtree))
     (org-agenda arg)))
 
-(defun org-todo-done ()
-  "Change the TODO state of an item to ""done""."
-  (interactive)
-  (org-todo 'done))
-
 (defun org-promote-subtree-x (&optional n)
   "Cut the current subtree and paste it one heading level up.
 With prefix arg N, cut this many sequential subtrees."
@@ -149,31 +152,29 @@ With prefix arg N, cut this many sequential subtrees."
             (turn-on-auto-fill)))
 (add-hook 'org-load-hook
           (lambda ()
-            (define-key org-mode-map "\C-ca" 'org-agenda)
-            (define-key org-mode-map "\C-cm" 'org-agenda-match-subtree)
-            (define-key org-mode-map "\C-cs" 'org-agenda-restrict-subtree)
-            (define-key org-mode-map "\C-cl" 'org-store-link)
-            (define-key org-mode-map "\C-cb" 'org-iswitchb)
+            (define-keys org-mode-map
+              ("\C-ca" . 'org-agenda)
+              ("\C-cm" . 'org-agenda-match-subtree)
+              ("\C-cs" . 'org-agenda-restrict-subtree)
+              ("\C-cl" . 'org-store-link)
+              ("\C-cb" . 'org-iswitchb)
 
-            ;; Make links work like chasing definitions in source code.
-            (define-key org-mode-map "\M-." 'org-open-at-point)
-            (define-key org-mode-map "\M-," 'org-mark-ring-goto)
+              ;; Make links work like chasing definitions in source code.
+              ("\M-." . 'org-open-at-point)
+              ("\M-," . 'org-mark-ring-goto)
 
-            (define-key org-mode-map "\C-\M-a" 'org-archive-subtree)
-            (define-key org-mode-map "\C-\M-p" 'org-promote-subtree-x)
-            (define-key org-mode-map "\C-cd" 'org-todo-done)
+              ("\C-\M-a" . 'org-archive-subtree)
+              ("\C-\M-p" . 'org-promote-subtree-x)
 
-            ;; Compatibility with my isearch keys
-            (define-key org-mode-map "\C-c\C-x\C-r" 'org-paste-special)
+              ;; Compatibility with my isearch keys
+              ("\C-c\C-x\C-r" . 'org-paste-special)
 
-            ;; clear this so next- previous-buffer works
-            (define-key org-mode-map [C-tab] nil)
+              ;; clear this so next- previous-buffer works
+              ([C-tab] . nil))
 
             (setq org-agenda-files
                   (append
                    (directory-files org-directory t "\\.org$")
-                   ;; (list my-action-org
-                   ;;       my-work-org)
                    (directory-files (concat org-directory "/../banjo") t "\\.org$")))
             (setq org-agenda-custom-commands
                   '(("P" "Project list" tags "prj"
@@ -223,20 +224,36 @@ With prefix arg N, cut this many sequential subtrees."
         ((and (eq window-system 'w32) (fboundp 'w32-get-clipboard-data))
          (w32-get-clipboard-data))))
 
+(defun read-org-agenda-file ()
+  "Completing-read for an org agenda file."
+  (let ((org-completion-use-ido t))
+    (org-icompleting-read "Org buffer: "
+                          (mapcar 'list (mapcar 'buffer-name (org-buffer-list 'agenda)))
+                          nil t)))
+
 (setq org-capture-templates
+        ; standard capture: blank headline, paste region
       '(("a" "Action" entry (file org-default-notes-file)
          "* %?\n%i" :prepend t)
-        ("n" "Notes" entry (file+datetree my-notes-org)
+        ("n" "Notes" entry (file+datetree my-notes-org) ; include timestamp
          "* %?\n%i%U")
         ("w" "Work" entry (file my-work-org)
          "* %?\n%i" :prepend t)
+
+        ; clipboard capture: blank headline, paste OS clipboard
         ("v" "Templates for pasting the OS clipboard")
         ("va" "Action, paste clipboard" entry (file org-default-notes-file)
          "* %?\n%x" :prepend t)
         ("vw" "Work, paste clipboard" entry (file my-work-org)
          "* %?\n%x" :prepend t)
         ("vn" "Notes, paste clipboard" entry (file+datetree my-notes-org)
-         "* %?\n%x" :empty-lines 1)))
+         "* %?\n%x" :empty-lines 1)
+
+        ; org-protocol capture: the handler puts the link/title in the kill ring %c
+        ; and selected text in the region %i
+        ; Alt: "* %?[[%:link][%:description]]\n%:initial\n%U"
+        ("c" "org-protocol capture" entry (file read-org-agenda-file)
+         "* %?%c\n%i\n%U" :prepend t)))
 
 ;; paredit keyboard tweaks--from Bill Clementson
 (require 'paredit)
@@ -276,14 +293,13 @@ scan-error if not."
 
 (eval-after-load 'paredit
   '(progn
-     (define-key paredit-mode-map (kbd "<delete>")
-       'paredit-forward-maybe-delete-region)
-     (define-key paredit-mode-map (kbd "DEL")
-       'paredit-backward-maybe-delete-region)
-     (define-key paredit-mode-map (kbd ";") 'self-insert-command)
+     (define-keys paredit-mode-map
+       ((kbd "<delete>") . 'paredit-forward-maybe-delete-region)
+       ((kbd "DEL") . 'paredit-backward-maybe-delete-region)
+       ((kbd ";") . 'self-insert-command)
 
-     (define-key paredit-mode-map "\M-s" nil) ; override splice
-     (define-key paredit-mode-map "\M-S" nil)
+       ("\M-s" . nil) ; override splice
+       ("\M-S" . nil))
      ))
 
 ;; PHP

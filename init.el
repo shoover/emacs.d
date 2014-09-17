@@ -194,6 +194,7 @@
  '(hg-outgoing-repository "")
  '(indent-tabs-mode nil)
  '(ns-alternate-modifier (quote alt))
+ '(org-agenda-files (quote ("c:/Users/Shawn/Dropbox/action/action.org" "c:/Users/Shawn/Dropbox/action/dev.org" "c:/Users/Shawn/Dropbox/action/mobykids.org" "c:/Users/Shawn/Dropbox/action/notes.org" "c:/Users/Shawn/Dropbox/action/work.org" "c:/Users/Shawn/Dropbox/banjo/archtop.org" "c:/Users/Shawn/Dropbox/banjo/banjo.org" "c:/Users/Shawn/Dropbox/banjo/bass.org" "c:/Users/Shawn/Dropbox/banjo/fiddle.org" "c:/Users/Shawn/Dropbox/banjo/peghead.org" "c:/Users/Shawn/Dropbox/banjo/plan.org" "c:/Users/Shawn/Dropbox/banjo/plan_hand_drum.org" "c:/Users/Shawn/Dropbox/banjo/tools.org")))
  '(rst-level-face-base-light 20)
  '(rst-level-face-step-light 7)
  '(show-paren-mode t)
