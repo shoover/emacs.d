@@ -90,12 +90,13 @@
             (define-keys fsharp-mode-map
               ("\C-c\C-b" . 'fsharp-load-buffer)
               ("\C-c\C-l" . 'fsharp-load-line)
-              ("\C-c\C-u" . 'fsharp-goto-block-up))))
+              ("\C-c\C-u" . 'fsharp-goto-block-up)
+              ("\C-x\C-e" . 'fsharp-eval-phrase))))
 (add-hook 'inferior-fsharp-mode-hooks
           (lambda ()
             (add-to-list 'comint-output-filter-functions
                          'comint-truncate-buffer)
-            (setq comint-buffer-maximum-size 5000)))
+            (setq comint-buffer-maximum-size 2000)))
 
 (defun fsharp-load-buffer ()
   (interactive)
@@ -158,6 +159,7 @@ With prefix arg N, cut this many sequential subtrees."
               ("\C-cs" . 'org-agenda-restrict-subtree)
               ("\C-cl" . 'org-store-link)
               ("\C-cb" . 'org-iswitchb)
+              ("\C-cw" . 'copy-org-link-at-point)
 
               ;; Make links work like chasing definitions in source code.
               ("\M-." . 'org-open-at-point)
@@ -223,6 +225,13 @@ With prefix arg N, cut this many sequential subtrees."
            (if x (org-no-properties x))))
         ((and (eq window-system 'w32) (fboundp 'w32-get-clipboard-data))
          (w32-get-clipboard-data))))
+
+(defun copy-org-link-at-point ()
+  (interactive)
+  (when (org-in-regexp org-bracket-link-regexp 1)
+    (let ((link (org-link-unescape (org-match-string-no-properties 1))))
+      (kill-new link)
+      (message "Copied link '%s' to the clipboard." link))))
 
 (defun read-org-agenda-file ()
   "Completing-read for an org agenda file."
