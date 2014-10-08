@@ -330,9 +330,8 @@ scan-error if not."
   (interactive)
   (ruby-send-region (point-at-bol) (point-at-eol)))
 
-(add-hook 'ruby-mode-hook
-          (lambda ()
-            (define-key inf-ruby-minor-mode-map "\C-c\C-l" 'ruby-load-line)))
+(eval-after-load 'inf-ruby
+  '(define-key inf-ruby-minor-mode-map "\C-c\C-l" 'ruby-load-line))
 
 ;; Text
 (add-hook 'text-mode-hook 'turn-on-auto-fill)
