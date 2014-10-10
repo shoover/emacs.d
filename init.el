@@ -143,6 +143,11 @@
 
 (global-set-key "\C-c/" 'my-indent-region) ; Indent region or whole buffer
 
+;; Jump to elisp source. Thanks emacsredux.com.
+(define-key 'help-command (kbd "C-f") 'find-function)
+(define-key 'help-command (kbd "C-k") 'find-function-on-key)
+(define-key 'help-command (kbd "C-v") 'find-variable)
+
 ; Shift+(left|right|up|down) to get to a window quicker than with C-x o
 (windmove-default-keybindings)
 
