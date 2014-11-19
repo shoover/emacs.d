@@ -106,6 +106,16 @@
   (interactive)
   (fsharp-eval-region (point-at-bol) (point-at-eol)))
 
+;; Lua
+(add-hook 'lua-mode-hook
+          (lambda ()
+            (define-keys lua-mode-map
+              ("\C-c\C-l" . 'lua-send-current-line)
+              ("\C-c\C-b" . 'lua-send-buffer)
+              ("\C-c\C-r" . 'lua-send-region)
+              ("\C-x\C-e" . 'lua-send-defun)
+              ("\C-\M-x" . 'lua-send-defun))))
+
 ;; Lisp
 (require 'lisp-mode)
 (define-key lisp-mode-shared-map "\M-a" 'backward-sexp)

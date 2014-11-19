@@ -92,6 +92,9 @@
 (setq uniquify-buffer-name-style 'post-forward
       uniquify-separator ":")
 
+(setq tramp-default-method "plinkx")
+(setq tramp-verbose 9)
+
 ;; eshell prompt
 (setq eshell-prompt-function (lambda nil (concat "\n" (eshell/pwd) "\n$ "))
       eshell-prompt-regexp "^\$ ")
