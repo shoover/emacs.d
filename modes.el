@@ -110,11 +110,26 @@
 (add-hook 'lua-mode-hook
           (lambda ()
             (define-keys lua-mode-map
-              ("\C-c\C-l" . 'lua-send-current-line)
-              ("\C-c\C-b" . 'lua-send-buffer)
-              ("\C-c\C-r" . 'lua-send-region)
               ("\C-x\C-e" . 'lua-send-defun)
-              ("\C-\M-x" . 'lua-send-defun))))
+              ("\C-\M-x" . 'lua-send-defun))
+            (define-keys lua-prefix-mode-map ; C-c
+              ("\C-s" . 'lua-show-process-buffer)
+              ("\C-z" . 'lua-switch-to-inf)
+              ("\C-u" . 'lua-beginning-of-proc)
+              ("\C-l" . 'lua-send-current-line)
+              ("\C-b" . 'lua-send-buffer)
+              ("\C-r" . 'lua-send-region))))
+
+;; Borrowed from inf-ruby and cut down
+(defun lua-switch-to-inf (eob-p)
+  "Switch to the Lua process buffer.
+With argument, positions cursor at end of buffer."
+  (interactive "P")
+  (lua-show-process-buffer)
+  (pop-to-buffer lua-process-buffer)
+  (cond (eob-p
+         (push-mark)
+         (goto-char (point-max)))))
 
 ;; Lisp
 (require 'lisp-mode)
