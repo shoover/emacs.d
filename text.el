@@ -217,11 +217,6 @@ table determines which characters these are."
               (set-buffer-modified-p nil))))
 
 
-(defun toggle-selective-display () ;  From jao via stevey
-  "A poor-man's version of code folding."
-  (interactive)
-  (set-selective-display (if selective-display nil 1)))
-
 (defun my-comint (cmd)
   "Runs `comint', but parses cmd into a program and args like `inferior-lisp'."
   (interactive (list (if current-prefix-arg

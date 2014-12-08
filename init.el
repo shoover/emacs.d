@@ -129,8 +129,6 @@
 (global-set-key "\M-t" 'transpose-chars)
 (global-set-key "\M-T" 'transpose-words)
 
-(global-set-key [f1] 'toggle-selective-display)
-
 (global-set-key [C-tab] 'next-previous-buffer)
 (global-set-key "\M-`" 'other-frame)
 
