@@ -154,10 +154,6 @@
 
 (global-set-key "\C-xx" 'w32-explore-here)
 
-(require 'inc)
-(global-set-key (kbd "C-c +") 'increment-integer-at-point)
-(global-set-key (kbd "C-c -") 'decrement-integer-at-point)
-
 ;; OS X-specific setup
 (setq mac-command-modifier (quote meta))
 (setq mac-option-modifier (quote alt))
