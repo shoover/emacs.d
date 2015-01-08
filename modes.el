@@ -148,17 +148,6 @@ With argument, positions cursor at end of buffer."
 (add-to-list 'auto-mode-alist '("\\.nsh$"  . nsis-mode))
 
 ;; org-mode
-(defun org-agenda-match-subtree (&optional arg)
-  "Org Agenda tag/todo match restricted to the current subtree."
-  (interactive "P")
-  (org-agenda arg "m" 'subtree))
-
-(defun org-agenda-restrict-subtree (&optional arg)
-  "Dispatch agenda commands restricted to current subtree."
-  (interactive "P")
-  (let ((org-agenda-overriding-restriction 'subtree))
-    (org-agenda arg)))
-
 (defun org-promote-subtree-x (&optional n)
   "Cut the current subtree and paste it one heading level up.
 With prefix arg N, cut this many sequential subtrees."
@@ -173,6 +162,96 @@ With prefix arg N, cut this many sequential subtrees."
   ;; kill-region but org-paste-subtree doesn't set it.
   (setq this-command 'org-promote-subtree-x))
 
+(defun convert-org-items-to-paragraphs ()
+  "Convert items to normal paragraphs. If there is no active
+region, only the current line is considered.
+
+The overall structure and helper functions are cribbed from
+`org-toggle-item', which can convert items to plain lines but
+doesn't unindent multiline item text."
+  (interactive)
+  (let ((shift-text
+         (function
+          ;; Shift text in current section to IND, from point to END.
+          ;; The function leaves point to END line.
+          (lambda (ind end)
+            (let ((min-i 1000) (end (copy-marker end)))
+              ;; First determine the minimum indentation (MIN-I) of
+              ;; the text.
+              (save-excursion
+                (catch 'exit
+                  (while (< (point) end)
+                    (let ((i (org-get-indentation)))
+                      (cond
+                       ;; Skip blank lines and inline tasks.
+                       ((looking-at "^[ \t]*$"))
+                       ((looking-at org-outline-regexp-bol))
+                       ;; We can't find less than 0 indentation.
+                       ((zerop i) (throw 'exit (setq min-i 0)))
+                       ((< i min-i) (setq min-i i))))
+                    (forward-line))))
+              ;; Then indent each line so that a line indented to
+              ;; MIN-I becomes indented to IND.  Ignore blank lines
+              ;; and inline tasks in the process.
+              (let ((delta (- ind min-i)))
+                (while (< (point) end)
+                  (unless (or (looking-at "^[ \t]*$")
+                              (looking-at org-outline-regexp-bol))
+                    (org-indent-line-to (+ (org-get-indentation) delta)))
+                  (forward-line)))))))
+        (skip-blanks
+         (function
+          ;; Return beginning of first non-blank line, starting from
+          ;; line at POS.
+          (lambda (pos)
+            (save-excursion
+              (goto-char pos)
+              (skip-chars-forward " \r\t\n")
+              (point-at-bol)))))
+        beg end)
+
+    ;; Determine boundaries of changes.
+    (if (org-region-active-p)
+        (setq beg (funcall skip-blanks (region-beginning))
+              end (copy-marker (region-end)))
+      (setq beg (funcall skip-blanks (point-at-bol))
+            end (copy-marker (point-at-eol))))
+
+    ;; Depending on the starting line, choose an action on the text
+    ;; between BEG and END.
+    (org-with-limited-levels
+     (save-excursion
+       (goto-char beg)
+       (let ((ref-ind (org-get-indentation))
+             (first-item t))
+         (while (< (point) end)
+           (cond
+            ;; Start at an item: de-itemize and insert blank lines between them.
+            ((org-at-item-p)
+             (progn
+               ;; Delete the item prefix.
+               (save-excursion
+                 (skip-chars-forward " \t")
+                 (delete-region (point) (match-end 0)))
+
+               ;; Insert the blank line after deleting the item prefix;
+               ;; otherwise the prefix search gets messed up by a character or
+               ;; two.
+               (if first-item
+                   (setq first-item nil)
+                 (newline))))
+
+            ;; Unindent lines of enclosed paragraph.
+            (t
+             (save-excursion
+               (funcall shift-text
+                        ref-ind
+                        (min end (save-excursion
+                                   (move-end-of-line nil)
+                                   (point)))))))
+
+           (forward-line)))))))
+
 (add-hook 'org-mode-hook
           (lambda ()
             (turn-on-auto-fill)))
@@ -180,8 +259,6 @@ With prefix arg N, cut this many sequential subtrees."
           (lambda ()
             (define-keys org-mode-map
               ("\C-ca" . 'org-agenda)
-              ("\C-cm" . 'org-agenda-match-subtree)
-              ("\C-cs" . 'org-agenda-restrict-subtree)
               ("\C-cl" . 'org-store-link)
               ("\C-cb" . 'org-iswitchb)
               ("\C-cw" . 'copy-org-link-at-point)
@@ -208,7 +285,7 @@ With prefix arg N, cut this many sequential subtrees."
                      ((org-use-tag-inheritance nil)))
                     ("p" "Project list, current buffer" tags-tree "prj"
                      ((org-use-tag-inheritance nil)))))
-            (setq org-refile-targets '((org-agenda-files :maxlevel . 1))
+            (setq org-refile-targets '((org-agenda-files :maxlevel . 2))
                   org-refile-use-outline-path 'file
                   org-refile-allow-creating-parent-nodes 'confirm)))
 (setq org-default-notes-file (concat org-directory "/action.org"))
@@ -230,7 +307,7 @@ With prefix arg N, cut this many sequential subtrees."
   (interactive)
   (require 'frame-center)
   (let ((f (make-frame `((name . "*Capture*")
-                         (width . 90) (height . 20)))))
+                         (width . 95) (height . 25)))))
     ;; I would like to center this on the same display as the previous Emacs
     ;; frame, but frame parameters are relative to the main display and
     ;; display-*/frame-* don't seem to give any information about the
@@ -271,7 +348,7 @@ With prefix arg N, cut this many sequential subtrees."
                           nil t)))
 
 (setq org-capture-templates
-        ; standard capture: blank headline, paste region
+                                        ; standard capture: blank headline, paste region
       '(("a" "Action" entry (file org-default-notes-file)
          "* %?\n%i" :prepend t)
         ("n" "Notes" entry (file+datetree my-notes-org) ; include timestamp
@@ -279,7 +356,7 @@ With prefix arg N, cut this many sequential subtrees."
         ("w" "Work" entry (file my-work-org)
          "* %?\n%i" :prepend t)
 
-        ; clipboard capture: blank headline, paste OS clipboard
+                                        ; clipboard capture: blank headline, paste OS clipboard
         ("v" "Templates for pasting the OS clipboard")
         ("va" "Action, paste clipboard" entry (file org-default-notes-file)
          "* %?\n%x" :prepend t)
@@ -288,9 +365,9 @@ With prefix arg N, cut this many sequential subtrees."
         ("vn" "Notes, paste clipboard" entry (file+datetree my-notes-org)
          "* %?\n%x" :empty-lines 1)
 
-        ; org-protocol capture: the handler puts the link/title in the kill ring %c
-        ; and selected text in the region %i
-        ; Alt: "* %?[[%:link][%:description]]\n%:initial\n%U"
+        ;; org-protocol capture: the handler puts the link/title in the kill ring %c
+        ;; and selected text in the region %i
+        ;; Alt: "* %?[[%:link][%:description]]\n%:initial\n%U"
         ("c" "org-protocol capture" entry (file read-org-agenda-file)
          "* %?%c\n%i\n%U" :prepend t)))
 
