@@ -252,6 +252,33 @@ doesn't unindent multiline item text."
 
            (forward-line)))))))
 
+(defun org-export-html-subtree-x (&optional visible-only)
+  "Exports the current subtree to HTML and browses to the file.
+
+If property \"EXPORT_FILE_NAME\" is set in the subtree, that file
+name is used. Otherwise a temp file is used.
+
+When optional argument VISIBLE-ONLY is non-nil, don't export
+contents of hidden elements."
+  (interactive)
+  (let ((file (or
+               ;; Use the subtree export property if it exists
+               (org-entry-get
+                (save-excursion
+                  (ignore-errors (org-back-to-heading) (point)))
+                "EXPORT_FILE_NAME" t)
+
+               ;; Otherwise just a temp file, logic cribbed from browse-url-of-buffer
+               (convert-standard-filename
+                (make-temp-file
+                 (expand-file-name "burl" browse-url-temp-dir)
+                 nil ".html"))))
+        (async nil)
+        (subtreep t)
+        ;; (org-export-coding-system org-html-coding-system)
+        )
+    (browse-url-of-file (org-export-to-file 'html file async subtreep visible-only))))
+
 (add-hook 'org-mode-hook
           (lambda ()
             (turn-on-auto-fill)))
@@ -277,9 +304,11 @@ doesn't unindent multiline item text."
               ([C-tab] . nil))
 
             (setq org-agenda-files
-                  (append
-                   (directory-files org-directory t "\\.org$")
-                   (directory-files (concat org-directory "/../banjo") t "\\.org$")))
+                  (apply 'append
+                         (mapcar (lambda (dir)
+                                   (directory-files dir t "\\.org\\|org_archive$"))
+                                 (list org-directory
+                                       (concat org-directory "/../banjo")))))
             (setq org-agenda-custom-commands
                   '(("P" "Project list" tags "prj"
                      ((org-use-tag-inheritance nil)))
