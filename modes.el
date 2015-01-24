@@ -252,36 +252,38 @@ doesn't unindent multiline item text."
 
            (forward-line)))))))
 
-(defun org-export-html-subtree-x (&optional visible-only)
+(defun org-export-html-subtree-x (arg)
   "Exports the current subtree to HTML and browses to the file.
 
-If property \"EXPORT_FILE_NAME\" is set in the subtree, that file
-name is used. Otherwise a temp file is used.
-
-When optional argument VISIBLE-ONLY is non-nil, don't export
-contents of hidden elements."
-  (interactive)
+With a prefix arg, prompt for a file name. If property
+\"EXPORT_FILE_NAME\" is set in the subtree, that file name is
+used. Otherwise a temp file is used."
+  (interactive "P")
   (let ((file (or
-               ;; Use the subtree export property if it exists
+               ;; Get the output file name from the user if a prefix arg was given
+               (and arg
+                    (ido-read-file-name "HTML file:"))
+
+               ;; Use the subtree export file name if the property is set
                (org-entry-get
                 (save-excursion
                   (ignore-errors (org-back-to-heading) (point)))
                 "EXPORT_FILE_NAME" t)
 
-               ;; Otherwise just a temp file, logic cribbed from browse-url-of-buffer
+               ;; Otherwise use a temp file, logic cribbed from browse-url-of-buffer
                (convert-standard-filename
                 (make-temp-file
                  (expand-file-name "burl" browse-url-temp-dir)
                  nil ".html"))))
         (async nil)
-        (subtreep t)
-        ;; (org-export-coding-system org-html-coding-system)
-        )
-    (browse-url-of-file (org-export-to-file 'html file async subtreep visible-only))))
+        (subtreep t))
+    (browse-url-of-file
+     (org-export-to-file 'html file async subtreep))))
 
 (add-hook 'org-mode-hook
           (lambda ()
             (turn-on-auto-fill)))
+
 (add-hook 'org-load-hook
           (lambda ()
             (define-keys org-mode-map
@@ -317,6 +319,7 @@ contents of hidden elements."
             (setq org-refile-targets '((org-agenda-files :maxlevel . 2))
                   org-refile-use-outline-path 'file
                   org-refile-allow-creating-parent-nodes 'confirm)))
+
 (setq org-default-notes-file (concat org-directory "/action.org"))
 (setq org-tags-column -85)
 
