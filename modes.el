@@ -106,6 +106,9 @@
   (interactive)
   (fsharp-eval-region (point-at-bol) (point-at-eol)))
 
+;; generic modes built in, e.g. bat-mode
+(require 'generic-x)
+
 ;; Lua
 (add-hook 'lua-mode-hook
           (lambda ()
@@ -387,6 +390,8 @@ used. Otherwise a temp file is used."
          "* %?\n%i%U")
         ("w" "Work" entry (file my-work-org)
          "* %?\n%i" :prepend t)
+        ("o" "Workout" entry (file+datetree (concat org-directory "/workout.org"))
+         "* %?")
 
                                         ; clipboard capture: blank headline, paste OS clipboard
         ("v" "Templates for pasting the OS clipboard")
@@ -454,6 +459,7 @@ scan-error if not."
 (add-to-list 'auto-mode-alist '("\\.php$" . html-mode))
 
 ;; Python
+(add-to-list 'auto-mode-alist '("scons" . python-mode))
 (add-to-list 'auto-mode-alist '("SConstruct" . python-mode))
 (add-to-list 'auto-mode-alist '("SConscript" . python-mode))
 (add-to-list 'auto-mode-alist '("wscript" . python-mode))
