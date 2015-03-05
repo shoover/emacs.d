@@ -47,9 +47,27 @@ of the box `(w h)' inside the box `(cw ch)'."
                 (center (frame-get-center frame)))
            `(,frame ,@center))))
 
+(defun display-get-workarea-width ()
+  "Get the work area pixel width of the main display."
+  (nth 3 (assq 'workarea (car (display-monitor-attributes-list)))))
+
+(defun display-get-workarea-height ()
+  "Get the work area pixel height of the main display."
+  (nth 4 (assq 'workarea (car (display-monitor-attributes-list)))))
+
 (defun frame-bottom-right (&optional frame)
   "Position a frame at the bottom right of the screen."
   (interactive)
-  (set-frame-position (frame-get-selected-frame frame) -1 (- (screen-unusable-height))))
+  ;; (-1,-1) used to work, but in Emacs 24.4 it seems negative numbers are
+  ;; taken relative to the total size of all monitors, so we're back to doing
+  ;; the math relative to the main monitor's size.
+  (let ((frame (frame-get-selected-frame frame)))
+    (set-frame-position frame
+                        (- (display-get-workarea-width)
+                           (frame-pixel-width frame)
+                           16) ; no clue why this constant is needed
+                        (- (display-get-workarea-height)
+                           (frame-pixel-height frame)
+                           60)))) ; no clue why this constant is needed
 
 (provide 'frame-center)

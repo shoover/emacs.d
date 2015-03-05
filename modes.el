@@ -343,10 +343,6 @@ used. Otherwise a temp file is used."
   (require 'frame-center)
   (let ((f (make-frame `((name . "*Capture*")
                          (width . 95) (height . 25)))))
-    ;; I would like to center this on the same display as the previous Emacs
-    ;; frame, but frame parameters are relative to the main display and
-    ;; display-*/frame-* don't seem to give any information about the
-    ;; alternate display size. So just put stick it in the bottom right.
     (frame-bottom-right f)
     (select-frame f)
     (raise-frame f))
