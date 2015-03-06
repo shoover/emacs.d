@@ -60,7 +60,8 @@
       (ample/gray "#a5a5a5")
       (ample/dark-gray "#656565")
       (ample/darker-gray "#454545")
-      (ample/darkest-gray "#252525")
+      (ample/darkerer-gray "#313131")
+      (ample/darkest-gray "#222222")
       (ample/red "#cd7542")
       (ample/dark-red "#9d2512")
 
@@ -118,7 +119,7 @@
 
    ;; search
    `(isearch		((t (:background ,ample/blue :foreground ,ample/bg))))
-   `(lazy-highlight	((t (:background ,ample/bg :foreground ,ample/purple :underline nil))))
+   `(lazy-highlight	((t (:background ,ample/darkerer-gray :foreground ,ample/purple :underline nil))))
 
    ;; ace-jump
    `(ace-jump-face-background ((t (:inherit font-lock-comment-face))))
@@ -126,7 +127,7 @@
 
    `(vertical-border ((t (:background ,ample/darker-gray :foreground ,ample/darkest-gray))))
 
-   `(hl-line ((t (:background "#222222"))))
+   `(hl-line ((t (:background ,ample/darkest-gray))))
 
    `(highlight-indentation-face ((t (:background ,ample/darkest-gray))))
 

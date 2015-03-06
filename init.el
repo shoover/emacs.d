@@ -54,11 +54,9 @@
 (setq-default scroll-down-aggressively 0.25
               scroll-up-aggressively 0.25)
 
-;; Whitespace mode was much less subtle in 22 and used other variables
-(when (>= emacs-major-version 23)
-  (setq whitespace-global-modes '(c-mode clojure-mode emacs-lisp-mode ruby-mode)
-        whitespace-style '(tabs trailing lines-tail space-before-tab empty
-                                space-after-tab)))
+(setq whitespace-global-modes '(c-mode clojure-mode emacs-lisp-mode ruby-mode)
+      whitespace-style '(tabs trailing lines-tail space-before-tab empty
+                              space-after-tab))
 
 (blink-cursor-mode 1)
 (setq ring-bell-function (lambda () (message "")))
@@ -96,18 +94,19 @@
 (setq tramp-default-method "plinkx")
 (setq tramp-verbose 9)
 
-;; eshell prompt
 (setq eshell-prompt-function (lambda nil (concat "\n" (eshell/pwd) "\n$ "))
       eshell-prompt-regexp "^\$ ")
 
+(defun add-to-list-n (list-var &rest elements)
+  "Adds each element in ELEMENTS to the value of LIST-VAR as in `add-to-list'."
+  (dolist (i elements)
+    (add-to-list list-var i)))
+
 ;; Project setup
-;; Files to include in find-file-in-project. Requires find-file-in-project and
-;; project.el to be package installed. (Get
-;; http://github.com/technomancy/find-file-in-project and run `git submodule
-;; update`, then package-install-from-buffer.)
-(setq ffip-patterns '("*.c" "*.cs" "*.el" "*.h" "*.rb" "*.t"))
-;; This is needed for ffip to work, but it's not on all my machines yet.
-;;(require 'project nil t)
+(require 'find-file-in-project)
+(add-to-list-n 'ffip-patterns "*.c" "*.cs" "*.h" "*.t")
+(add-to-list-n 'ffip-project-file ".hg" ".svn")
+(add-to-list-n 'ffip-prune-patterns ".hg" ".svn")
 
 ;;; Custom functions and mode settings
 (load "text")
@@ -121,10 +120,11 @@
 (global-set-key "\M-r" 'yank-pop)
 
 (global-set-key "\C-s" 'isearch-forward)
-(global-set-key "\M-s" 'isearch-backward)
+(global-set-key "\C-xs" 'isearch-backward)
+(define-key isearch-mode-map "\C-xs" 'isearch-repeat-backward)
 (define-key isearch-mode-map "\M-s" 'isearch-repeat-backward)
-(global-set-key (kbd "C-S-S") 'isearch-forward-regexp)
-(global-set-key (kbd "M-S-S") 'isearch-backward-regexp)
+(global-set-key "\M-s" 'isearch-forward-regexp)
+(global-set-key "\C-x\M-s" 'isearch-backward-regexp)
 
 ; remap transpose so C-t is available to create a buffer like Chrome tabs
 (global-set-key "\M-t" 'transpose-chars)
@@ -135,6 +135,7 @@
 
 (global-set-key "\C-x\C-f" 'my-ido-find-file)
 (global-set-key "\C-xf" 'my-ido-find-file)
+(global-set-key "\C-xk" 'my-ido-kill-buffer)
 (global-set-key "\C-xb" 'my-switch-to-buffer)
 (global-set-key [f5] 'revert-buffer)
 (global-set-key [f6] 'kill-this-buffer)
@@ -145,7 +146,7 @@
 
 (global-set-key "\C-c/" 'my-indent-region) ; Indent region or whole buffer
 
-;; Jump to elisp source. Thanks emacsredux.com.
+;; Jump to elisp source. Thanks, emacsredux.com.
 (define-key 'help-command (kbd "C-f") 'find-function)
 (define-key 'help-command (kbd "C-k") 'find-function-on-key)
 (define-key 'help-command (kbd "C-v") 'find-variable)
@@ -154,6 +155,7 @@
 (windmove-default-keybindings)
 
 (global-set-key "\C-xx" 'w32-explore-here)
+(global-set-key "\C-xg" 'browse-url-at-point)
 
 ;; OS X-specific setup
 (setq mac-command-modifier (quote meta))
@@ -194,7 +196,7 @@
     (".obj" ".pdb" ".svn/" "CVS/" ".o" "~" ".bin" ".bak" ".obj" ".map" ".ico" ".pif" ".lnk" ".a" ".ln" ".blg" ".bbl" ".dll" ".drv" ".vxd" ".386" ".elc" ".lof" ".glo" ".idx" ".lot" ".fmt" ".tfm" ".class" ".fas" ".lib" ".mem" ".x86f" ".sparcf" ".fasl" ".ufsl" ".fsl" ".dxl" ".pfsl" ".dfsl" ".p64fsl" ".d64fsl" ".dx64fsl" ".lo" ".la" ".gmo" ".mo" ".toc" ".aux" ".cp" ".fn" ".ky" ".pg" ".tp" ".vr" ".cps" ".fns" ".kys" ".pgs" ".tps" ".vrs" ".pyc" ".pyo")))
  '(custom-safe-themes
    (quote
-    ("6a985479364fbdc04e63fa1d96d0d86b9281e94a100e1b60f795ec53096b6063" "716bb0758bc6ceee435d3efe38fdde8c1252fb6bf51004159229eb2d9a2fc4de" "0e3f7fae39f57a1c49850be1614a285d2ae9c827d9e42ec6f4e48b3ec2a690b6" "d823c26445ba9e5a6a6e28a7a58da756566cfbd6a5737d56f3345b8204e346df" "c8f583441df726c20a7b40a47be63c6a4e6a496783cafdd7f21520b66a7308b7" "1218df7ba75a7d9d51199866d9d7bf1861e54122863366cf097c4cae9c2a625c" "47372e349f9fee5ce5350c03358628f36ccfc25e7a4e73d1a0473511d295c2f8" default)))
+    ("1d245dd8c1422d8395c85b0d78f6380aad6e97a24da2cbf3d1491ad57ed4ea5d" "6a985479364fbdc04e63fa1d96d0d86b9281e94a100e1b60f795ec53096b6063" "716bb0758bc6ceee435d3efe38fdde8c1252fb6bf51004159229eb2d9a2fc4de" "0e3f7fae39f57a1c49850be1614a285d2ae9c827d9e42ec6f4e48b3ec2a690b6" "d823c26445ba9e5a6a6e28a7a58da756566cfbd6a5737d56f3345b8204e346df" "c8f583441df726c20a7b40a47be63c6a4e6a496783cafdd7f21520b66a7308b7" "1218df7ba75a7d9d51199866d9d7bf1861e54122863366cf097c4cae9c2a625c" "47372e349f9fee5ce5350c03358628f36ccfc25e7a4e73d1a0473511d295c2f8" default)))
  '(default-frame-alist (quote ((width . 95) (height . 55))))
  '(fill-column 78)
  '(global-hl-line-mode t)

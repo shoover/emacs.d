@@ -255,8 +255,8 @@ table determines which characters these are."
 (defun move-buffer-other-frame ()
   "Moves the current buffer to another frame. If there's another
 frame, it is used. Otherwise a new frame is created. This is
-mainly useful when emacsclient opens a file in a frame that's
-sized for something other than reading code or logs."
+useful when you're in the wrong frame and Alt+Tab and C-xb keeps
+you stuck there."
   (interactive)
   (let ((buf (current-buffer)))
     (bury-buffer)
@@ -280,13 +280,20 @@ sized for something other than reading code or logs."
   (interactive)
   (let ((buf (ido-switch-buffer)))
     (with-current-buffer buf
-      ; cheap newly created, fileless buffer detection
+                                        ; cheap newly created, fileless buffer detection
       (unless (or buffer-offer-save
                   (buffer-file-name)
                   (buffer-modified-p)
                   (> (buffer-size) 0))
         (switch-to-install-offer-save buf)))))
 
+(defun my-ido-kill-buffer (arg)
+  "ido-kill-buffer, but with a prefix arg just save the buffer
+file name to the kill ring instead."
+  (interactive "P")
+  (if arg
+      (copy-file-name-to-clipboard)
+    (ido-kill-buffer)))
 
 ;; Originally from stevey, adapted to support moving to a new directory.
 (defun rename-file-and-buffer (new-name)
@@ -355,7 +362,7 @@ Uses async-shell-command if a prefix arg is given."
            (f (if arg 'async-shell-command 'shell-command)))
       (funcall f
                (concat (read-shell-command prompt nil nil open) " \""
-  buffer-file-name "\"")))))
+                       buffer-file-name "\"")))))
 
 ;; http://arunrocks.com/emacs-tip-a-key-to-open-the-current-folder-in-windows/
 (defun w32-explore-here ()

@@ -6,16 +6,17 @@
   (let ((forms (mapcar (lambda (pair) `(define-key ,map ,(car pair) ,(cdr pair))) pairs)))
     `(progn ,@forms)))
 
+(defun add-to-mode-alist (mode &rest patterns)
+  (dolist (p patterns)
+    (add-to-list 'auto-mode-alist (cons p mode))))
+
 ;; AutoHotkey
 (autoload 'autohotkey-mode "autohotkey-mode" "Edit AutoHotkey scripts" t)
 (add-to-list 'auto-mode-alist '("\\.ahk$" . autohotkey-mode))
 
 ;; Basic
 (autoload 'visual-basic-mode "visual-basic-mode" "Visual Basic mode." t)
-(add-to-list 'auto-mode-alist '("\\.frm$" . visual-basic-mode))
-(add-to-list 'auto-mode-alist '("\\.bas$" . visual-basic-mode))
-(add-to-list 'auto-mode-alist '("\\.cls$" . visual-basic-mode))
-(add-to-list 'auto-mode-alist '("\\.vbs$" . visual-basic-mode))
+(add-to-mode-alist 'visual-basic-mode "\\.frm$" "\\.bas$" "\\.cls$" "\\.vbs$")
 
 ;; C
 (add-hook 'c-mode-hook
@@ -68,8 +69,7 @@
 
 ;; CMake
 (autoload 'cmake-mode "cmake-mode" "Edit CMake definitions" t)
-(add-to-list 'auto-mode-alist '("CMakeLists\\.txt$" . cmake-mode))
-(add-to-list 'auto-mode-alist '("\\.cmake$"         . cmake-mode))
+(add-to-mode-alist 'cmake-mode "CMakeLists\\.txt$" "\\.cmake$")
 
 ;; dired sorting hooks
 (add-hook 'dired-mode-hook
@@ -136,8 +136,9 @@ With argument, positions cursor at end of buffer."
 
 ;; Lisp
 (require 'lisp-mode)
-(define-key lisp-mode-shared-map "\M-a" 'backward-sexp)
-(define-key lisp-mode-shared-map "\M-e" 'forward-sexp)
+(define-keys lisp-mode-shared-map
+  ("\M-a" . 'backward-sexp)
+  ("\M-e" . 'forward-sexp))
 
 ;; Make
 (setq compile-command "make ")
@@ -147,8 +148,7 @@ With argument, positions cursor at end of buffer."
 
 ;; NSIS
 (autoload 'nsis-mode "nsis-mode" "Edit Nullsoft installer scripts" t)
-(add-to-list 'auto-mode-alist '("\\.nsi.tmpl$"  . nsis-mode))
-(add-to-list 'auto-mode-alist '("\\.nsh$"  . nsis-mode))
+(add-to-mode-alist 'nsis-mode "\\.nsh$" "\\.nsi.tmpl$")
 
 ;; org-mode
 (defun org-promote-subtree-x (&optional n)
@@ -378,18 +378,38 @@ used. Otherwise a temp file is used."
                           (mapcar 'list (mapcar 'buffer-name (org-buffer-list 'agenda)))
                           nil t)))
 
+;; If this stops inserting at the right level, check org-capture-place-entry for
+;; http://orgmode.org/w/?p=org-mode.git;a=commitdiff;h=f1583aab467fff999f25eff6a03e771d11139a93
+;; Somehow that patch didn't make it into 8.2.10 even though it's ancient. Hopefully
+;; someday.
+(defun org-datetree-find-date-create-month (&optional date)
+  "Find or create a datetree entry for DATE's year and month. DATE defaults to today."
+  (require 'org-datetree)
+  (let* ((date (or date (calendar-gregorian-from-absolute (org-today))))
+         (year (nth 2 date))
+         (month (car date))
+         (day (nth 1 date)))
+    (org-set-local 'org-datetree-base-level 1) ; needed to get the buffer to widen right
+    (widen)
+    (save-restriction
+      (goto-char (point-min))
+      (org-datetree-find-year-create year)
+      (org-datetree-find-month-create year month)
+      (goto-char (prog1 (point) (widen))))))
+
 (setq org-capture-templates
-                                        ; standard capture: blank headline, paste region
+      ;; standard capture: blank headline, paste region
       '(("a" "Action" entry (file org-default-notes-file)
          "* %?\n%i" :prepend t)
         ("n" "Notes" entry (file+datetree my-notes-org) ; include timestamp
          "* %?\n%i%U")
         ("w" "Work" entry (file my-work-org)
          "* %?\n%i" :prepend t)
-        ("o" "Workout" entry (file+datetree (concat org-directory "/workout.org"))
-         "* %?")
-
-                                        ; clipboard capture: blank headline, paste OS clipboard
+        ("o" "Workout" entry (file+function (concat org-directory "/workout.org")
+                                            org-datetree-find-date-create-month)
+         "* %<%m-%d %a> %?")
+        
+        ;; clipboard capture: blank headline, paste OS clipboard
         ("v" "Templates for pasting the OS clipboard")
         ("va" "Action, paste clipboard" entry (file org-default-notes-file)
          "* %?\n%x" :prepend t)
@@ -455,17 +475,11 @@ scan-error if not."
 (add-to-list 'auto-mode-alist '("\\.php$" . html-mode))
 
 ;; Python
-(add-to-list 'auto-mode-alist '("scons" . python-mode))
-(add-to-list 'auto-mode-alist '("SConstruct" . python-mode))
-(add-to-list 'auto-mode-alist '("SConscript" . python-mode))
-(add-to-list 'auto-mode-alist '("wscript" . python-mode))
+(add-to-mode-alist 'python-mode "scons" "SConstruct" "SConscript" "wscript")
 
 ;; Ruby
 ;; .rb is set up by elpa
-(add-to-list 'auto-mode-alist '("\\.t$"  . ruby-mode))
-(add-to-list 'auto-mode-alist '("Rakefile$"  . ruby-mode))
-(add-to-list 'auto-mode-alist '("\\.rake$"  . ruby-mode))
-(add-to-list 'auto-mode-alist '("\\.rxml$"  . ruby-mode))
+(add-to-mode-alist 'ruby-mode "\\.t$" "Rakefile$" "\\.rake$" "\\.rxml$")
 
 (defun ruby-load-line ()
   (interactive)
