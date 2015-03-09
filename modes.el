@@ -405,9 +405,9 @@ used. Otherwise a temp file is used."
          "* %?\n%i%U")
         ("w" "Work" entry (file my-work-org)
          "* %?\n%i" :prepend t)
-        ("o" "Workout" entry (file+function (concat org-directory "/workout.org")
-                                            org-datetree-find-date-create-month)
-         "* %<%m-%d %a> %?")
+        ("o" "Workout Table" table-line (file+function (concat org-directory "/workout.org")
+                                                       org-datetree-find-date-create-month)
+         "|%<%m-%d %a>|%^{Time}|%?")
         
         ;; clipboard capture: blank headline, paste OS clipboard
         ("v" "Templates for pasting the OS clipboard")
