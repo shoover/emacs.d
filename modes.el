@@ -283,6 +283,17 @@ used. Otherwise a temp file is used."
     (browse-url-of-file
      (org-export-to-file 'html file async subtreep))))
 
+(defun find-org-files (&optional regexp)
+  "Returns a list of files in `org-directories' (searched
+recursively) whose names match REGEXP. The search pattern
+defaults to .org. You can override, for example, to also search
+archives."
+  (let ((regexp (or regexp "\\.org$")))
+    (apply 'append
+           (mapcar (lambda (dir)
+                     (directory-files dir t regexp))
+                   org-directories))))
+
 (add-hook 'org-mode-hook
           (lambda ()
             (turn-on-auto-fill)))
@@ -292,7 +303,6 @@ used. Otherwise a temp file is used."
             (define-keys org-mode-map
               ("\C-ca" . 'org-agenda)
               ("\C-cl" . 'org-store-link)
-              ("\C-cb" . 'org-iswitchb)
               ("\C-cw" . 'copy-org-link-at-point)
 
               ;; Make links work like chasing definitions in source code.
@@ -308,16 +318,18 @@ used. Otherwise a temp file is used."
               ;; clear this so next- previous-buffer works
               ([C-tab] . nil))
 
-            (setq org-agenda-files
-                  (apply 'append
-                         (mapcar (lambda (dir)
-                                   (directory-files dir t "\\.org\\|org_archive$"))
-                                 (list org-directory
-                                       (concat org-directory "/../banjo")))))
+            (setq org-directories (list org-directory
+                                        (concat org-directory "/../banjo")))
+            (setq org-agenda-files (find-org-files))
             (setq org-agenda-custom-commands
-                  '(("P" "Project list" tags "prj"
+                  '(("A" "Multi-occur, agenda and archives"
+                     search ""
+                     ((org-agenda-files (find-org-files "\\.org\\|org_archive$"))))
+                    ("P" "Project list"
+                     tags "prj"
                      ((org-use-tag-inheritance nil)))
-                    ("p" "Project list, current buffer" tags-tree "prj"
+                    ("p" "Project list, current buffer"
+                     tags-tree "prj"
                      ((org-use-tag-inheritance nil)))))
             (setq org-refile-targets '((org-agenda-files :maxlevel . 2))
                   org-refile-use-outline-path 'file
@@ -349,7 +361,7 @@ used. Otherwise a temp file is used."
 
   ;; Capture template selection uses org-mks, which insists on using a
   ;; separate window to pick the template. This looks weird when we already
-  ;; are making a separate frame, so hack it to use the same window.
+  ;; are making a dedicated frame, so hack it to use the same window.
   (letf (((symbol-function 'org-switch-to-buffer-other-window)
           (symbol-function 'switch-to-buffer)))
     (org-capture)))
@@ -423,53 +435,6 @@ used. Otherwise a temp file is used."
         ;; Alt: "* %?[[%:link][%:description]]\n%:initial\n%U"
         ("c" "org-protocol capture" entry (file read-org-agenda-file)
          "* %?%c\n%i\n%U" :prepend t)))
-
-;; paredit keyboard tweaks--from Bill Clementson
-(require 'paredit)
-(defun lisp-enable-paredit-hook () (paredit-mode 1))
-(defun check-region-parens ()
-  "Check if parentheses in the region are balanced. Signals a
-scan-error if not."
-  (interactive)
-  (save-restriction
-    (save-excursion
-      (let ((deactivate-mark nil))
-        (condition-case c
-            (progn
-              (narrow-to-region (region-beginning) (region-end))
-              (goto-char (point-min))
-              (while (/= 0 (- (point)
-                              (forward-list))))
-              t)
-          (scan-error (signal 'scan-error
-                              '("Region parentheses not balanced"))))))))
-
-(defun paredit-backward-maybe-delete-region ()
-  (interactive)
-  (if mark-active
-      (progn
-        (check-region-parens)
-        (cua-delete-region))
-    (paredit-backward-delete)))
-
-(defun paredit-forward-maybe-delete-region ()
-  (interactive)
-  (if mark-active
-      (progn
-        (check-region-parens)
-        (cua-delete-region))
-    (paredit-forward-delete)))
-
-(eval-after-load 'paredit
-  '(progn
-     (define-keys paredit-mode-map
-       ((kbd "<delete>") . 'paredit-forward-maybe-delete-region)
-       ((kbd "DEL") . 'paredit-backward-maybe-delete-region)
-       ((kbd ";") . 'self-insert-command)
-
-       ("\M-s" . nil) ; override splice
-       ("\M-S" . nil))
-     ))
 
 ;; PHP
 (add-to-list 'auto-mode-alist '("\\.php$" . html-mode))
