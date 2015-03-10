@@ -143,9 +143,6 @@ With argument, positions cursor at end of buffer."
 ;; Make
 (setq compile-command "make ")
 
-;; Mercurial
-(require 'mercurial)
-
 ;; NSIS
 (autoload 'nsis-mode "nsis-mode" "Edit Nullsoft installer scripts" t)
 (add-to-mode-alist 'nsis-mode "\\.nsh$" "\\.nsi.tmpl$")
@@ -411,29 +408,42 @@ archives."
 
 (setq org-capture-templates
       ;; standard capture: blank headline, paste region
-      '(("a" "Action" entry (file org-default-notes-file)
-         "* %?\n%i" :prepend t)
-        ("n" "Notes" entry (file+datetree my-notes-org) ; include timestamp
+      '(("a" "Action"
+         entry (file org-default-notes-file)
+         "* %?\n%i"
+         :prepend t)
+        ("n" "Notes"
+         entry (file+datetree my-notes-org) ; include timestamp
          "* %?\n%i%U")
-        ("w" "Work" entry (file my-work-org)
-         "* %?\n%i" :prepend t)
-        ("o" "Workout Table" table-line (file+function (concat org-directory "/workout.org")
-                                                       org-datetree-find-date-create-month)
+        ("w" "Work"
+         entry (file my-work-org)
+         "* %?\n%i"
+         :prepend t)
+        ("o" "Workout Table"
+         table-line (file+function (concat org-directory "/workout.org")
+                                   org-datetree-find-date-create-month)
          "|%<%m-%d %a>|%^{Time}|%?")
         
         ;; clipboard capture: blank headline, paste OS clipboard
         ("v" "Templates for pasting the OS clipboard")
-        ("va" "Action, paste clipboard" entry (file org-default-notes-file)
-         "* %?\n%x" :prepend t)
-        ("vw" "Work, paste clipboard" entry (file my-work-org)
-         "* %?\n%x" :prepend t)
-        ("vn" "Notes, paste clipboard" entry (file+datetree my-notes-org)
-         "* %?\n%x" :empty-lines 1)
+        ("va" "Action, paste clipboard"
+         entry (file org-default-notes-file)
+         "* %?\n%x"
+         :prepend t)
+        ("vw" "Work, paste clipboard"
+         entry (file my-work-org)
+         "* %?\n%x"
+         :prepend t)
+        ("vn" "Notes, paste clipboard"
+         entry (file+datetree my-notes-org)
+         "* %?\n%x"
+         :empty-lines 1)
 
         ;; org-protocol capture: the handler puts the link/title in the kill ring %c
         ;; and selected text in the region %i
         ;; Alt: "* %?[[%:link][%:description]]\n%:initial\n%U"
-        ("c" "org-protocol capture" entry (file read-org-agenda-file)
+        ("c" "org-protocol capture"
+         entry (file read-org-agenda-file)
          "* %?%c\n%i\n%U" :prepend t)))
 
 ;; PHP
@@ -455,6 +465,14 @@ archives."
 
 ;; Text
 (add-hook 'text-mode-hook 'turn-on-auto-fill)
+
+;; VC -- Bring back some of that old mercurial.el feeling to VC mode. I miss the
+;; single step commit without having to set up a fileset but let's give this a whirl.
+(eval-after-load 'vc-hooks
+  '(define-keys vc-prefix-map
+     ("=" . 'vc-root-diff)
+     ("D" . 'vc-diff)
+     ("n" . 'vc-next-action)))
 
 ;; YAML
 (autoload 'yaml-mode "yaml-mode" "Edit YAML files" t)

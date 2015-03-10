@@ -24,14 +24,6 @@
 ;; This makes load-theme work on anything in "themes"
 (setq custom-theme-directory (concat emacs-root "themes"))
 
-;; I install some info files here.
-;;   makeinfo foo.texi
-;;   install-info foo emacs/info/dir
-(require 'info)
-(setq Info-directory-list
-      (add-to-list 'Info-default-directory-list
-                   (expand-file-name "info" emacs-root)))
-
 (when (eq system-type 'windows-nt)
   ;; Put cygwin ahead of system32 for emacs and things it shells out to.
   ;; The gnuwin32 find.exe that comes with emacsw32 has a bug and doesn't
