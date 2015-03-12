@@ -138,7 +138,12 @@ With argument, positions cursor at end of buffer."
 (require 'lisp-mode)
 (define-keys lisp-mode-shared-map
   ("\M-a" . 'backward-sexp)
-  ("\M-e" . 'forward-sexp))
+  ("\M-e" . 'forward-sexp)
+  ("\M-k" . 'kill-sexp))
+
+;; Log files
+(autoload 'log-mode "log-mode" "View log files" t)
+(add-to-list 'auto-mode-alist '("\\.log$" . log-mode))
 
 ;; Make
 (setq compile-command "make ")
@@ -319,7 +324,7 @@ archives."
                                         (concat org-directory "/../banjo")))
             (setq org-agenda-files (find-org-files))
             (setq org-agenda-custom-commands
-                  '(("A" "Multi-occur, agenda and archives"
+                  '(("A" "Multi-occur, agenda files and archives"
                      search ""
                      ((org-agenda-files (find-org-files "\\.org\\|org_archive$"))))
                     ("P" "Project list"
@@ -412,28 +417,35 @@ archives."
          entry (file org-default-notes-file)
          "* %?\n%i"
          :prepend t)
+
         ("n" "Notes"
          entry (file+datetree my-notes-org) ; include timestamp
          "* %?\n%i%U")
+
         ("w" "Work"
          entry (file my-work-org)
          "* %?\n%i"
          :prepend t)
+
         ("o" "Workout Table"
          table-line (file+function (concat org-directory "/workout.org")
                                    org-datetree-find-date-create-month)
+         ;; insert date, prompt for Time, enter the rest manually
          "|%<%m-%d %a>|%^{Time}|%?")
         
         ;; clipboard capture: blank headline, paste OS clipboard
         ("v" "Templates for pasting the OS clipboard")
+
         ("va" "Action, paste clipboard"
          entry (file org-default-notes-file)
          "* %?\n%x"
          :prepend t)
+
         ("vw" "Work, paste clipboard"
          entry (file my-work-org)
          "* %?\n%x"
          :prepend t)
+
         ("vn" "Notes, paste clipboard"
          entry (file+datetree my-notes-org)
          "* %?\n%x"
@@ -445,6 +457,15 @@ archives."
         ("c" "org-protocol capture"
          entry (file read-org-agenda-file)
          "* %?%c\n%i\n%U" :prepend t)))
+
+;; Paredit
+(require 'paredit)
+(defun lisp-enable-paredit-hook () (paredit-mode 1))
+(eval-after-load 'paredit
+  '(progn
+     (define-keys paredit-mode-map
+       ("\M-s" . nil)                   ; override splice
+       ("\M-S" . nil))))                ; split
 
 ;; PHP
 (add-to-list 'auto-mode-alist '("\\.php$" . html-mode))
