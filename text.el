@@ -76,29 +76,38 @@ region is commented instead."
       (mark-sexp arg allow-extend))
     (comment-region (region-beginning) (region-end))))
 
-(defmacro loop-paragraphs (&rest body)
-  `(save-excursion
-     (goto-char (point-min))
-     (while (not (eobp))
-       ,@body
-       (forward-paragraph))))
-
 (defun fill-buffer ()
+  "Fill each of the paragraphs in the buffer."
   (interactive)
-  (loop-paragraphs
-   (fill-paragraph nil)))
+  (fill-region (point-min) (point-max)))
 
-;;; From Stefan Monnier. It is the opposite of fill-paragraph. Takes a
-;;; multi-line paragraph and makes it into a single line of text.
-(defun unfill-paragraph ()
-  (interactive)
-  (let ((fill-column (point-max)))
-    (fill-paragraph nil)))
+;;; From Stefan Monnier, adapted to unfill multiple paragraphs.
+(defun unfill-paragraph (&optional arg)
+  "Unfill paragraph at or after point. With a prefix arg, works
+on that many paragraphs."
+  (interactive "p")
+  (or arg (setq arg 1))
+  (while (and (> arg 0) (not (eobp)))
+    (let ((fill-column (point-max)))
+      (fill-paragraph nil))
+    (forward-paragraph)
+    (next-line)
+    (decf arg)))
 
 (defun unfill-buffer ()
+  "Unfills all the paragraphs in the buffer."
   (interactive)
-  (loop-paragraphs
-   (unfill-paragraph)))
+  (let ((fill-column (point-max)))
+    (fill-buffer)))
+
+(defun unfill-region ()
+  "Unfills all the paragraphs in the region, or in the buffer if
+the mark is not active."
+  (interactive)
+  (let ((fill-column (point-max)))
+    (if mark-active
+        (fill-region (region-beginning) (region-end))
+      (fill-region (point-min) (point-max)))))
 
 (defun unfill-paragraph-html ()
   "Unfills the current paragraph and inserts HTML breaks at the end."
