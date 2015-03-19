@@ -119,6 +119,15 @@
 (global-set-key "\M-s" 'isearch-forward-regexp)
 (global-set-key "\C-x\M-s" 'isearch-backward-regexp)
 
+;; I want to remap C-i but leave tab working as normal. This is the only way
+;; I've found that works without messing up local keymaps.
+;; http://stackoverflow.com/a/11319885/223029
+(define-key input-decode-map "\C-i" "\H-i")
+
+;; ispell
+(global-set-key "\H-i" 'ispell-word) ; word; this is really C-i
+(global-set-key "\M-i" 'ispell)           ; region or buffer
+
 ; remap transpose so C-t is available to create a buffer like Chrome tabs
 (global-set-key "\M-t" 'transpose-chars)
 (global-set-key "\M-T" 'transpose-words)
@@ -189,16 +198,13 @@
     (".obj" ".pdb" ".svn/" "CVS/" ".o" "~" ".bin" ".bak" ".obj" ".map" ".ico" ".pif" ".lnk" ".a" ".ln" ".blg" ".bbl" ".dll" ".drv" ".vxd" ".386" ".elc" ".lof" ".glo" ".idx" ".lot" ".fmt" ".tfm" ".class" ".fas" ".lib" ".mem" ".x86f" ".sparcf" ".fasl" ".ufsl" ".fsl" ".dxl" ".pfsl" ".dfsl" ".p64fsl" ".d64fsl" ".dx64fsl" ".lo" ".la" ".gmo" ".mo" ".toc" ".aux" ".cp" ".fn" ".ky" ".pg" ".tp" ".vr" ".cps" ".fns" ".kys" ".pgs" ".tps" ".vrs" ".pyc" ".pyo")))
  '(custom-safe-themes
    (quote
-    ("4f6cb6a7675c0c9931235ad2d60ba820ddf83d9b2754aad04c2ef7c3d0776942" "1d245dd8c1422d8395c85b0d78f6380aad6e97a24da2cbf3d1491ad57ed4ea5d" "6a985479364fbdc04e63fa1d96d0d86b9281e94a100e1b60f795ec53096b6063" "716bb0758bc6ceee435d3efe38fdde8c1252fb6bf51004159229eb2d9a2fc4de" "0e3f7fae39f57a1c49850be1614a285d2ae9c827d9e42ec6f4e48b3ec2a690b6" "d823c26445ba9e5a6a6e28a7a58da756566cfbd6a5737d56f3345b8204e346df" "c8f583441df726c20a7b40a47be63c6a4e6a496783cafdd7f21520b66a7308b7" "1218df7ba75a7d9d51199866d9d7bf1861e54122863366cf097c4cae9c2a625c" "47372e349f9fee5ce5350c03358628f36ccfc25e7a4e73d1a0473511d295c2f8" default)))
+    ("12d8cb25243aae3137aeebab95119638450eb0de0aed0bca7b55882564d142ef" "edbe2d6a820433a4b4179fecd92dcae318c82d0a60b470e55ab1d48bd56bb8c9" "4f6cb6a7675c0c9931235ad2d60ba820ddf83d9b2754aad04c2ef7c3d0776942" "1d245dd8c1422d8395c85b0d78f6380aad6e97a24da2cbf3d1491ad57ed4ea5d" "6a985479364fbdc04e63fa1d96d0d86b9281e94a100e1b60f795ec53096b6063" "716bb0758bc6ceee435d3efe38fdde8c1252fb6bf51004159229eb2d9a2fc4de" "0e3f7fae39f57a1c49850be1614a285d2ae9c827d9e42ec6f4e48b3ec2a690b6" "d823c26445ba9e5a6a6e28a7a58da756566cfbd6a5737d56f3345b8204e346df" "c8f583441df726c20a7b40a47be63c6a4e6a496783cafdd7f21520b66a7308b7" "1218df7ba75a7d9d51199866d9d7bf1861e54122863366cf097c4cae9c2a625c" "47372e349f9fee5ce5350c03358628f36ccfc25e7a4e73d1a0473511d295c2f8" default)))
  '(default-frame-alist (quote ((width . 95) (height . 55))))
  '(fill-column 78)
  '(global-hl-line-mode t)
  '(hg-outgoing-repository "")
  '(indent-tabs-mode nil)
  '(ns-alternate-modifier (quote alt))
- '(org-agenda-files
-   (quote
-    ("c:/Users/Shawn/Dropbox/action/action.org" "c:/Users/Shawn/Dropbox/action/dev.org" "c:/Users/Shawn/Dropbox/action/mobykids.org" "c:/Users/Shawn/Dropbox/action/notes.org" "c:/Users/Shawn/Dropbox/action/work.org" "c:/Users/Shawn/Dropbox/banjo/archtop.org" "c:/Users/Shawn/Dropbox/banjo/banjo.org" "c:/Users/Shawn/Dropbox/banjo/bass.org" "c:/Users/Shawn/Dropbox/banjo/fiddle.org" "c:/Users/Shawn/Dropbox/banjo/peghead.org" "c:/Users/Shawn/Dropbox/banjo/plan.org" "c:/Users/Shawn/Dropbox/banjo/plan_hand_drum.org" "c:/Users/Shawn/Dropbox/banjo/tools.org")))
  '(rst-level-face-base-light 20)
  '(rst-level-face-step-light 7)
  '(show-paren-mode t)
@@ -220,11 +226,10 @@
 ;(load-theme 'fogus)
 (load-theme 'ample)
 
+(cd "~")
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
-
-(cd "~")
