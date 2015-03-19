@@ -92,7 +92,7 @@
 
    ;; standard font lock
    `(font-lock-builtin-face		((t (:foreground ,ample/light-blue))))
-   `(font-lock-comment-face		((t (:foreground ,ample/gray))))
+   `(font-lock-comment-face		((t (:foreground ,ample/tan))))
    `(font-lock-comment-delimiter-face	((t (:foreground ,ample/dark-gray))))
    `(font-lock-function-name-face	((t (:foreground ,ample/green))))
    `(font-lock-keyword-face		((t (:foreground ,ample/blue))))
@@ -113,10 +113,11 @@
 
    `(popup-tip-face ((t (:background ,ample/fg :foreground ,ample/bg))))
 
-   `(header-line ((t (:background ,ample/fg :foreground ,ample/bg))))
+   `(header-line ((t (:inherit (mode-line-inactive) :background ,ample/darkerer-gray))))
 
    `(button  ((t (:foreground ,ample/lighter-blue :background nil :underline t))))
-
+   `(link ((t :foreground ,ample/light-blue :background nil :underline t)))
+   
    ;; search
    `(isearch		((t (:background ,ample/blue :foreground ,ample/bg))))
    `(lazy-highlight	((t (:background ,ample/darkerer-gray :foreground ,ample/purple :underline nil))))
