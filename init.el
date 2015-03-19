@@ -119,14 +119,11 @@
 (global-set-key "\M-s" 'isearch-forward-regexp)
 (global-set-key "\C-x\M-s" 'isearch-backward-regexp)
 
-;; I want to remap C-i but leave tab working as normal. This is the only way
-;; I've found that works without messing up local keymaps.
-;; http://stackoverflow.com/a/11319885/223029
-(define-key input-decode-map "\C-i" "\H-i")
-
-;; ispell
-(global-set-key "\H-i" 'ispell-word) ; word; this is really C-i
-(global-set-key "\M-i" 'ispell)           ; region or buffer
+;; I want to remap C-i in text-mode but leave tab working as normal. This is
+;; the only way I've found that works without messing up local keymaps like
+;; the minibuffer's. http://stackoverflow.com/a/11319885/223029
+;; Works great except you have to remember to use H-i everywhere you want to override.
+(define-key input-decode-map "\C-i" (kbd "H-i"))
 
 ; remap transpose so C-t is available to create a buffer like Chrome tabs
 (global-set-key "\M-t" 'transpose-chars)

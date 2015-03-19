@@ -109,6 +109,9 @@
 ;; generic modes built in, e.g. bat-mode
 (require 'generic-x)
 
+;; INI, hgrc
+(add-to-list 'auto-mode-alist '("hgrc$" . ini-generic-mode))
+
 ;; Lua
 (add-hook 'lua-mode-hook
           (lambda ()
@@ -494,6 +497,12 @@ archives."
 
 ;; Text
 (add-hook 'text-mode-hook 'turn-on-auto-fill)
+(add-hook 'text-mode-hook 'turn-on-ispell-keys) 
+
+(defun turn-on-ispell-keys ()
+  (interactive)
+	(local-set-key (kbd "H-i") 'ispell-word) ; word; this is really C-i
+  (local-set-key "\M-i" 'ispell))          ; region or buffer
 
 ;; VC -- Bring back some of that old mercurial.el feeling to VC mode. I miss the
 ;; single step commit without having to set up a fileset but let's give this a whirl.

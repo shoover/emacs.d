@@ -51,11 +51,14 @@
     )
 
   '("\\.log$") ; file assocation
-  '(list       ; mode setup functions
-    (lambda ()
-      (use-local-map log-mode-map)))
+  '(list log-mode-init)                ; mode setup functions
   "Major mode for viewing log files.")
- 
+
+(defun log-mode-init ()
+  (use-local-map log-mode-map)
+  (setq imenu-generic-expression
+                `((nil ,(concat "^.*" log-incident-regexp ".\\{0,30\\}") 0))))
+
 (defvar log-incident-regexp (regexp-opt '("ERROR" "WARN"))
   "Regexp to search for \"incidents\" when navigating with the
   forward- and backward- functions.")

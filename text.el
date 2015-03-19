@@ -23,6 +23,11 @@ line instead."
   (interactive)
   (find-file "~/emacs/init.el"))
 
+(defun modes ()
+  "Find my modes file"
+  (interactive)
+  (find-file "~/emacs/modes.el"))
+
 (defun action ()
   "Find my org file"
   (interactive)
