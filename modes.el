@@ -411,6 +411,14 @@ archives."
       (org-datetree-find-month-create year month)
       (goto-char (prog1 (point) (widen))))))
 
+;; minutes parsing for workout duration math formulas. Stock table T/t
+;; formatting defaults to HH:MM but we need MM:SS.
+(defun parse-minutes-x (time)
+  "Converts TIME in MM:SS format to a number of minutes."
+  (when (string-match "\\([0-9]+\\)\\:\\([0-9]+\\)" time)
+    (+ (string-to-number (match-string 1 time))
+       (/ (string-to-number (match-string 2 time)) 60.0))))
+
 (setq org-capture-templates
       ;; standard capture: blank headline, paste region
       '(("a" "Action"
