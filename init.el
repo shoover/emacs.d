@@ -119,6 +119,8 @@
 (global-set-key "\M-s" 'isearch-forward-regexp)
 (global-set-key "\C-x\M-s" 'isearch-backward-regexp)
 
+(define-key ido-common-completion-map "\M-s" 'ido-prev-match)
+
 ;; I want to remap C-i in text-mode but leave tab working as normal. This is
 ;; the only way I've found that works without messing up local keymaps like
 ;; the minibuffer's. http://stackoverflow.com/a/11319885/223029
@@ -165,7 +167,7 @@
 
 ;; Snippets
 (require 'yasnippet)
-(yas/load-directory (concat emacs-root "snippets"))
+(add-to-list 'yas-snippet-dirs (concat emacs-root "snippets"))
 
 ;;; Server setup
 

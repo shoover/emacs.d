@@ -45,6 +45,7 @@
          "Pause"
          "Run"
          "Send"
+         "SendEvent"
          "SendMessage"
          "SendMode"
          "SetKeyDelay"
