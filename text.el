@@ -155,7 +155,9 @@ the mark is not active."
                (forward-line 1)
                (when (or (< arg 0) (not (eobp)))
                  (transpose-lines arg))
-               (forward-line -1))
+               ;; This used to be unconditionally -1. Then it started leaving
+               ;; point on the wrong line for move-text-up, maybe with Emacs 24?
+               (forward-line (if (< arg 0) -2 -1)))
              (move-to-column column t))
            ))))
 
