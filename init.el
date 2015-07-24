@@ -106,20 +106,20 @@
 
 ;;; Custom keybindings
 
-; Paste with one hand
-; todo: reuse C-y
+;; Paste with one hand
+;; todo: reuse C-y
 (global-set-key "\C-r" 'yank)
 (global-set-key "\M-r" 'yank-pop)
 (define-key paredit-mode-map "\M-r" 'paredit-yank-pop)
 
 (global-set-key "\C-s" 'isearch-forward)
-(global-set-key "\C-xs" 'isearch-backward)
-(define-key isearch-mode-map "\C-xs" 'isearch-repeat-backward)
+(global-set-key "\M-s" 'isearch-backward)
 (define-key isearch-mode-map "\M-s" 'isearch-repeat-backward)
-(global-set-key "\M-s" 'isearch-forward-regexp)
+(global-set-key "\C-xs" 'isearch-forward-regexp)
 (global-set-key "\C-x\M-s" 'isearch-backward-regexp)
 
 (define-key ido-common-completion-map "\M-s" 'ido-prev-match)
+(define-key ido-file-dir-completion-map "\M-s" 'ido-prev-match)
 
 ;; I want to remap C-i in text-mode but leave tab working as normal. This is
 ;; the only way I've found that works without messing up local keymaps like
@@ -168,6 +168,7 @@
 ;; Snippets
 (require 'yasnippet)
 (add-to-list 'yas-snippet-dirs (concat emacs-root "snippets"))
+(yas-global-mode 1)
 
 ;;; Server setup
 
