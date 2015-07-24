@@ -24,6 +24,7 @@
             (setq indent-tabs-mode nil)
             (setq tab-width 4)
             (setq c-basic-offset 4)
+            (c-set-offset 'substatement-open 0)
             (define-key c-mode-map "\C-c\C-c" 'compile)))
 (add-to-list 'auto-mode-alist '("\\.rl$" . c-mode))
 
@@ -260,6 +261,7 @@ doesn't unindent multiline item text."
 
            (forward-line)))))))
 
+(require 'browse-url)
 (defun org-export-html-subtree-x (arg)
   "Exports the current subtree to HTML and browses to the file.
 
@@ -284,9 +286,10 @@ used. Otherwise a temp file is used."
                  (expand-file-name "burl" browse-url-temp-dir)
                  nil ".html"))))
         (async nil)
-        (subtreep t))
+        (subtreep t)
+        (visible-only t))
     (browse-url-of-file
-     (org-export-to-file 'html file async subtreep))))
+     (org-export-to-file 'html file async subtreep visible-only))))
 
 (defun find-org-files (&optional regexp)
   "Returns a list of files in `org-directories' (searched
@@ -422,6 +425,8 @@ archives."
     (+ (string-to-number (match-string 1 time))
        (/ (string-to-number (match-string 2 time)) 60.0))))
 
+(require 'org-protocol) ; let the org-protocol template work
+
 (setq org-capture-templates
       ;; standard capture: blank headline, paste region
       '(("a" "Action"
@@ -465,6 +470,7 @@ archives."
         ;; org-protocol capture: the handler puts the link/title in the kill ring %c
         ;; and selected text in the region %i
         ;; Alt: "* %?[[%:link][%:description]]\n%:initial\n%U"
+        ;; Update HKEY_CLASSES_ROOT\org-protocol\shell\open\command.
         ("c" "org-protocol capture"
          entry (file read-org-agenda-file)
          "* %?%c\n%i\n%U" :prepend t)))
@@ -486,7 +492,7 @@ archives."
 
 ;; Ruby
 ;; .rb is set up by elpa
-(add-to-mode-alist 'ruby-mode "\\.t$" "Rakefile$" "\\.rake$" "\\.rxml$")
+(add-to-mode-alist 'ruby-mode "\\.t$" "Rakefile$" "\\.rake$" "\\.rxml$" "\\.xrs$")
 
 (defun ruby-load-line ()
   (interactive)
