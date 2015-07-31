@@ -7,6 +7,7 @@
     `(progn ,@forms)))
 
 (defun add-to-mode-alist (mode &rest patterns)
+  "Adds each pattern in PATTERNS to `auto-mode-alist' for MODE."
   (dolist (p patterns)
     (add-to-list 'auto-mode-alist (cons p mode))))
 
@@ -354,25 +355,64 @@ archives."
 ;; Automatic closing of capture frames
 (add-hook 'org-capture-after-finalize-hook
           (lambda ()
-            (when (capture-frame-p)
+            (when (and (frame-live-p (selected-frame))
+                       (capture-frame-p))
               (delete-frame))))
 
 (defun make-capture-frame ()
-  "Create a new frame and run org capture."
-  (interactive)
+  "Makes a frame with dialog-like properties and the name
+\"*Capture*\" for tracking in after-finalize."
   (require 'frame-center)
   (let ((f (make-frame `((name . "*Capture*")
                          (width . 95) (height . 25)))))
     (frame-bottom-right f)
     (select-frame f)
-    (raise-frame f))
+    (raise-frame f)
+    f))
 
-  ;; Capture template selection uses org-mks, which insists on using a
-  ;; separate window to pick the template. This looks weird when we already
-  ;; are making a dedicated frame, so hack it to use the same window.
-  (letf (((symbol-function 'org-switch-to-buffer-other-window)
-          (symbol-function 'switch-to-buffer)))
-    (org-capture)))
+(defmacro define-keys (map &rest pairs)
+  "Define multiple keys at once in keymap MAP. PAIRS are associations, for example
+(\"C-l\" . 'load)."
+  (let ((forms (mapcar (lambda (pair) `(define-key ,map ,(car pair) ,(cdr pair))) pairs)))
+    `(progn ,@forms)))
+
+(defmacro with-capture-frame (&rest body)
+  "Opens a new capture frame and invokes BODY. This also hacks
+org-mode variables to make sure org capture template selection
+doesn't divide the frame into a new window; since we're already
+making a dedicated frame, we want one full window in the frame."
+  `(progn
+     (let ((capture-frame (make-capture-frame)))
+       ;; Capture template selection uses org-mks, which insists on using a
+       ;; separate window to pick the template. This looks weird when we
+       ;; already are making a dedicated frame, so hack it to use the same
+       ;; window.
+       (letf (((symbol-function 'org-switch-to-buffer-other-window)
+               (symbol-function 'switch-to-buffer)))
+         ,@body))))
+
+(defun my-org-capture-new-frame ()
+  "Create a new frame and run org capture, good for slickrun
+commands, desktop shortcuts, scripts, etc. For example: \"emacsclientw
+-e (my-org-capture-new-frame)\". This ensures that template
+selection is presented in the new frame; using org-capture-hook
+instead would result in the template selection prompt being
+buried in the existing frame."
+  (interactive)
+  (with-capture-frame
+   (org-capture)))
+
+(require 'org-protocol)
+
+;; Advise org-protocol-capture to always wrap in a new capture frame. This
+;; would be risky with, say, org-capture, but since protocol capture is never
+;; called within emacs interactively but only from other programs, I think
+;; it's ok. If it became a problem we would have to register a new protocol
+;; and handler just for wrapping.
+(advice-add 'org-protocol-capture :around #'my-org-protocol-advice)
+(defun my-org-protocol-advice (orig-fun &rest args)
+  (with-capture-frame
+   (apply orig-fun args)))
 
 ;; Patch org-get-x-clipboard to work on Windows:
 ;; http://lists.gnu.org/archive/html/emacs-orgmode/2013-11/msg00675.html
@@ -425,8 +465,6 @@ archives."
     (+ (string-to-number (match-string 1 time))
        (/ (string-to-number (match-string 2 time)) 60.0))))
 
-(require 'org-protocol) ; let the org-protocol template work
-
 (setq org-capture-templates
       ;; standard capture: blank headline, paste region
       '(("a" "Action"
@@ -473,7 +511,11 @@ archives."
         ;; Update HKEY_CLASSES_ROOT\org-protocol\shell\open\command.
         ("c" "org-protocol capture"
          entry (file read-org-agenda-file)
-         "* %?%c\n%i\n%U" :prepend t)))
+         "* %?%c\n%i\n%U" :prepend t)
+        ;; Notes datetree requires a separate template
+        ("N" "org-protocol Notes capture"
+         entry (file+datetree my-notes-org)
+         "* %?%c\n%i\n%U")))
 
 ;; Paredit
 (require 'paredit)
