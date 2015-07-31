@@ -156,7 +156,7 @@
 (windmove-default-keybindings)
 
 (global-set-key "\C-xx" 'w32-explore-here)
-(global-set-key "\C-xg" 'browse-url-at-point)
+(global-set-key "\C-cg" 'browse-url-at-point)
 
 ;; OS X-specific setup
 (setq mac-command-modifier (quote meta))

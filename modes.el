@@ -414,16 +414,6 @@ buried in the existing frame."
   (with-capture-frame
    (apply orig-fun args)))
 
-;; Patch org-get-x-clipboard to work on Windows:
-;; http://lists.gnu.org/archive/html/emacs-orgmode/2013-11/msg00675.html
-(defun org-get-x-clipboard (value)
-  "Get the value of the x or Windows clipboard, compatible with XEmacs, and GNU Emacs 21."
-  (cond ((eq window-system 'x)
-         (let ((x (org-get-x-clipboard-compat value)))
-           (if x (org-no-properties x))))
-        ((and (eq window-system 'w32) (fboundp 'w32-get-clipboard-data))
-         (w32-get-clipboard-data))))
-
 (defun copy-org-link-at-point ()
   (interactive)
   (when (org-in-regexp org-bracket-link-regexp 1)
