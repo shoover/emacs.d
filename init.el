@@ -7,6 +7,13 @@
 ;; (load custom-file)
 ;;
 ;; Run this occasionally: C-u 0 M-x byte-recompile-directory
+;;
+;; Keys listed on require lines indicate where the dependency is assumed:
+;; - PKG: from the package system, M-x package-install
+;; - LISP: from the local lisp directory
+;;
+;; Package requirements not discoverable by grep require:
+;; - org-mode: development moves fast, so the built in version may not work with my config
 
 ;;; Paths and such
 
@@ -95,7 +102,7 @@
     (add-to-list list-var i)))
 
 ;; Project setup
-(require 'find-file-in-project)
+(require 'find-file-in-project) ; PKG
 (add-to-list-n 'ffip-patterns "*.c" "*.cs" "*.h" "*.t")
 (add-to-list-n 'ffip-project-file ".hg" ".svn")
 (add-to-list-n 'ffip-prune-patterns ".hg" ".svn")
@@ -125,7 +132,9 @@
 ;; the only way I've found that works without messing up local keymaps like
 ;; the minibuffer's. http://stackoverflow.com/a/11319885/223029
 ;; Works great except you have to remember to use H-i everywhere you want to override.
-(define-key input-decode-map "\C-i" (kbd "H-i"))
+;; Character displays can't distinguish tab from C-i, so forget it there.
+(when (display-graphic-p)
+  (define-key input-decode-map "\C-i" (kbd "H-i")))
 
 ; remap transpose so C-t is available to create a buffer like Chrome tabs
 (global-set-key "\M-t" 'transpose-chars)
@@ -166,7 +175,7 @@
   (define-key osx-key-mode-map `[(control z)] 'iconify-or-deiconify-frame))
 
 ;; Snippets
-(require 'yasnippet)
+(require 'yasnippet) ; PKG
 (add-to-list 'yas-snippet-dirs (concat emacs-root "snippets"))
 (yas-global-mode 1)
 
@@ -201,13 +210,12 @@
     ("12d8cb25243aae3137aeebab95119638450eb0de0aed0bca7b55882564d142ef" "edbe2d6a820433a4b4179fecd92dcae318c82d0a60b470e55ab1d48bd56bb8c9" "4f6cb6a7675c0c9931235ad2d60ba820ddf83d9b2754aad04c2ef7c3d0776942" "1d245dd8c1422d8395c85b0d78f6380aad6e97a24da2cbf3d1491ad57ed4ea5d" "6a985479364fbdc04e63fa1d96d0d86b9281e94a100e1b60f795ec53096b6063" "716bb0758bc6ceee435d3efe38fdde8c1252fb6bf51004159229eb2d9a2fc4de" "0e3f7fae39f57a1c49850be1614a285d2ae9c827d9e42ec6f4e48b3ec2a690b6" "d823c26445ba9e5a6a6e28a7a58da756566cfbd6a5737d56f3345b8204e346df" "c8f583441df726c20a7b40a47be63c6a4e6a496783cafdd7f21520b66a7308b7" "1218df7ba75a7d9d51199866d9d7bf1861e54122863366cf097c4cae9c2a625c" "47372e349f9fee5ce5350c03358628f36ccfc25e7a4e73d1a0473511d295c2f8" default)))
  '(default-frame-alist (quote ((width . 95) (height . 55))))
  '(fill-column 78)
- '(global-hl-line-mode t)
  '(hg-outgoing-repository "")
  '(indent-tabs-mode nil)
  '(ns-alternate-modifier (quote alt))
+ '(org-export-backends (quote (ascii html latex md odt)))
  '(rst-level-face-base-light 20)
  '(rst-level-face-step-light 7)
- '(show-paren-mode t)
  '(show-paren-style (quote mixed))
  '(special-display-regexps (quote (".*SPEEDBAR.*")))
  '(tab-always-indent t)
@@ -220,11 +228,15 @@
  '(x-select-enable-clipboard t))
 
 ;; Subtle face for parens in lisp modes
-(require 'parenface)
+(require 'parenface) ; LISP
 
-;(load-theme 'Shawn)
-;(load-theme 'fogus)
-(load-theme 'ample)
+(when (display-graphic-p)
+  ;;(load-theme 'Shawn)
+  ;;(load-theme 'fogus)
+  (load-theme 'ample)
+
+  (global-hl-line-mode t)
+  (show-paren-mode t))
 
 (cd "~")
 (custom-set-faces

@@ -290,7 +290,7 @@ you stuck there."
                                      nil)))
     (ido-find-file)))
 
-(require 'switch-to-new-buffer)
+(require 'switch-to-new-buffer) ; LISP
 (defun my-switch-to-buffer ()
   "ido-switch-buffer plus installing hooks to offer to save new buffers on kill."
   (interactive)

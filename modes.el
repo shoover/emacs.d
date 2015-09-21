@@ -22,7 +22,6 @@
 ;; C
 (add-hook 'c-mode-hook
           (lambda ()
-            (setq indent-tabs-mode nil)
             (setq tab-width 4)
             (setq c-basic-offset 4)
             (c-set-offset 'substatement-open 0)
@@ -49,7 +48,7 @@
             (add-to-list 'comint-output-filter-functions
                          'comint-truncate-buffer)
             (setq comint-buffer-maximum-size 5000)))
-(require 'ac-slime)
+(require 'ac-slime) ; LISP
 (add-hook 'slime-mode-hook 'set-up-slime-ac)
 (add-hook 'slime-repl-mode-hook 'set-up-slime-ac)
 
@@ -303,6 +302,15 @@ archives."
                      (directory-files dir t regexp))
                    org-directories))))
 
+;; Fix weird scrolling of the org export dispatch buffer by unsetting my
+;; typical scroll variables.
+(when (functionp 'advice-add) ;; emacs >= 24.4
+  (advice-add 'org-export-dispatch :around #'my-org-export-dispatch-advice)
+  (defun my-org-export-dispatch-advice (orig-fun &rest args)
+  (let ((scroll-margin 0)
+        (scroll-preserve-screen-position nil))
+    (apply orig-fun args))))
+
 (add-hook 'org-mode-hook
           (lambda ()
             (turn-on-auto-fill)))
@@ -327,8 +335,11 @@ archives."
               ;; clear this so next- previous-buffer works
               ([C-tab] . nil))
 
-            (setq org-directories (list org-directory
-                                        (concat org-directory "/../banjo")))
+            (setq org-directories (list org-directory))
+            (let ((b (concat org-directory "/../banjo")))
+              (when (file-exists-p b)
+                (add-to-list 'org-directories b)))
+            
             (setq org-agenda-files (find-org-files))
             (setq org-agenda-custom-commands
                   '(("A" "Multi-occur, agenda files and archives"
@@ -409,10 +420,11 @@ buried in the existing frame."
 ;; called within emacs interactively but only from other programs, I think
 ;; it's ok. If it became a problem we would have to register a new protocol
 ;; and handler just for wrapping.
-(advice-add 'org-protocol-capture :around #'my-org-protocol-advice)
-(defun my-org-protocol-advice (orig-fun &rest args)
-  (with-capture-frame
-   (apply orig-fun args)))
+(when (functionp 'advice-add) ;; emacs >= 24.4
+  (advice-add 'org-protocol-capture :around #'my-org-protocol-advice)
+  (defun my-org-protocol-advice (orig-fun &rest args)
+    (with-capture-frame
+     (apply orig-fun args))))
 
 (defun copy-org-link-at-point ()
   (interactive)
@@ -508,7 +520,7 @@ buried in the existing frame."
          "* %?%c\n%i\n%U")))
 
 ;; Paredit
-(require 'paredit)
+(require 'paredit) ; PKG
 (defun lisp-enable-paredit-hook () (paredit-mode 1))
 (eval-after-load 'paredit
   '(progn
@@ -521,6 +533,9 @@ buried in the existing frame."
 
 ;; Python
 (add-to-mode-alist 'python-mode "scons" "SConstruct" "SConscript" "wscript")
+(add-hook 'python-mode-hook
+          (lambda ()
+            (setq indent-tabs-mode t)))
 
 ;; Ruby
 ;; .rb is set up by elpa
@@ -539,8 +554,8 @@ buried in the existing frame."
 
 (defun turn-on-ispell-keys ()
   (interactive)
-	(local-set-key (kbd "H-i") 'ispell-word) ; word; this is really C-i
-  (local-set-key "\M-i" 'ispell))          ; region or buffer
+	(local-set-key (kbd "H-i") 'ispell-word) ; ispell word; this is really C-i
+  (local-set-key "\M-i" 'ispell))          ; ispell region or buffer
 
 ;; VC -- Bring back some of that old mercurial.el feeling to VC mode. I miss the
 ;; single step commit without having to set up a fileset but let's give this a whirl.
