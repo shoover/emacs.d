@@ -179,6 +179,9 @@
 (add-to-list 'yas-snippet-dirs (concat emacs-root "snippets"))
 (yas-global-mode 1)
 
+;; scpaste; this is available on ELPA, but I have patched it to work with pscp/plink
+(require 'scpaste) ; LISP
+
 ;;; Server setup
 
 ;; Make sure there's a server. Some OS-specific builds start it automatically,
