@@ -53,7 +53,7 @@
       (ample/lighter-blue "#68a5e9")
       (ample/orange "#dF9522")
       (ample/tan "#bdbc61")
-      (ample/dark-tan "#7d7c61")
+      (ample/dark-tan "#adac71") ;;"#7d7c61"
       (ample/yellow "#baba36")
       (ample/bright-yellow "#fffe0a")
       (ample/purple "#ab75c3")
