@@ -35,18 +35,37 @@
 
     ;; work C logs:
     ;; [ERROR] [321] 03/12/15 09:33:39 src\file.c, line = 799, functionName: Message text
-    ;; [DEBUG] src\file.c, line = 5651, functionName: Message text
-    ("\\(\\[ERROR\\]\\) \\(\\[[0-9]+\\]\\) \\([0-9]+/[0-9]+/[0-9]+ [0-9]+:[0-9]+:[0-9]+\\) \\(.*\\):"
+    ("\\(\\[ERROR\\]\\) \\(\\[[0-9]+\\]\\) \\([0-9]+/[0-9]+/[0-9]+ [0-9]+:[0-9]+:[0-9]+\\) \\([[:alnum:]._\\]+, line = [0-9]+,\\) \\([[:alnum:]_]+\\): .+"
      (1 font-lock-warning-face nil t) ; ERROR
      (2 font-lock-warning-face nil t) ; [status code]
-     (3 font-lock-doc-face) ; timestamp
-     (4 font-lock-string-face) ; file, line, function
+     (3 font-lock-string-face)        ; timestamp
+     (4 font-lock-keyword-face)       ; file, line
+     (5 font-lock-function-name-face) ; function
      )
-    ("\\(\\[\\(\\(WARN\\)\\|\\(DEBUG\\|INFO\\)\\)\\]\\) \\(.*\\):"
+    ("\\(\\[\\(\\(WARN *\\)\\|\\(DEBUG\\|INFO *\\)\\)\\]\\) \\([[:alnum:]._\\]+, line = [0-9]+,\\) \\([[:alnum:]_]+\\): .+"
      (1 font-lock-comment-delimiter-face) ; [] delim
      (3 font-lock-warning-face t t) ; WARN
      (4 font-lock-constant-face t t) ; DEBUG/INFO
-     (5 font-lock-string-face) ; file, line, function
+     (5 font-lock-keyword-face)       ; file, line
+     (6 font-lock-function-name-face) ; function
+     )
+
+    ;; [ERROR] 10/02/15 17:02:22 xiaGetSpecialRunData (handel_run_control.c:526)                : [316] detChan number is not in the list of valid values 
+    ("\\(\\[ERROR\\]\\) \\([0-9]+/[0-9]+/[0-9]+ [0-9]+:[0-9]+:[0-9]+\\) \\([[:alnum:]]+\\) \\(([[:alnum:]:._]+)\\) +: \\(\\[ *[0-9]+\\]\\) .+"
+     (1 font-lock-warning-face nil t) ; ERROR
+     (2 font-lock-string-face) ; timestamp
+     (3 font-lock-function-name-face) ; function
+     (4 font-lock-keyword-face) ; file, line
+     (5 font-lock-warning-face nil t) ; [status code]
+     )
+    ;; [WARN] 10/02/15 17:02:22 xiaGetSpecialRunData (handel_run_control.c:526)                : detChan number is not in the list of valid values 
+    ("\\(\\[\\(\\(WARN *\\)\\|\\(DEBUG\\|INFO *\\)\\)\\]\\) \\([0-9]+/[0-9]+/[0-9]+ [0-9]+:[0-9]+:[0-9]+\\) \\([[:alnum:]]+\\) \\(([[:alnum:]:._]+)\\) +: .+"
+     (1 font-lock-comment-delimiter-face) ; [] delim
+     (3 font-lock-warning-face t t) ; WARN
+     (4 font-lock-constant-face t t) ; DEBUG/INFO
+     (5 font-lock-doc-face) ; timestamp
+     (6 font-lock-function-name-face) ; function
+     (7 font-lock-keyword-face) ; file, line
      )
     )
 
