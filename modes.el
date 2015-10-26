@@ -171,7 +171,7 @@ With prefix arg N, cut this many sequential subtrees."
   ;; kill-region but org-paste-subtree doesn't set it.
   (setq this-command 'org-promote-subtree-x))
 
-(defun convert-org-items-to-paragraphs ()
+(defun org-convert-items-to-paragraphs-x ()
   "Convert items to normal paragraphs. If there is no active
 region, only the current line is considered.
 
@@ -541,12 +541,18 @@ buried in the existing frame."
 ;; .rb is set up by elpa
 (add-to-mode-alist 'ruby-mode "\\.t$" "Rakefile$" "\\.rake$" "\\.rxml$" "\\.xrs$")
 
-(defun ruby-load-line ()
+(defun ruby-load-line-x ()
   (interactive)
   (ruby-send-region (point-at-bol) (point-at-eol)))
 
+(defun ruby-load-buffer-x ()
+  (interactive)
+  (ruby-send-region (point-min) (point-max)))
+
 (eval-after-load 'inf-ruby
-  '(define-key inf-ruby-minor-mode-map "\C-c\C-l" 'ruby-load-line))
+  '(define-keys inf-ruby-minor-mode-map
+     ("\C-c\C-l" . 'ruby-load-line-x)
+     ("\C-c\C-b" . 'ruby-load-buffer-x)))
 
 ;; Text
 (add-hook 'text-mode-hook 'turn-on-auto-fill)
