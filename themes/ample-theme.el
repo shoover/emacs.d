@@ -458,7 +458,7 @@
    ;;`(org-document-info ((t (:foreground nil :background nil))))
    ;;`(org-document-info-keyword ((t (:foreground nil :background nil))))
    ;;`(org-document-title ((t (:foreground nil :background nil))))
-   `(org-done ((t (:foreground ,ample/green :background nil))))
+   `(org-done ((t (:foreground ,ample/green :bold t :background nil))))
    `(org-todo ((t (:foreground ,ample/red :background nil :bold t))))
    ;;`(org-drawer ((t (:foreground nil :background nil))))
    ;;`(org-ellipsis ((t (:foreground nil :background nil))))
