@@ -318,8 +318,11 @@ file name to the kill ring instead."
    (progn
      (if (not (buffer-file-name))
          (error "Buffer '%s' is not visiting a file!" (buffer-name)))
-     (list (read-file-name (format "Rename %s to: " (file-name-nondirectory
-                                                     (buffer-file-name)))))))
+     ;; Disable ido auto merge since it too frequently jumps back to the original
+     ;; file name if you pause while typing. Reenable with C-z C-z in the prompt.
+     (let ((ido-auto-merge-work-directories-length -1))
+       (list (read-file-name (format "Rename %s to: " (file-name-nondirectory
+                                                       (buffer-file-name))))))))
   (if (equal new-name "")
       (error "Aborted rename"))
   (setq new-name (if (file-directory-p new-name)
