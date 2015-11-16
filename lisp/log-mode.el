@@ -65,7 +65,7 @@
      (5 font-lock-warning-face nil t) ; [status code]
      )
     ;; [WARN] 10/02/15 17:02:22 xiaGetSpecialRunData (handel_run_control.c:526)                : detChan number is not in the list of valid values 
-    ("\\(\\[\\(\\(WARN *\\)\\|\\(DEBUG\\|INFO *\\)\\)\\]\\) \\([0-9]+/[0-9]+/[0-9]+ [0-9]+:[0-9]+:[0-9]+\\) \\([[:alnum:]_]+\\) \\(([[:alnum:]:._]+?)\\) +: .+"
+    ("\\(\\[\\(\\(WARN \\)\\|\\(DEBUG\\|INFO \\)\\)\\]\\) \\([0-9]+/[0-9]+/[0-9]+ [0-9]+:[0-9]+:[0-9]+\\) \\([[:alnum:]_]+\\) \\(([[:alnum:]:._]+?)\\) +: .+"
      (1 font-lock-comment-delimiter-face) ; [] delim
      (3 font-lock-warning-face t t) ; WARN
      (4 font-lock-constant-face t t) ; DEBUG/INFO
