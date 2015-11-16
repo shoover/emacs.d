@@ -41,8 +41,7 @@
           (lambda ()
             (define-key clojure-mode-map "\C-c\C-l" 'lisp-load-buffer)
             (set (make-local-variable 'indent-line-function)
-                 'indent-line)
-            (define-clojure-indent (defmethod 'defun))))
+                 'indent-line)))
 (add-hook 'inferior-lisp-mode-hook
           (lambda ()
             (add-to-list 'comint-output-filter-functions
@@ -166,7 +165,7 @@ With prefix arg N, cut this many sequential subtrees."
     (outline-up-heading 1)
     (org-paste-subtree))
 
-  ;; Work around so repeated calls don't append to the previous promoted text
+  ;; Workaround so repeated calls don't append to the previous promoted text
   ;; and paste duplicate info. org-cut-subtree leaves last-command set to
   ;; kill-region but org-paste-subtree doesn't set it.
   (setq this-command 'org-promote-subtree-x))
@@ -380,12 +379,6 @@ archives."
     (select-frame f)
     (raise-frame f)
     f))
-
-(defmacro define-keys (map &rest pairs)
-  "Define multiple keys at once in keymap MAP. PAIRS are associations, for example
-(\"C-l\" . 'load)."
-  (let ((forms (mapcar (lambda (pair) `(define-key ,map ,(car pair) ,(cdr pair))) pairs)))
-    `(progn ,@forms)))
 
 (defmacro with-capture-frame (&rest body)
   "Opens a new capture frame and invokes BODY. This also hacks
