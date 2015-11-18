@@ -225,6 +225,10 @@ archives."
 (setq org-default-notes-file (concat org-directory "/action.org"))
 (setq org-tags-column -85)
 
+;; These should prevent underscores without {} from exporting as subscripts... but don't.
+(setq org-use-sub-superscripts '{})
+(setq org-export-with-sub-superscripts '{})
+
 (require 'org-protocol)
 
 ;; Advise org-protocol-capture to always wrap in a new capture frame. This
