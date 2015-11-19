@@ -1,5 +1,6 @@
-;; emacs -l .elisp/settings/00.bootstrap.el --batch -f af-bootstrap-packages
-;; Use the above for moving into a new machine
+;; emacs -l emacs/bootstrap.el --batch -f my-bootstrap-packages
+;; Use the above for moving into a new machine.
+;; From Augie Fackler https://bitbucket.org/durin42/dotfiles and hacked.
 
 (add-to-list 'load-path (expand-file-name "~/.elisp"))
 
@@ -16,40 +17,29 @@
 
 
 (package-initialize)
+(dolist (archive '(("melpa" . "http://melpa.milkbox.net/packages/")
+                   ("marmalade" . "http://marmalade-repo.org/packages/")
+                   ("org" . "http://orgmode.org/elpa/")))
+  (add-to-list 'package-archives archive t))
 
-(setq package-archives '(("durin42" . "http://durin42.com/elpa/")
-                         ("marmalade" . "http://marmalade-repo.org/packages/")
-                         ("melpa" . "http://melpa.milkbox.net/packages/")
-                         ("elpa" . "http://elpa.gnu.org/packages/")))
-
-(defun af-bootstrap-packages ()
+(defun my-bootstrap-packages ()
   (interactive)
   (unless package-archive-contents (package-refresh-contents))
-  (dolist (pack '(diff-mode-
-                  doctest-mode
-                  http-twiddle
-                  ipython
-                  nose
-
-                  ;; disabled until I don't need a modified version
-                  ;; textmate
-
-                  iedit
-
-                  ;; from elpa
-                  js2-mode
-                  magit
+  (dolist (pack '(
+                  clojure-mode
+                  csharp-mode
+                  edit-server
+                  fsharp-mode
+                  find-file-in-project
+                  htmlize
                   markdown-mode
+                  org-mode
+                  org-plus-contrib
                   paredit
-                  smex
+                  powershell
+                  ruby-mode ; extra extensions
                   yaml-mode
-                  company
-                  wgrep
-                  ;; for go-eldoc
-                  popup
-                  auto-complete
-                  go-autocomplete
-                  go-eldoc
+                  yasnippet
                   ))
     (unless (or (member pack package-activated-list)
                 (functionp pack))

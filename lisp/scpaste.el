@@ -8,7 +8,7 @@
 ;; Created: 2008-04-02
 ;; Keywords: convenience hypermedia
 ;; EmacsWiki: SCPaste
-;; Package-Requires: ((htmlize "1.39")) ; PKG
+;; Package-Requires: ((htmlize "1.39"))
 
 ;; This file is NOT part of GNU Emacs.
 

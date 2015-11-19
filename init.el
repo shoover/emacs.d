@@ -8,16 +8,11 @@
 ;;
 ;; Run this occasionally: C-u 0 M-x byte-recompile-directory
 ;;
-;; Keys listed on require lines indicate where the dependency is assumed:
-;; - PKG: from the package system, M-x package-install
-;; - LISP: from the local lisp directory
-;;
-;; Package requirements not discoverable by grep require:
-;; - org-plus-contrib from http://orgmode.org/elpa/:
-;;   development moves fast, so the built in version may not work with my config
+;; LISP in a require line comment means the file is assumed to be in
+;; emacs/lisp. Otherwise it should be in stalled in the package system by
+;; running bootstrap.el.
 
-;;; Paths and such
-
+;;; Paths
 (defvar nix (or (eq system-type 'cygwin)
                 (eq system-type 'gnu/linux)
                 (eq system-type 'linux)
@@ -103,7 +98,7 @@
     (add-to-list list-var i)))
 
 ;; Project setup
-(require 'find-file-in-project) ; PKG
+(require 'find-file-in-project)
 
 ;; patterns defaults to "", which includes everything not in ffip-prune-patterns,
 ;; which is probably easier than stewarding the include patterns
@@ -176,7 +171,7 @@
 (define-key 'help-command (kbd "C-k") 'find-function-on-key)
 (define-key 'help-command (kbd "C-v") 'find-variable)
 
-; Shift+(left|right|up|down) to get to a window quicker than with C-x o
+; Shift+(left|right|up|down) to hop around windows quicker than with C-x o
 (windmove-default-keybindings)
 
 (global-set-key "\C-xx" 'w32-explore-here)
@@ -190,7 +185,7 @@
   (define-key osx-key-mode-map `[(control z)] 'iconify-or-deiconify-frame))
 
 ;; Snippets
-(require 'yasnippet) ; PKG
+(require 'yasnippet)
 (add-to-list 'yas-snippet-dirs (concat emacs-root "snippets"))
 (yas-global-mode 1)
 

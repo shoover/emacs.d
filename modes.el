@@ -336,7 +336,7 @@ archives."
          "* %?%c\n%i\n%U")))
 
 ;; Paredit
-(require 'paredit) ; PKG
+(require 'paredit)
 (defun lisp-enable-paredit-hook () (paredit-mode 1))
 (eval-after-load 'paredit
   '(progn
