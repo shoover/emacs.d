@@ -1,9 +1,9 @@
 # -*- mode: snippet -*-
-# name: Quote Block
-# key: quote
-# binding: C-c y q
+# name: code
+# key: code_
+# binding: C-c y c
 # expand-env: ((yas/indent-line 'fixed) (yas/wrap-around-region t))
 # --
-#+begin_quote
+#+begin_src ${1:lang}
 $0
-#+end_quote$1
+#+end_src
