@@ -182,50 +182,56 @@ archives."
           (lambda ()
             (turn-on-auto-fill)))
 
-(add-hook 'org-load-hook
-          (lambda ()
-            (define-keys org-mode-map
-              ("\C-ca" . 'org-agenda)
-              ("\C-cl" . 'org-store-link)
-              ("\C-cw" . 'copy-org-link-at-point)
+(add-hook 'org-load-hook 'my-org-load-hook)
+(defun my-org-load-hook ()
+  (define-keys org-mode-map
+    ("\C-ca" . 'org-agenda)
+    ("\C-cl" . 'org-store-link)
+    ("\C-cw" . 'copy-org-link-at-point)
 
-              ;; Make links work like chasing definitions in source code.
-              ("\M-." . 'org-open-at-point)
-              ("\M-," . 'org-mark-ring-goto)
+    ;; Make links work like chasing definitions in source code.
+    ("\M-." . 'org-open-at-point)
+    ("\M-," . 'org-mark-ring-goto)
 
-              ("\C-\M-a" . 'org-archive-subtree)
-              ("\C-\M-p" . 'org-promote-subtree-x)
+    ("\C-\M-a" . 'org-archive-subtree)
+    ("\C-\M-p" . 'org-promote-subtree-x)
 
-              ;; Compatibility with my isearch keys
-              ("\C-c\C-x\C-r" . 'org-paste-special)
+    ;; Compatibility with my isearch keys
+    ("\C-c\C-x\C-r" . 'org-paste-special)
 
-              ;; clear this so next- previous-buffer works
-              ([C-tab] . nil))
+    ;; clear this so next- previous-buffer works
+    ([C-tab] . nil))
 
-            (setq org-directories (list org-directory))
-            (let ((b (concat org-directory "/../banjo")))
-              (when (file-exists-p b)
-                (add-to-list 'org-directories b)))
-            
-            (setq org-agenda-files (find-org-files))
-            (setq org-agenda-custom-commands
-                  '(("A" "Multi-occur, agenda files and archives"
-                     search ""
-                     ((org-agenda-files (find-org-files "\\.org\\|org_archive$"))))
-                    ("P" "Project list"
-                     tags "prj"
-                     ((org-use-tag-inheritance nil)))
-                    ("p" "Project list, current buffer"
-                     tags-tree "prj"
-                     ((org-use-tag-inheritance nil)))))
-            (setq org-refile-targets '((org-agenda-files :maxlevel . 2))
-                  org-refile-use-outline-path 'file
-                  org-refile-allow-creating-parent-nodes 'confirm)))
+  (setq org-directories (list org-directory))
+  (let ((b (concat org-directory "/../banjo")))
+    (when (file-exists-p b)
+      (add-to-list 'org-directories b)))
+
+  (setq org-agenda-files (find-org-files))
+  (setq org-agenda-custom-commands
+        '(("A" "Multi-occur, agenda files and archives"
+           search ""
+           ((org-agenda-files (find-org-files "\\.org\\|org_archive$"))))
+          ("P" "Project list"
+           tags "prj"
+           ((org-use-tag-inheritance nil)))
+          ("p" "Project list, current buffer"
+           tags-tree "prj"
+           ((org-use-tag-inheritance nil)))))
+  (setq org-refile-targets '((org-agenda-files :maxlevel . 2))
+        org-refile-use-outline-path 'file
+        org-refile-allow-creating-parent-nodes 'confirm)
+
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '(; (fsharp . t); I got a babel helper from https://github.com/fradav/ob-fsharp/blob/master/ob-fsharp.el,
+                   ; but it doesn't work
+     (ruby . t))))
 
 (setq org-default-notes-file (concat org-directory "/action.org"))
 (setq org-tags-column -85)
 
-;; These should prevent underscores without {} from exporting as subscripts... but don't.
+;; These should prevent underscores without {} from exporting as subscripts... but don't?
 (setq org-use-sub-superscripts '{})
 (setq org-export-with-sub-superscripts '{})
 
@@ -304,7 +310,7 @@ archives."
                                    org-datetree-find-date-create-month)
          ;; insert date, prompt for Time, enter the rest manually
          "|%<%m-%d %a>|%^{Time}|%?")
-        
+
         ;; clipboard capture: blank headline, paste OS clipboard
         ("v" "Templates for pasting the OS clipboard")
 
