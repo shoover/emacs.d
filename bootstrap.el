@@ -1,4 +1,4 @@
-;; emacs -l emacs/bootstrap.el --batch -f my-bootstrap-packages
+;; emacs --load emacs/bootstrap.el --batch --funcall my-bootstrap-packages
 ;; Use the above for moving into a new machine.
 ;; From Augie Fackler https://bitbucket.org/durin42/dotfiles and hacked.
 
@@ -16,11 +16,12 @@
     (error "ELPA is not in Emacs, and local package.el failed to load.")))
 
 
-(package-initialize)
+(require 'package)
 (dolist (archive '(("melpa" . "http://melpa.milkbox.net/packages/")
                    ("marmalade" . "http://marmalade-repo.org/packages/")
                    ("org" . "http://orgmode.org/elpa/")))
   (add-to-list 'package-archives archive t))
+(package-initialize)
 
 (defun my-bootstrap-packages ()
   (interactive)
