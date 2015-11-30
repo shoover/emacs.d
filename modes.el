@@ -106,7 +106,8 @@
 
 (defun fsharp-load-line ()
   (interactive)
-  (fsharp-eval-region (point-at-bol) (point-at-eol)))
+  (fsharp-eval-region (point-at-bol) (point-at-eol))
+  (move-beginning-of-line 2))
 
 ;; Hack this into inferior-fsharp-eval-region to make aquamacs 3.2/emacs 24.4
 ;; not raise the frame if inferior-fsharp is in another frame.
