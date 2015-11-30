@@ -85,6 +85,7 @@
 ;; F#
 (defvar inferior-fsharp-program "\"c:\\Program Files (x86)\\Microsoft F#\\v4.0\\Fsi.exe\"")
 (defvar fsharp-compiler "\"c:\\Program Files (x86)\\Microsoft F#\\v4.0\\Fsc.exe\"")
+(setq fsharp-tab-always-indent nil)
 (add-hook 'fsharp-mode-hook
           (lambda ()
             (define-keys fsharp-mode-map
@@ -105,6 +106,11 @@
 (defun fsharp-load-line ()
   (interactive)
   (fsharp-eval-region (point-at-bol) (point-at-eol)))
+
+;; Hack this into inferior-fsharp-eval-region to make aquamacs 3.2/emacs 24.4
+;; not raise the frame if inferior-fsharp is in another frame.
+;; (display-buffer inferior-fsharp-buffer-name
+;;                 '(display-buffer-reuse-window (inhibit-switch-frame t)))
 
 ;; generic modes built in, e.g. bat-mode
 (require 'generic-x)
