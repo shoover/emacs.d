@@ -2,7 +2,7 @@
 ;; Use the above for moving into a new machine.
 ;; From Augie Fackler https://bitbucket.org/durin42/dotfiles and hacked.
 
-(add-to-list 'load-path (expand-file-name "~/.elisp"))
+(add-to-list 'load-path "~/emacs/lisp")
 
 ;; emacs 23 compat hack from Lucas Bergman
 (unless (fboundp 'package-refresh-contents)
@@ -17,7 +17,7 @@
 
 
 (require 'package)
-(dolist (archive '(("melpa" . "http://melpa.org/packages/")
+(dolist (archive '(("melpa" . "https://melpa.org/packages/")
                    ("marmalade" . "http://marmalade-repo.org/packages/")
                    ("org" . "http://orgmode.org/elpa/")))
   (add-to-list 'package-archives archive t))
