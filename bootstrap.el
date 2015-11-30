@@ -17,7 +17,7 @@
 
 
 (require 'package)
-(dolist (archive '(("melpa" . "http://melpa.milkbox.net/packages/")
+(dolist (archive '(("melpa" . "http://melpa.org/packages/")
                    ("marmalade" . "http://marmalade-repo.org/packages/")
                    ("org" . "http://orgmode.org/elpa/")))
   (add-to-list 'package-archives archive t))
