@@ -152,14 +152,21 @@ using the org HTML publisher."
          (target (or target (concat dir-exp "/html")))
          (project-name (or project-name (file-name-nondirectory dir)))
          (org-publish-project-alist `((,project-name
+                                       :components ("orgfiles" "css"))
+                                      ("orgfiles"
                                        :base-directory ,dir-exp
                                        :publishing-directory ,target
                                        :publishing-function org-html-publish-to-html
                                        :auto-sitemap nil ; quieter logs
-                                       ))))
+                                       :make-index t)
+                                      ("css"
+                                       :base-directory ,dir-exp
+                                       :base-extension "css"
+                                       :publishing-directory ,target
+                                       :publishing-function org-publish-attachment))))
     (message "Publishing org dir: %s" dir-exp)
     (org-publish-project project-name
-                         t ; set to force publishing files the org cache thinks are ok
+                         ;t ; set to force publishing files the org cache thinks are ok
                          ;;  ; even if they were deleted :-/
                          )))
 

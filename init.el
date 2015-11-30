@@ -215,6 +215,7 @@
  '(aquamacs-customization-version-id 307 t)
  '(aquamacs-tool-bar-user-customization nil t)
  '(c-doc-comment-style (quote set-from-style))
+ '(column-number-mode t)
  '(completion-ignored-extensions
    (quote
     (".obj" ".pdb" ".svn/" "CVS/" ".o" "~" ".bin" ".bak" ".obj" ".map" ".ico" ".pif" ".lnk" ".a" ".ln" ".blg" ".bbl" ".dll" ".drv" ".vxd" ".386" ".elc" ".lof" ".glo" ".idx" ".lot" ".fmt" ".tfm" ".class" ".fas" ".lib" ".mem" ".x86f" ".sparcf" ".fasl" ".ufsl" ".fsl" ".dxl" ".pfsl" ".dfsl" ".p64fsl" ".d64fsl" ".dx64fsl" ".lo" ".la" ".gmo" ".mo" ".toc" ".aux" ".cp" ".fn" ".ky" ".pg" ".tp" ".vr" ".cps" ".fns" ".kys" ".pgs" ".tps" ".vrs" ".pyc" ".pyo")))
@@ -232,10 +233,12 @@
  '(org-export-backends (quote (ascii html latex md odt)))
  '(rst-level-face-base-light 20)
  '(rst-level-face-step-light 7)
+ '(show-paren-mode t)
  '(show-paren-style (quote mixed))
  '(special-display-regexps (quote (".*SPEEDBAR.*")))
  '(tab-always-indent t)
  '(tab-width 2)
+ '(tool-bar-mode nil)
  '(user-full-name "Shawn Hoover")
  '(user-mail-address "shawn.hoover@gmail.com")
  '(visual-line-mode nil t)
@@ -260,6 +263,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(default ((t (:family "Consolas" :foundry "outline" :slant normal :weight normal :height 113 :width normal)))))
  )
 
 ;; Check custom-file compatibility

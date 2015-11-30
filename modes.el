@@ -85,7 +85,8 @@
 ;; F#
 (defvar inferior-fsharp-program "\"c:\\Program Files (x86)\\Microsoft F#\\v4.0\\Fsi.exe\"")
 (defvar fsharp-compiler "\"c:\\Program Files (x86)\\Microsoft F#\\v4.0\\Fsc.exe\"")
-(setq fsharp-tab-always-indent nil)
+(setq fsharp-tab-always-indent nil) ; try to prevent it from indenting the
+                                    ; previous line when pressing Enter
 (add-hook 'fsharp-mode-hook
           (lambda ()
             (define-keys fsharp-mode-map
@@ -156,6 +157,9 @@ With argument, positions cursor at end of buffer."
 
 ;; Make
 (setq compile-command "make ")
+
+;; msbuild
+(add-to-list 'auto-mode-alist '("\\.targets$" . nxml-mode))
 
 ;; NSIS
 (autoload 'nsis-mode "nsis-mode" "Edit Nullsoft installer scripts" t)
@@ -228,6 +232,7 @@ archives."
         org-refile-use-outline-path 'file
         org-refile-allow-creating-parent-nodes 'confirm)
 
+  (setq org-src-fontify-natively t)
   (org-babel-do-load-languages
    'org-babel-load-languages
    '(; (fsharp . t); I got a babel helper from https://github.com/fradav/ob-fsharp/blob/master/ob-fsharp.el,
