@@ -264,7 +264,6 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(default ((t (:family "Consolas" :foundry "outline" :slant normal :weight normal :height 113 :width normal)))))
- )
 
 ;; Check custom-file compatibility
 (when (and (boundp 'aquamacs-version-id)
