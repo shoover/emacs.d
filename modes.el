@@ -247,6 +247,44 @@ archives."
 (setq org-use-sub-superscripts '{})
 (setq org-export-with-sub-superscripts '{})
 
+;; 'sah-org-article' for exporting org documents as 'article'.
+;; Requires xelatex on the PATH (via miktex on Windows)
+;; Use by setting #+LATEX_CLASS: sah-org-article
+(require 'ox-latex)
+(setq org-latex-pdf-process
+ '("xelatex -interaction nonstopmode %f"
+   "xelatex -interaction nonstopmode %f"))
+(add-to-list 'org-latex-classes
+  '("sah-org-article"
+"\\documentclass[12pt,letterpaper]{article}
+\\usepackage{geometry}
+\\geometry{letterpaper, margin=1.0in,
+           marginparsep=7pt, marginparwidth=.6in}
+
+% use some default packages excluded by NO-* below
+\\usepackage[T1]{fontenc}
+\\usepackage{graphicx}
+\\usepackage{hyperref}
+
+% use system fonts
+\\usepackage{fontspec}
+\\setromanfont{Palatino Linotype}
+\\setsansfont[Scale=0.8]{Bitstream Vera Sans}
+\\setmonofont[Scale=0.8]{Monaco}
+
+% smash down list items for orgmode docs
+\\usepackage{paralist}
+
+% Without these lines, my fonts don't work and there's a weird front matter page
+      [NO-DEFAULT-PACKAGES]
+      [NO-PACKAGES]
+"
+     ("\\section{%s}" . "\\section*{%s}")
+     ("\\subsection{%s}" . "\\subsection*{%s}")
+     ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+     ("\\paragraph{%s}" . "\\paragraph*{%s}")
+     ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+
 (require 'org-protocol)
 
 ;; Advise org-protocol-capture to always wrap in a new capture frame. This
