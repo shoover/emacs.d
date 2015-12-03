@@ -1,3 +1,15 @@
+
+(defun find-org-files-x (&optional regexp)
+  "Returns a list of files in `org-directories' (searched
+recursively) whose names match REGEXP. The search pattern
+defaults to .org. You can override, for example, to also search
+archives."
+  (let ((regexp (or regexp "\\.org$")))
+    (apply 'append
+           (mapcar (lambda (dir)
+                     (directory-files dir t regexp))
+                   org-directories))))
+
 (defun org-promote-subtree-x (&optional n)
   "Cut the current subtree and paste it one heading level up.
 With prefix arg N, cut this many sequential subtrees."

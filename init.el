@@ -29,8 +29,7 @@
 
 (when (eq system-type 'windows-nt)
   ;; Put cygwin ahead of system32 for emacs and things it shells out to.
-  ;; The gnuwin32 find.exe that comes with emacsw32 has a bug and doesn't
-  ;; look for wildcards in the path you specify.
+  ;; This is needed by find-file-in-project, at least.
   (setenv "PATH" (concat "c:/bin" path-separator (getenv "PATH"))))
 
 (defvar my-action-org (concat org-directory "/action.org"))
@@ -54,7 +53,7 @@
                               space-after-tab))
 
 (blink-cursor-mode 1)
-(setq ring-bell-function (lambda () (message "")))
+(setq ring-bell-function 'ignore)
 (setq inhibit-splash-screen t)
 (fset 'yes-or-no-p 'y-or-n-p) ; "y or n" instead of "yes or no"
 
@@ -258,12 +257,6 @@
   (show-paren-mode t))
 
 (cd "~")
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(default ((t (:family "Consolas" :foundry "outline" :slant normal :weight normal :height 113 :width normal)))))
 
 ;; Check custom-file compatibility
 (when (and (boundp 'aquamacs-version-id)
@@ -278,3 +271,4 @@ Errors may occur.  Save Options to overwrite the customization file. The origina
 	  (x-popup-dialog t (list msg '("OK" . nil) 'no-cancel) "Warning")
 	(message msg)))))
 ;; End compatibility check
+

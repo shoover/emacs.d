@@ -169,17 +169,6 @@ With argument, positions cursor at end of buffer."
 ;; org-mode
 (load "my-org-helpers.el")
 
-(defun find-org-files (&optional regexp)
-  "Returns a list of files in `org-directories' (searched
-recursively) whose names match REGEXP. The search pattern
-defaults to .org. You can override, for example, to also search
-archives."
-  (let ((regexp (or regexp "\\.org$")))
-    (apply 'append
-           (mapcar (lambda (dir)
-                     (directory-files dir t regexp))
-                   org-directories))))
-
 ;; Fix weird scrolling of the org export dispatch buffer by unsetting my
 ;; typical scroll variables.
 (when (functionp 'advice-add) ;; emacs >= 24.4
@@ -218,11 +207,11 @@ archives."
     (when (file-exists-p b)
       (add-to-list 'org-directories b)))
 
-  (setq org-agenda-files (find-org-files))
+  (setq org-agenda-files (find-org-files-x))
   (setq org-agenda-custom-commands
         '(("A" "Multi-occur, agenda files and archives"
            search ""
-           ((org-agenda-files (find-org-files "\\.org\\|org_archive$"))))
+           ((org-agenda-files (find-org-files-x "\\.org\\|org_archive$"))))
           ("P" "Project list"
            tags "prj"
            ((org-use-tag-inheritance nil)))
@@ -240,12 +229,17 @@ archives."
                    ; but it doesn't work
      (ruby . t))))
 
-(setq org-default-notes-file (concat org-directory "/action.org"))
-(setq org-tags-column -85)
+(setq org-default-notes-file (concat org-directory "/action.org")
+
+      org-indent-mode t
+      org-hide-leading-stars t
+      org-startup-indented 'overview
+
+      org-tags-column -85)
 
 ;; These should prevent underscores without {} from exporting as subscripts... but don't?
-(setq org-use-sub-superscripts '{})
-(setq org-export-with-sub-superscripts '{})
+(setq org-use-sub-superscripts '{}
+      org-export-with-sub-superscripts '{})
 
 ;; 'sah-org-article' for exporting org documents as 'article'.
 ;; Requires xelatex on the PATH (via miktex on Windows)
@@ -264,7 +258,7 @@ archives."
 % use some default packages excluded by NO-* below
 \\usepackage[T1]{fontenc}
 \\usepackage{graphicx}
-\\usepackage{hyperref}
+\\usepackage[breaklinks]{hyperref}
 
 % use system fonts
 \\usepackage{fontspec}
