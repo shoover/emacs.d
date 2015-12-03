@@ -401,3 +401,19 @@ Uses async-shell-command if a prefix arg is given."
     (url-hexify-string (if mark-active
                            (buffer-substring (region-beginning) (region-end))
                          (read-string "Google: "))))))
+(defun save-compile-project ()
+  "Saves modified files under the project root (without asking)
+and recompiles. The project root is determined using
+`ffip-get-project-root-directory'."
+  (interactive)
+
+  ;; `compile' calls `save-some-buffers' implicitly. We configure it to save
+  ;; without asking and give it a predicate to ignore files outside the
+  ;; project directory. (Another way would be to set `buffer-save-without-query'
+  ;; in all relevant source file mode hooks.)
+  (let ((dir (ffip-get-project-root-directory))
+        (compilation-ask-about-save nil)
+        (compilation-save-buffers-predicate (lambda ()
+                                              (string-prefix-p dir (buffer-file-name)))))
+    (message "Saving and compiling in directory %s" dir)
+    (recompile nil)))

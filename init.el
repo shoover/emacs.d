@@ -38,9 +38,9 @@
 
 ;;; Settings
 
-;; Tab defaults
+;; Tab defaults: 4 spaces
 (setq-default indent-tabs-mode nil)
-(setq tab-width 2)
+(setq tab-width 4)
 
 ;; Scroll when the cursor nears the edge, move up to a proportion of the screen
 (setq scroll-margin 2
@@ -64,6 +64,9 @@
 ;; A more generic solution will be needed to work with @param lists in C-code.
 (setq paragraph-start "\f\\|[ 	]*$\\|\\([ ]+- \\)")
 (setq sentence-end-double-space nil)
+
+;; Insert matching parens and braces, please
+(electric-pair-mode 1)
 
 (setq ispell-program-name "aspell"
       ispell-extra-args '("--sug-mode=ultra"))
@@ -107,12 +110,13 @@
                           (list ffip-project-file)))
 (add-to-list-n 'ffip-project-file ".hg" ".svn" "build.bat")
 (add-to-list-n 'ffip-prune-patterns
-               ".hg*"
                ".lock*"
+               "*/\\.vs/*"
                "build-*"
-               "html" ; doxygen builds
-               "obj"
-               "release" ; project release builds
+               "html"                   ; doxygen builds
+               "*/obj/*"
+               "*/packages/*"
+               "*/release/*"                ; project release builds
                "scons-out"
                "waf-*")
 
@@ -176,6 +180,8 @@
 (global-set-key "\C-xx" 'w32-explore-here)
 (global-set-key "\C-cg" 'browse-url-at-point)
 
+(global-set-key (kbd "C-S-b") 'save-compile-project)
+
 ;; OS X-specific setup
 (setq mac-command-modifier (quote meta))
 (setq mac-option-modifier (quote alt))
@@ -232,6 +238,10 @@
  '(org-export-backends (quote (ascii html latex md odt)))
  '(rst-level-face-base-light 20)
  '(rst-level-face-step-light 7)
+ '(safe-local-variable-values
+   (quote
+    ((eval setq default-directory
+           (locate-dominating-file buffer-file-name ".dir-locals.el")))))
  '(show-paren-mode t)
  '(show-paren-style (quote mixed))
  '(special-display-regexps (quote (".*SPEEDBAR.*")))
@@ -272,3 +282,9 @@ Errors may occur.  Save Options to overwrite the customization file. The origina
 	(message msg)))))
 ;; End compatibility check
 
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
