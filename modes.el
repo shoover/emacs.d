@@ -242,7 +242,7 @@ With argument, positions cursor at end of buffer."
       org-export-with-sub-superscripts '{})
 
 ;; 'sah-org-article' for exporting org documents as 'article'.
-;; Requires xelatex on the PATH (via miktex on Windows)
+;; Requires xelatex for fontspec (on the PATH via miktex on Windows)
 ;; Use by setting #+LATEX_CLASS: sah-org-article
 (require 'ox-latex)
 (setq org-latex-pdf-process
@@ -252,10 +252,10 @@ With argument, positions cursor at end of buffer."
   '("sah-org-article"
 "\\documentclass[12pt,letterpaper]{article}
 \\usepackage{geometry}
-\\geometry{letterpaper, margin=1.0in,
+\\geometry{letterpaper, margin=1.25in,
            marginparsep=7pt, marginparwidth=.6in}
 
-% use some default packages excluded by NO-* below
+% use some default packages otherwise excluded by NO-* below
 \\usepackage[T1]{fontenc}
 \\usepackage{graphicx}
 \\usepackage[breaklinks]{hyperref}
