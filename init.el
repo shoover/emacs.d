@@ -200,10 +200,12 @@
   (tabbar-mode -1)
   (define-key osx-key-mode-map `[(control z)] 'iconify-or-deiconify-frame))
 
-;; Snippets
+;; Snippets. Enable TAB expansion globally, but only after typing something;
+;; if I'm moving around and press tab, I want it to indent the line.
 (require 'yasnippet)
 (add-to-list 'yas-snippet-dirs (concat emacs-root "snippets"))
 (yas-global-mode 1)
+(setq yas-expand-only-for-last-commands '(self-insert-command))
 
 ;; scpaste; this is available on ELPA, but I have patched it to work with pscp/plink
 (require 'scpaste) ; LISP
