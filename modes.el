@@ -67,10 +67,6 @@
                                        (swank-clojure-default-classpath))))
     (slime)))
 
-;; CMake
-(autoload 'cmake-mode "cmake-mode" "Edit CMake definitions" t)
-(add-to-mode-alist 'cmake-mode "CMakeLists\\.txt$" "\\.cmake$")
-
 ;; dired sorting hooks
 (add-hook 'dired-mode-hook
           (lambda () (require 'dired-sort-map)))
