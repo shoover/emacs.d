@@ -78,6 +78,7 @@
 
 (setq backup-directory-alist
       `(("." . ,(expand-file-name "~/.emacs.d/auto-save"))))
+(setq delete-by-moving-to-trash t)
 
 ;; Fancy buffer and everything else switching
 (setq ido-enable-flex-matching t
