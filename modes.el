@@ -74,7 +74,10 @@
 ;; elisp
 (add-hook 'emacs-lisp-mode-hook
           (lambda ()
-            (define-key emacs-lisp-mode-map "\C-c\C-k" 'eval-buffer)
+            (define-keys emacs-lisp-mode-map
+              ("\C-c\C-b" . 'eval-buffer)
+              ("\C-c\C-r" . 'eval-region))
+
             (turn-on-eldoc-mode)
             (paredit-mode 1)))
 
