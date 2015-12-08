@@ -70,6 +70,9 @@
 ;; Insert matching parens and braces, please
 (electric-pair-mode 1)
 
+;; Typing overwrites the region
+(delete-selection-mode 1)
+
 (setq ispell-program-name "aspell"
       ispell-extra-args '("--sug-mode=ultra"))
 
