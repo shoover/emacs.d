@@ -18,6 +18,32 @@ line instead."
        (list (region-beginning) (region-end))
      (list (line-beginning-position) (line-beginning-position 2)))))
 
+(when (functionp 'advice-add) ;; emacs >= 24.4
+  (defun my-comment-dwim-mark-line (&optional arg)
+    "When called with no active region, mark the line.
+comment-dwim checks the new region and comments it instead of
+inserting a comment at the end of the line."
+    (when (and (not mark-active)
+            (not (looking-at "[ \t]*$")))
+      (end-of-line)
+      (set-mark (line-beginning-position))))
+
+  (advice-add 'comment-dwim :before #'my-comment-dwim-mark-line)
+  (advice-add 'paredit-comment-dwim :before #'my-comment-dwim-mark-line))
+
+;; Two-stage move-beginning-of-line, once to end of indentation, twice to true BOL.
+;; From http://irreal.org/blog/?p=1946
+(defadvice move-beginning-of-line (around smarter-bol activate)
+  ;; Move to requested line if needed.
+  (let ((arg (or (ad-get-arg 0) 1)))
+    (when (/= arg 1)
+      (forward-line (1- arg))))
+  ;; Move to indentation on first call, then to actual BOL on second.
+  (let ((pos (point)))
+    (back-to-indentation)
+    (when (= pos (point))
+      ad-do-it)))
+
 (defun init ()
   "Find my init file"
   (interactive)
