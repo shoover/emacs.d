@@ -33,14 +33,17 @@
   (setenv "PATH" (concat "c:/bin" path-separator (getenv "PATH"))))
 
 (defvar my-action-org (concat org-directory "/action.org"))
+(setq org-default-notes-file my-action-org)
 (defvar my-work-org (concat org-directory "/work.org"))
 (defvar my-notes-org (concat org-directory "/notes.org"))
 
 ;;; Settings
 
 ;; Tab defaults: 4 spaces
-(setq-default indent-tabs-mode nil)
-(setq tab-width 4)
+(setq-default
+ indent-tabs-mode nil
+ tab-width 4
+ tab-always-indent t)
 
 ;; Scroll when the cursor nears the edge, move up to a proportion of the screen
 (setq scroll-margin 2
@@ -48,7 +51,7 @@
 (setq-default scroll-down-aggressively 0.25
               scroll-up-aggressively 0.25)
 
-(setq whitespace-global-modes '(c-mode clojure-mode emacs-lisp-mode ruby-mode)
+(setq whitespace-global-modes '(c-mode csharp-mode clojure-mode emacs-lisp-mode ruby-mode)
       whitespace-style '(tabs trailing lines-tail space-before-tab empty
                               space-after-tab))
 
@@ -66,6 +69,8 @@
 ;; A more generic solution will be needed to work with @param lists in C-code.
 (setq paragraph-start "\f\\|[ 	]*$\\|\\([ ]+- \\)")
 (setq sentence-end-double-space nil)
+
+(setq fill-column 78)
 
 ;; Insert matching parens and braces, please
 (electric-pair-mode 1)
@@ -241,25 +246,17 @@
    (quote
     ("c3d2ba95aa0b113cae54270a18b971bda31262470cc4ae516687cf08360d5e47" "2ce2b0917177236c5af530e08354de4d98004fae5900fd06acc8512cffdd5368" "12d8cb25243aae3137aeebab95119638450eb0de0aed0bca7b55882564d142ef" "edbe2d6a820433a4b4179fecd92dcae318c82d0a60b470e55ab1d48bd56bb8c9" "4f6cb6a7675c0c9931235ad2d60ba820ddf83d9b2754aad04c2ef7c3d0776942" "1d245dd8c1422d8395c85b0d78f6380aad6e97a24da2cbf3d1491ad57ed4ea5d" "6a985479364fbdc04e63fa1d96d0d86b9281e94a100e1b60f795ec53096b6063" "716bb0758bc6ceee435d3efe38fdde8c1252fb6bf51004159229eb2d9a2fc4de" "0e3f7fae39f57a1c49850be1614a285d2ae9c827d9e42ec6f4e48b3ec2a690b6" "d823c26445ba9e5a6a6e28a7a58da756566cfbd6a5737d56f3345b8204e346df" "c8f583441df726c20a7b40a47be63c6a4e6a496783cafdd7f21520b66a7308b7" "1218df7ba75a7d9d51199866d9d7bf1861e54122863366cf097c4cae9c2a625c" "47372e349f9fee5ce5350c03358628f36ccfc25e7a4e73d1a0473511d295c2f8" default)))
  '(default-frame-alist (quote ((width . 95) (height . 55))))
- '(fill-column 78)
- '(global-hl-line-mode t)
  '(hg-outgoing-repository "")
- '(indent-tabs-mode nil)
  '(ns-alternate-modifier (quote alt))
  '(ns-tool-bar-display-mode (quote both) t)
  '(ns-tool-bar-size-mode nil t)
- '(org-export-backends (quote (ascii html latex md odt)))
  '(rst-level-face-base-light 20)
  '(rst-level-face-step-light 7)
  '(safe-local-variable-values
    (quote
     ((eval setq default-directory
            (locate-dominating-file buffer-file-name ".dir-locals.el")))))
- '(show-paren-mode t)
- '(show-paren-style (quote mixed))
  '(special-display-regexps (quote (".*SPEEDBAR.*")))
- '(tab-always-indent t)
- '(tab-width 2)
  '(tool-bar-mode nil)
  '(user-full-name "Shawn Hoover")
  '(user-mail-address "shawn.hoover@gmail.com")
@@ -277,7 +274,10 @@
   (load-theme 'ample)
 
   (global-hl-line-mode t)
-  (show-paren-mode t))
+  
+  (show-paren-mode t)
+  (setq show-paren-style 'mixed)
+)
 
 (cd "~")
 

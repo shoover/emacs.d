@@ -26,7 +26,7 @@
             (setq c-basic-offset 4)
             (c-set-offset 'substatement-open 0)
             (define-key c-mode-map "\C-c\C-c" 'compile)))
-(add-to-list 'auto-mode-alist '("\\.rl$" . c-mode))
+(add-to-list 'auto-mode-alist '("\\.rl$" . c-mode)) ; Ragel
 
 ;; C#
 (add-hook 'csharp-mode-hook
@@ -86,8 +86,8 @@
 (add-hook 'fsharp-mode-hook
           (lambda ()
             (define-keys fsharp-mode-map
-              ("\C-c\C-b" . 'fsharp-load-buffer)
-              ("\C-c\C-l" . 'fsharp-load-line)
+              ("\C-c\C-b" . 'fsharp-load-buffer-x)
+              ("\C-c\C-l" . 'fsharp-load-line-x)
               ("\C-c\C-u" . 'fsharp-goto-block-up)
               ("\C-x\C-e" . 'fsharp-eval-phrase))))
 (add-hook 'inferior-fsharp-mode-hooks
@@ -96,11 +96,11 @@
                          'comint-truncate-buffer)
             (setq comint-buffer-maximum-size 2000)))
 
-(defun fsharp-load-buffer ()
+(defun fsharp-load-buffer-x ()
   (interactive)
   (fsharp-eval-region (point-min) (point-max)))
 
-(defun fsharp-load-line ()
+(defun fsharp-load-line-x ()
   (interactive)
   (fsharp-eval-region (point-at-bol) (point-at-eol))
   (move-beginning-of-line 2))
@@ -171,9 +171,9 @@ With argument, positions cursor at end of buffer."
 (when (functionp 'advice-add) ;; emacs >= 24.4
   (advice-add 'org-export-dispatch :around #'my-org-export-dispatch-advice)
   (defun my-org-export-dispatch-advice (orig-fun &rest args)
-  (let ((scroll-margin 0)
-        (scroll-preserve-screen-position nil))
-    (apply orig-fun args))))
+    (let ((scroll-margin 0)
+          (scroll-preserve-screen-position nil))
+      (apply orig-fun args))))
 
 (add-hook 'org-mode-hook
           (lambda ()
@@ -226,13 +226,13 @@ With argument, positions cursor at end of buffer."
                    ; but it doesn't work
      (ruby . t))))
 
-(setq org-default-notes-file (concat org-directory "/action.org")
-
-      org-indent-mode t
+(setq org-indent-mode t
       org-hide-leading-stars t
       org-startup-indented 'overview
 
-      org-tags-column -85)
+      org-tags-column -85
+
+      org-export-backends '(ascii html latex md odt))
 
 ;; These should prevent underscores without {} from exporting as subscripts... but don't?
 (setq org-use-sub-superscripts '{}
@@ -280,7 +280,7 @@ With argument, positions cursor at end of buffer."
 
 ;; Advise org-protocol-capture to always wrap in a new capture frame. This
 ;; would be risky with, say, org-capture, but since protocol capture is never
-;; called within emacs interactively but only from other programs, I think
+;; called within emacs interactively and only from other programs, I think
 ;; it's ok. If it became a problem we would have to register a new protocol
 ;; and handler just for wrapping.
 (when (functionp 'advice-add) ;; emacs >= 24.4
