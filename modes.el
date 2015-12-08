@@ -41,7 +41,7 @@
           (lambda ()
             (define-key clojure-mode-map "\C-c\C-l" 'lisp-load-buffer)
             (set (make-local-variable 'indent-line-function)
-                 'indent-line)))
+                 'my-lisp-indent-line)))
 (add-hook 'inferior-lisp-mode-hook
           (lambda ()
             (add-to-list 'comint-output-filter-functions

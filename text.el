@@ -56,7 +56,7 @@ line instead."
         (indent-region (region-beginning) (region-end))
       (indent-buffer))))
 
-(defun indent-line ()
+(defun my-lisp-indent-line ()
   "Indent ;-comments like ;;-comments for compatibility with
 other Clojure programmers. Mostly cribbed from `lisp-indent-line'."
   (interactive)
