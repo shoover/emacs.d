@@ -57,6 +57,8 @@
 (setq inhibit-splash-screen t)
 (fset 'yes-or-no-p 'y-or-n-p) ; "y or n" instead of "yes or no"
 
+(savehist-mode t) ; save minibuffer history
+
 ;; Allow bullet lists starting with - to delimit paragraphs for use with
 ;; fill-paragraph. fill-individual-paragraphs accomplishes what I want, but it
 ;; requires that you have an active region.
