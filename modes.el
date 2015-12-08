@@ -146,7 +146,8 @@ With argument, positions cursor at end of buffer."
 (define-keys lisp-mode-shared-map
   ("\M-a" . 'backward-sexp)
   ("\M-e" . 'forward-sexp)
-  ("\M-k" . 'kill-sexp))
+  ("\M-k" . 'kill-sexp)
+  ("\C-c\C-u" . 'backward-up-list))
 
 ;; Log files
 (autoload 'log-mode "log-mode" "View log files" t)

@@ -182,6 +182,11 @@
 
 ; Shift+(left|right|up|down) to hop around windows quicker than with C-x o
 (windmove-default-keybindings)
+(global-set-key (kbd "M-o") 'other-window)
+
+;; Change font size on the fly.
+(global-set-key (kbd "C-+") 'text-scale-increase)
+(global-set-key (kbd "C-_") 'text-scale-decrease)
 
 (global-set-key "\C-xx" 'w32-explore-here)
 (global-set-key "\C-cg" 'browse-url-at-point)
