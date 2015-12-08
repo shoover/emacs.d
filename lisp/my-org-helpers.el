@@ -144,6 +144,36 @@ used. Otherwise a temp file is used."
     (browse-url-of-file
      (org-export-to-file 'html file async subtreep visible-only))))
 
+(defun org-export-pdf-subtree-x (arg)
+  "Exports the current subtree to HTML and browses to the file.
+
+With a prefix arg, prompt for a file name. If property
+\"EXPORT_FILE_NAME\" is set in the subtree, that file name is
+used. Otherwise a temp file is used."
+  (interactive "P")
+  (let ((file (or
+               ;; Get the output file name from the user if a prefix arg was given
+               (and arg
+                    (ido-read-file-name "PDF file:"))
+
+               ;; Use the subtree export file name if the property is set
+               (org-entry-get
+                (save-excursion
+                  (ignore-errors (org-back-to-heading) (point)))
+                "EXPORT_FILE_NAME" t)
+
+               ;; Otherwise use a temp file, logic cribbed from browse-url-of-buffer
+               (convert-standard-filename
+                (make-temp-file
+                 (expand-file-name "burl" browse-url-temp-dir)
+                 nil ".pdf"))))
+        (async nil)
+        (subtreep t)
+        (visible-only t)
+        (org-export-with-toc nil))
+    (browse-url-of-file
+     (org-export-to-file 'latex file async subtreep visible-only))))
+
 (defun org-publish-dir-x (dir &optional target project-name)
   "Publishes all the .org files in DIR to the TARGET directory
 using the org HTML publisher."
