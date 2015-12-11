@@ -399,9 +399,7 @@ With argument, positions cursor at end of buffer."
 
 ;; Python
 (add-to-mode-alist 'python-mode "scons" "SConstruct" "SConscript" "wscript")
-(add-hook 'python-mode-hook
-          (lambda ()
-            (setq indent-tabs-mode t)))
+(add-hook 'python-mode-hook 'guess-style-guess-all)
 
 ;; Ruby
 ;; .rb is set up by elpa

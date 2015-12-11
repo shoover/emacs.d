@@ -45,6 +45,11 @@
  tab-width 4
  tab-always-indent t)
 
+;; Guess indentation style, when activated in language mode hooks. LISP
+(autoload 'guess-style-guess-all "guess-style" nil t)
+(autoload 'guess-style-set-variable "guess-style" nil t)
+(autoload 'guess-style-guess-variable "guess-style")
+
 ;; Scroll when the cursor nears the edge, move up to a proportion of the screen
 (setq scroll-margin 2
       scroll-preserve-screen-position t)
