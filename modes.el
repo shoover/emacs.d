@@ -29,11 +29,7 @@
 (add-to-list 'auto-mode-alist '("\\.rl$" . c-mode)) ; Ragel
 
 ;; C#
-(add-hook 'csharp-mode-hook
-          (lambda ()
-            (setq tab-width 4)
-            (setq c-basic-offset 4)
-            (c-set-style "c#")))
+(setq csharp-want-imenu nil) ; imenu noticeably slows fontification of large files
 
 ;; Clojure
 (add-hook 'clojure-mode-hook 'lisp-enable-paredit-hook)
