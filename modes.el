@@ -374,10 +374,12 @@ With argument, positions cursor at end of buffer."
         ("c" "org-protocol capture"
          entry (file read-org-agenda-file)
          "* %?%c\n%i\n%U" :prepend t)
-        ;; Notes datetree requires a separate template
+
         ("N" "org-protocol Notes capture"
          entry (file+datetree my-notes-org)
-         "* %?%c\n%i\n%U")))
+         "* %:description %?[[%:link][www]]\n%:initial\n%U"
+         ;; "* %?%c\n%i\n%U"
+         )))
 
 ;; Paredit
 (require 'paredit)
