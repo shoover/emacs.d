@@ -22,8 +22,6 @@
 ;; C
 (add-hook 'c-mode-hook
           (lambda ()
-            (setq tab-width 4)
-            (setq c-basic-offset 4)
             (c-set-offset 'substatement-open 0)
             (define-key c-mode-map "\C-c\C-c" 'compile)))
 (add-to-list 'auto-mode-alist '("\\.rl$" . c-mode)) ; Ragel

@@ -43,6 +43,7 @@
 (setq-default
  indent-tabs-mode nil
  tab-width 4
+ c-basic-offset 4
  tab-always-indent t)
 
 ;; Guess indentation style, when activated in language mode hooks. LISP
