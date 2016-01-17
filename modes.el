@@ -33,7 +33,7 @@
 (add-hook 'clojure-mode-hook 'lisp-enable-paredit-hook)
 (add-hook 'clojure-mode-hook
           (lambda ()
-            (define-key clojure-mode-map "\C-c\C-l" 'lisp-load-buffer)
+            (define-key clojure-mode-map "\C-c\C-b" 'lisp-load-buffer-x)
             (set (make-local-variable 'indent-line-function)
                  'my-lisp-indent-line)))
 (add-hook 'inferior-lisp-mode-hook
@@ -46,7 +46,7 @@
 (add-hook 'slime-repl-mode-hook 'set-up-slime-ac)
 
 ;; From nakkaya.com
-(defun lisp-load-buffer ()
+(defun lisp-load-buffer-x ()
   (interactive)
   (point-to-register 5)
   (mark-whole-buffer)
