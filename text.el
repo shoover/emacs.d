@@ -32,17 +32,19 @@ inserting a comment at the end of the line."
   (advice-add 'paredit-comment-dwim :before #'my-comment-dwim-mark-line))
 
 ;; Two-stage move-beginning-of-line, once to end of indentation, twice to true BOL.
-;; From http://irreal.org/blog/?p=1946
+;; Parts from http://irreal.org/blog/?p=1946
 (defadvice move-beginning-of-line (around smarter-bol activate)
-  ;; Move to requested line if needed.
-  (let ((arg (or (ad-get-arg 0) 1)))
-    (when (/= arg 1)
-      (forward-line (1- arg))))
-  ;; Move to indentation on first call, then to actual BOL on second.
-  (let ((pos (point)))
-    (back-to-indentation)
-    (when (= pos (point))
-      ad-do-it)))
+  (if (/= arg 1)
+      ;; Any time we're moving across lines, do the move and jump to indentation.
+      (progn
+        ad-do-it
+        (back-to-indentation))
+    ;; Staying on the same line. Move to indentation on first call,
+    ;; then to actual BOL on second.
+    (let ((pos (point)))
+      (back-to-indentation)
+      (when (= pos (point))
+        ad-do-it))))
 
 (defun init ()
   "Find my init file"
