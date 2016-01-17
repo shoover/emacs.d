@@ -205,7 +205,7 @@ With argument, positions cursor at end of buffer."
   (setq org-agenda-custom-commands
         '(("A" "Multi-occur, agenda files and archives"
            search ""
-           ((org-agenda-files (find-org-files-x "\\.org\\|org_archive$"))))
+           ((org-agenda-files (find-org-files-x "\\.org$\\|org_archive$"))))
           ("P" "Project list"
            tags "prj"
            ((org-use-tag-inheritance nil)))
