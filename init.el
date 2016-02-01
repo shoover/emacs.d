@@ -94,6 +94,9 @@
 ;; Typing overwrites the region
 (delete-selection-mode 1)
 
+;; Expand region by semantic units
+(require 'expand-region)
+
 (setq ispell-program-name "aspell"
       ispell-extra-args '("--sug-mode=ultra"))
 
@@ -196,7 +199,9 @@
 (global-set-key [C-up] 'move-text-up)
 (global-set-key [C-down] 'move-text-down)
 
-(global-set-key "\C-c/" 'my-indent-region) ; Indent region or whole buffer
+(global-set-key "\C-c/" 'indent-region) ; Indent region or whole buffer
+
+(global-set-key (kbd "C-=") 'er/expand-region) ; Expand region by semantic units
 
 ;; Jump to elisp source. Thanks, emacsredux.com.
 (define-key 'help-command (kbd "C-f") 'find-function)

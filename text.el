@@ -1,5 +1,16 @@
 ;; Text editing functions
 
+;; from https://github.com/bbatsov/crux/blob/master/crux.el
+(defmacro with-region-or-buffer-x (func)
+  "When called with no active region, call FUNC on current buffer.
+Use to make commands like `indent-region' work on both the region
+and the entire buffer (in the absense of a region)."
+  `(defadvice ,func (before with-region-or-buffer activate compile)
+     (interactive
+      (if mark-active
+          (list (region-beginning) (region-end))
+        (list (point-min) (point-max))))))
+
 ;; Line killing goodness from emacs-fu
 (defadvice kill-ring-save (before slick-copy activate compile)
   "When called interactively with no active region, copy a single
@@ -71,18 +82,10 @@ inserting a comment at the end of the line."
   (interactive)
   (find-file (expand-file-name (concat org-directory "/../banjo/banjo.org"))))
 
-(defun indent-buffer ()
-  "Indent the entire buffer. Seems like emacs should have this."
+(defun indent-buffer-x ()
+  "Indent the entire buffer."
   (interactive)
   (indent-region (point-min) (point-max)))
-
-(defun my-indent-region ()
-  "Indent the region if there is one active. Otherwise indent the buffer."
-  (interactive)
-  (save-excursion
-    (if mark-active
-        (indent-region (region-beginning) (region-end))
-      (indent-buffer))))
 
 (defun my-lisp-indent-line ()
   "Indent ;-comments like ;;-comments for compatibility with
@@ -99,6 +102,9 @@ other Clojure programmers. Mostly cribbed from `lisp-indent-line'."
           nil
         (delete-region beg (point))
         (indent-to indent)))))
+
+(with-region-or-buffer-x indent-region)
+(with-region-or-buffer-x fill-region)
 
 (defun comment-sexp (&optional arg allow-extend)
   "Comment ARG sexps from point. If a region is active, that
@@ -429,6 +435,7 @@ Uses async-shell-command if a prefix arg is given."
     (url-hexify-string (if mark-active
                            (buffer-substring (region-beginning) (region-end))
                          (read-string "Google: "))))))
+
 (defun save-compile-project ()
   "Saves modified files under the project root (without asking)
 and recompiles. The project root is determined using
