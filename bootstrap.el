@@ -33,6 +33,7 @@
                   fsharp-mode
                   find-file-in-project
                   htmlize
+                  imenu-anywhere
                   markdown-mode
                   org-mode
                   org-plus-contrib

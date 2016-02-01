@@ -158,6 +158,8 @@
 (define-key ido-common-completion-map "\M-s" 'ido-prev-match)
 (define-key ido-file-dir-completion-map "\M-s" 'ido-prev-match)
 
+(global-set-key (kbd "C-.") 'imenu-anywhere)
+
 ;; I want to remap C-i in text-mode but leave tab working as normal. This is
 ;; the only way I've found that works without messing up local keymaps like
 ;; the minibuffer's. http://stackoverflow.com/a/11319885/223029
