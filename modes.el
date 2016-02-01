@@ -377,7 +377,7 @@ With argument, positions cursor at end of buffer."
 
         ("N" "org-protocol Notes capture"
          entry (file+datetree my-notes-org)
-         "* %:description %?[[%:link][www]]\n%:initial\n%U"
+         "* %:description\n[[%:link][www]]\n\n%:initial%?\n\n%U"
          ;; "* %?%c\n%i\n%U"
          )))
 
