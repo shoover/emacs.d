@@ -78,8 +78,18 @@
 
 (setq fill-column 78)
 
-;; Insert matching parens and braces, please
+;; Insert matching parens and braces
 (electric-pair-mode 1)
+;; I like the conservative inhibit because it doesn't pair double
+;; quotes when looking at a word when going back and quoting existing
+;; text. But it has to be tweaked look back and not double up the
+;; closing quote. Truthfully, I have no idea why this works.
+(setq electric-pair-inhibit-predicate #'my-electric-pair-conservative-inhibit)
+(defun my-electric-pair-conservative-inhibit (char)
+  (or (electric-pair-conservative-inhibit char)
+      ;; Don't pair double quotes at the end of a string when the
+      ;; opening double quote wasn't auto-paired.
+      (eq (char-syntax (char-before (1- (point)))) ?w)))
 
 ;; Typing overwrites the region
 (delete-selection-mode 1)
