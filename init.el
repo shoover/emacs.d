@@ -162,6 +162,8 @@
 (global-set-key "\M-r" 'yank-pop)
 (define-key paredit-mode-map "\M-r" 'paredit-yank-pop)
 
+(global-set-key "\M-k" 'kill-sexp)
+
 (global-set-key "\C-s" 'isearch-forward)
 (global-set-key "\M-s" 'isearch-backward)
 (define-key isearch-mode-map "\M-s" 'isearch-repeat-backward)
