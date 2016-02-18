@@ -449,6 +449,13 @@ and recompiles. The project root is determined using
   (let ((dir (ffip-get-project-root-directory))
         (compilation-ask-about-save nil)
         (compilation-save-buffers-predicate (lambda ()
-                                              (string-prefix-p dir (buffer-file-name)))))
+                                              (string-prefix-p dir (buffer-file-name))))
+
+        ;;
+        (default-directory (capitalize (expand-file-name default-directory)))
+        (compilation-directory default-directory)
+
+        )
     (message "Saving and compiling in directory %s" dir)
+    (message "default-directory: %s" default-directory)
     (recompile nil)))

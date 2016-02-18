@@ -120,7 +120,10 @@ doesn't unindent multiline item text."
 
 With a prefix arg, prompt for a file name. If property
 \"EXPORT_FILE_NAME\" is set in the subtree, that file name is
-used. Otherwise a temp file is used."
+used. Otherwise a temp file is used.
+
+Defaults to disabling the table of contents and numbers. Override
+by setting EXPORT_OPTIONS in the subtree."
   (interactive "P")
   (let ((file (or
                ;; Get the output file name from the user if a prefix arg was given
@@ -140,7 +143,13 @@ used. Otherwise a temp file is used."
                  nil ".html"))))
         (async nil)
         (subtreep t)
-        (visible-only t))
+        (visible-only t)
+
+        ;; I want to override in-buffer options (but not subtree
+        ;; options), but it doesn't work and I can't find a way to
+        ;; fake properties :(
+        (org-export-with-toc nil)
+        (org-export-with-section-numbers nil))
     (browse-url-of-file
      (org-export-to-file 'html file async subtreep visible-only))))
 
@@ -175,8 +184,8 @@ used. Otherwise a temp file is used."
      (org-export-to-file 'latex file async subtreep visible-only))))
 
 (defun org-publish-dir-x (dir &optional target project-name)
-  "Publishes all the .org files in DIR to the TARGET directory
-using the org HTML publisher."
+  "Publishes all the .org files .css files in DIR to the TARGET
+directory using the org HTML publisher."
   (interactive
    (let* ((dir (ido-read-directory-name "Source dir: "))
           (target (ido-read-directory-name "HTML dir: "

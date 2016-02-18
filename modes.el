@@ -229,7 +229,8 @@ With argument, positions cursor at end of buffer."
 
       org-tags-column -85
 
-      org-export-backends '(ascii html latex md odt))
+      org-export-backends '(ascii html latex md odt)
+      org-html-validation-link nil)
 
 ;; These should prevent underscores without {} from exporting as subscripts... but don't?
 (setq org-use-sub-superscripts '{}
