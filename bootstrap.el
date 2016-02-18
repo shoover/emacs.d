@@ -30,6 +30,7 @@
                   clojure-mode
                   csharp-mode
                   edit-server
+                  expand-region
                   fsharp-mode
                   find-file-in-project
                   htmlize
