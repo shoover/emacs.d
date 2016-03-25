@@ -394,6 +394,14 @@ With argument, positions cursor at end of buffer."
 ;; PHP
 (add-to-list 'auto-mode-alist '("\\.php$" . html-mode))
 
+;; prog-mode derivees
+(add-hook 'prog-mode-hook 'my-prog-mode-hook)
+(defun my-prog-mode-hook ()
+  ;; make a hook local to prog modes to delete trailing whitespace. I
+  ;; have whitespace mode configured to show problems, but it may be a
+  ;; bit aggressive to clean all those things up automatically.
+  (add-hook 'before-save-hook 'delete-trailing-whitespace nil 'make-it-local))
+
 ;; Python
 (add-to-mode-alist 'python-mode "scons" "SConstruct" "SConscript" "wscript")
 (add-hook 'python-mode-hook 'guess-style-guess-all)

@@ -58,8 +58,10 @@
               scroll-up-aggressively 0.25)
 
 (setq whitespace-global-modes '(c-mode csharp-mode clojure-mode emacs-lisp-mode ruby-mode)
-      whitespace-style '(tabs trailing lines-tail space-before-tab empty
-                              space-after-tab))
+      whitespace-style '(face tabs spaces trailing lines indentation::space
+                              space-before-tab space-after-tab)
+      whitespace-line-column 91)
+(global-whitespace-mode 1)
 
 (blink-cursor-mode 1)
 (setq ring-bell-function 'ignore)
@@ -302,7 +304,7 @@
   (load-theme 'ample)
 
   (global-hl-line-mode t)
-  
+
   (show-paren-mode t)
   (setq show-paren-style 'mixed)
 )

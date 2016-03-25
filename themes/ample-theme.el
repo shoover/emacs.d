@@ -117,7 +117,7 @@
 
    `(button  ((t (:foreground ,ample/lighter-blue :background nil :underline t))))
    `(link ((t :foreground ,ample/light-blue :background nil :underline t)))
-   
+
    ;; search
    `(isearch		((t (:background ,ample/blue :foreground ,ample/bg))))
    `(lazy-highlight	((t (:background ,ample/darkerer-gray :foreground ,ample/purple :underline nil))))
@@ -335,7 +335,7 @@
    `(ac-slime-selection-face		((t (:inherit ac-selection-face))))
    `(ac-yasnippet-candidate-face	((t (:inherit ac-candidate-face))))
    `(ac-yasnippet-selection-face	((t (:inherit ac-selection-face))))
-   
+
    ;;`(company-echo			((t (:foreground nil :background nil))))
    ;;`(company-echo-common		((t (:foreground nil :background "firebrick4"))))
    ;;`(company-preview			((t (:foreground "wheat" :background "blue4"))))
@@ -490,7 +490,7 @@
    ;;`(org-table ((t (:foreground nil :background nil))))
    ;;`(org-tag ((t (:foreground nil :background nil))))
    ;;`(org-target ((t (:foreground nil :background nil))))
-   ;;`(org-time-grid ((t (:foreground nil :background nil))))   
+   ;;`(org-time-grid ((t (:foreground nil :background nil))))
    ;;`(org-upcoming-deadline ((t (:foreground nil :background nil))))
    ;;`(org-verbatim ((t (:foreground nil :background nil))))
    ;;`(org-verse ((t (:foreground nil :background nil))))
@@ -598,7 +598,7 @@
    `(whitespace-space-after-tab		((t (:foreground ,ample/gray :background "gray13"))))
    `(whitespace-space-before-tab	((t (:foreground ,ample/gray :background "gray14"))))
    `(whitespace-tab			((t (:foreground ,ample/gray :background "grey15"))))
-   `(whitespace-trailing		((t (:foreground ,ample/rb3 :background ,ample/bg :bold t))))
+   `(whitespace-trailing		((t (:foreground ,ample/rb3 :background ,ample/dark-red :bold t))))
 
    ;;magit
    `(magit-branch				((t (:foreground ,ample/orange :background nil))))
@@ -653,7 +653,7 @@
    `(git-gutter:separator ((t (:foreground ,ample/orange :background nil :bold t))))
    `(git-gutter:unchanged ((t (:foreground ,ample/yellow :background nil))))
 
-   `(highlight-indentation-current-column-face ((t (:foreground nil :background ,ample/gray)))) 
+   `(highlight-indentation-current-column-face ((t (:foreground nil :background ,ample/gray))))
    `(highlight-indentation-face                ((t (:foreground nil :background ,ample/darkest-gray))))
 
    ;; trailing whitespace
