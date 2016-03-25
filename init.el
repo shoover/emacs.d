@@ -80,6 +80,8 @@
 
 (setq fill-column 78)
 
+(setq comment-auto-fill-only-comments 1)
+
 ;; Insert matching parens and braces
 (electric-pair-mode 1)
 ;; I like the conservative inhibit because it doesn't pair double
@@ -165,6 +167,7 @@
 (define-key paredit-mode-map "\M-r" 'paredit-yank-pop)
 
 (global-set-key "\M-k" 'kill-sexp)
+(global-set-key "\C-\M-k" 'kill-sentence)
 
 (global-set-key "\C-s" 'isearch-forward)
 (global-set-key "\M-s" 'isearch-backward)

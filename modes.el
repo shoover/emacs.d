@@ -172,10 +172,7 @@ With argument, positions cursor at end of buffer."
           (scroll-preserve-screen-position nil))
       (apply orig-fun args))))
 
-(add-hook 'org-mode-hook
-          (lambda ()
-            (turn-on-auto-fill)))
-
+(add-hook 'org-mode-hook 'turn-on-auto-fill)
 (add-hook 'org-load-hook 'my-org-load-hook)
 (defun my-org-load-hook ()
   (define-keys org-mode-map
@@ -425,7 +422,11 @@ With argument, positions cursor at end of buffer."
 
 ;; Text
 (add-hook 'text-mode-hook 'turn-on-auto-fill)
-(add-hook 'text-mode-hook 'turn-on-ispell-keys) 
+(add-hook 'text-mode-hook 'my-text-mode-hook)
+(add-hook 'text-mode-hook 'turn-on-ispell-keys)
+
+(defun my-text-mode-hook ()
+  (local-set-key "\M-k" 'kill-sentence))
 
 (defun turn-on-ispell-keys ()
   (interactive)
