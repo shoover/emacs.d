@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+#contributor: Shawn Hoover <shawn@xia.com>
+#name: comment
+#key: \doxy
+#group: doxygen
+# --
+/**
+ * ${1}
+ */
