@@ -71,14 +71,18 @@
           (lambda () (require 'dired-sort-map)))
 
 ;; elisp
-(add-hook 'emacs-lisp-mode-hook
-          (lambda ()
-            (define-keys emacs-lisp-mode-map
-              ("\C-c\C-b" . 'eval-buffer)
-              ("\C-c\C-r" . 'eval-region))
+(defun my-emacs-lisp-mode-hook ()
+  (define-keys emacs-lisp-mode-map
+    ("\C-c\C-b" . 'eval-buffer)
+    ("\C-c\C-r" . 'eval-region))
 
-            (turn-on-eldoc-mode)
-            (paredit-mode 1)))
+  (turn-on-eldoc-mode)
+  (paredit-mode 1))
+
+(add-hook 'emacs-lisp-mode-hook 'my-emacs-lisp-mode-hook)
+
+(add-hook 'eval-expression-minibuffer-setup-hook #'eldoc-mode)
+(add-hook 'eval-expression-minibuffer-setup-hook #'paredit-mode)
 
 ;; F#
 (defvar inferior-fsharp-program "\"c:\\Program Files (x86)\\Microsoft F#\\v4.0\\Fsi.exe\"")
