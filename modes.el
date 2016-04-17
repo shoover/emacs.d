@@ -20,10 +20,15 @@
 (add-to-mode-alist 'visual-basic-mode "\\.frm$" "\\.bas$" "\\.cls$" "\\.vbs$")
 
 ;; C
-(add-hook 'c-mode-hook
-          (lambda ()
-            (c-set-offset 'substatement-open 0)
-            (define-key c-mode-map "\C-c\C-c" 'compile)))
+(add-hook 'c-mode-hook 'my-c-mode-hook)
+(defun my-c-mode-hook ()
+  (c-set-offset 'substatement-open 0)
+  (define-key c-mode-map "\C-c\C-c" 'compile)
+
+  ;; Break paragraphs at doxygen commands already on separate lines, e.g. @code.
+  (set (make-local-variable 'paragraph-separate)
+       "[ 	]*\\(//+\\|\\**\\)[ 	]*\\(@[a-zA-Z0-9,_-]+\\({.*}\\)*\\)*[ 	]*$\\|^"))
+
 (add-to-list 'auto-mode-alist '("\\.rl$" . c-mode)) ; Ragel
 
 ;; C#
