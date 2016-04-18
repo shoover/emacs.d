@@ -201,7 +201,13 @@ With argument, positions cursor at end of buffer."
     ("\C-c\C-x\C-r" . 'org-paste-special)
 
     ;; clear this so next- previous-buffer works
-    ([C-tab] . nil))
+    ([C-tab] . nil)
+
+    ;; clear up/down priority/clock keys for scrolling
+    ([S-up] . nil)
+    ([S-down] . nil)
+    ([C-S-up] . nil)
+    ([C-S-down] . nil))
 
   (setq org-directories (list org-directory))
   (let ((b (concat org-directory "/../banjo")))

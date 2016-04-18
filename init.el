@@ -9,7 +9,7 @@
 ;; Run this occasionally: C-u 0 M-x byte-recompile-directory
 ;;
 ;; LISP in a require line comment means the file is assumed to be in
-;; emacs/lisp. Otherwise it should be in stalled in the package system by
+;; emacs/lisp. Otherwise it should be installed in the package system by
 ;; running bootstrap.el.
 
 ;;; Paths
@@ -56,6 +56,7 @@
       scroll-preserve-screen-position t)
 (setq-default scroll-down-aggressively 0.25
               scroll-up-aggressively 0.25)
+(setq mouse-wheel-scroll-amount '(1 ((shift) . 1))) ; mouse wheel one line at a time
 
 (setq whitespace-global-modes '(c-mode csharp-mode clojure-mode emacs-lisp-mode ruby-mode)
       whitespace-style '(face tabs spaces trailing lines indentation::space
@@ -205,6 +206,11 @@
 
 (global-set-key [C-up] 'move-text-up)
 (global-set-key [C-down] 'move-text-down)
+
+(global-set-key [S-up] 'scroll-down-line)      ; scroll without moving point
+(global-set-key [S-down] 'scroll-up-line)
+(global-set-key [C-S-up] 'slide-previous-line) ; scroll and move point
+(global-set-key [C-S-down] 'slide-next-line)
 
 (global-set-key "\C-c/" 'indent-region) ; Indent region or whole buffer
 

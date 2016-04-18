@@ -192,6 +192,18 @@ the mark is not active."
   (interactive "*p")
   (move-text-internal arg))
 
+(defun slide-previous-line ()
+  "Scroll down, keeping point at the same position relative to the frame."
+  (interactive)
+  (scroll-down-line)
+  (previous-line))
+
+(defun slide-next-line ()
+  "Scroll up, keeping point at the same position relative to the frame."
+  (interactive)
+  (scroll-up-line)
+  (next-line))
+
 (defun count-chars-region (beginning end)
   "Displays a message with the number of characters in the region."
   (interactive "r")
@@ -272,7 +284,7 @@ table determines which characters these are."
   "Opens an interactive sqlite session in a comint buffer."
   (interactive
    (list (ido-read-file-name "DB: ")))
-  (pop-to-buffer 
+  (pop-to-buffer
    (make-comint "sqlite" "sqlite3" nil "-interactive" db)))
 
 (defun eval-print ()
