@@ -420,8 +420,8 @@ tree can be found."
          :prepend t)
 
         ("n" "Notes"
-         entry (file+datetree my-notes-org) ; include timestamp
-         "* %?\n%i%U")
+         entry (file+datetree my-notes-org)
+         "* %?\n%i")
 
         ("w" "Work"
          entry (file my-work-org)
@@ -462,8 +462,8 @@ tree can be found."
 
         ("N" "org-protocol Notes capture"
          entry (file+datetree my-notes-org)
-         "* %:description\n[[%:link][www]]\n\n%:initial%?\n\n%U"
-         ;; "* %?%c\n%i\n%U"
+         "* %:description\n[[%:link][www]]\n\n%:initial%?\n"
+         ;; "* %?%c\n%i\n"
          )))
 
 ;; Paredit
