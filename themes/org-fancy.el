@@ -24,7 +24,9 @@
                              ((x-family-fonts "Sans Serif")    '(:family "Sans Serif"))
                              (nil (warn "Cannot find a Sans Serif Font.  Install Source Sans Pro."))))
        (base-font-color    (face-foreground 'default nil 'default))
-       (headline           `(:inherit default :weight bold :foreground ,base-font-color)))
+       (base-font-color "#bdbc91") ; pale yellow/tan
+       (headline           `(:inherit default :weight normal :foreground ,base-font-color
+                                      :underline nil)))
 
   (custom-theme-set-faces 'user
                           `(org-level-8 ((t (,@headline ,@variable-tuple :slant italic))))
@@ -32,9 +34,9 @@
                           `(org-level-6 ((t (,@headline ,@variable-tuple :slant italic))))
                           `(org-level-5 ((t (,@headline ,@variable-tuple :slant italic))))
                           `(org-level-4 ((t (,@headline ,@variable-tuple :height 1.1 :slant italic))))
-                          `(org-level-3 ((t (,@headline ,@variable-tuple :height 1.1 :slant italic))))
-                          `(org-level-2 ((t (,@headline ,@variable-tuple :height 1.2 :slant italic))))
-                          `(org-level-1 ((t (,@headline ,@variable-tuple :height 1.3))))
+                          `(org-level-3 ((t (,@headline ,@variable-tuple :height 1.15 :slant italic))))
+                          `(org-level-2 ((t (,@headline ,@variable-tuple :height 1.25 :slant italic))))
+                          `(org-level-1 ((t (,@headline ,@variable-tuple :height 1.35))))
                           `(org-document-title ((t (,@headline ,@variable-tuple :height 1.5 :underline nil))))))
 
 ;; justified tags look terrible with the variable-width heading font
