@@ -305,6 +305,7 @@
   ;;(load-theme 'Shawn)
   ;;(load-theme 'fogus)
   (load-theme 'ample)
+  (load "themes/org-fancy.el")
 
   (global-hl-line-mode t)
 
