@@ -34,6 +34,11 @@
 ;; C#
 (setq csharp-want-imenu nil) ; imenu noticeably slows fontification of large files
 
+;; Calc
+(add-hook 'calc-mode-hook 'my-calc-mode-hook)
+(defun my-calc-mode-hook ()
+  (define-key calc-mode-map [C-backspace] 'calc-reset))
+
 ;; Clojure
 (add-hook 'clojure-mode-hook 'lisp-enable-paredit-hook)
 (add-hook 'clojure-mode-hook
