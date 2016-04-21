@@ -17,7 +17,7 @@
 (setq org-bullets-bullet-list '("○")) ;"●"
 
 ;; larger, variable-width heading fonts. 2-8 italic, for fun.
-(let* ((variable-tuple (cond ((x-list-fonts "InputSans") '(:font "InputSans"))
+(let* ((variable-tuple (cond ((x-list-fonts "InputSans") '(:font "InputSans Bold"))
                              ((x-list-fonts "Source Sans Pro") '(:font "Source Sans Pro"))
                              ((x-list-fonts "Lucida Grande")   '(:font "Lucida Grande"))
                              ((x-list-fonts "Verdana")         '(:font "Verdana"))
@@ -29,15 +29,16 @@
                                       :underline nil)))
 
   (custom-theme-set-faces 'user
-                          `(org-level-8 ((t (,@headline ,@variable-tuple :slant italic))))
-                          `(org-level-7 ((t (,@headline ,@variable-tuple :slant italic))))
-                          `(org-level-6 ((t (,@headline ,@variable-tuple :slant italic))))
-                          `(org-level-5 ((t (,@headline ,@variable-tuple :slant italic))))
-                          `(org-level-4 ((t (,@headline ,@variable-tuple :height 1.1 :slant italic))))
-                          `(org-level-3 ((t (,@headline ,@variable-tuple :height 1.15 :slant italic))))
-                          `(org-level-2 ((t (,@headline ,@variable-tuple :height 1.25 :slant italic))))
-                          `(org-level-1 ((t (,@headline ,@variable-tuple :height 1.35))))
+                          `(org-level-8 ((t (,@headline ,@variable-tuple :height 1.2))))
+                          `(org-level-7 ((t (,@headline ,@variable-tuple :height 1.2))))
+                          `(org-level-6 ((t (,@headline ,@variable-tuple :height 1.2))))
+                          `(org-level-5 ((t (,@headline ,@variable-tuple :height 1.2 :slant italic))))
+                          `(org-level-4 ((t (,@headline ,@variable-tuple :height 1.2 :slant italic))))
+                          `(org-level-3 ((t (,@headline ,@variable-tuple :height 1.25 :slant italic))))
+                          `(org-level-2 ((t (,@headline ,@variable-tuple :height 1.35 :slant italic))))
+                          `(org-level-1 ((t (,@headline ,@variable-tuple :height 1.45))))
                           `(org-document-title ((t (,@headline ,@variable-tuple :height 1.5 :underline nil))))))
 
-;; justified tags look terrible with the variable-width heading font
+;; justified tags look terrible with the variable-width heading font,
+;; so turn that off
 (setq org-tags-column 0)

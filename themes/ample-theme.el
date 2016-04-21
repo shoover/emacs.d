@@ -60,7 +60,7 @@
       (ample/gray "#a5a5a5")
       (ample/dark-gray "#656565")
       (ample/darker-gray "#454545")
-      (ample/darkerer-gray "#313131")
+      (ample/darkerer-gray "#242424")
       (ample/darkest-gray "#222222")
       (ample/red "#cd7542")
       (ample/dark-red "#9d2512")
@@ -128,7 +128,7 @@
 
    `(vertical-border ((t (:background ,ample/darker-gray :foreground ,ample/darkest-gray))))
 
-   `(hl-line ((t (:background ,ample/darkest-gray))))
+   `(hl-line ((t (:background ,ample/darkerer-gray))))
 
    `(highlight-indentation-face ((t (:background ,ample/darkest-gray))))
 
@@ -591,12 +591,12 @@
    ;; whitespace mode
    `(whitespace-empty			((t (:foreground ,ample/gray :background "gray10"))))
    `(whitespace-hspace			((t (:foreground ,ample/gray :background "grey11"))))
-   `(whitespace-indentation		((t (:foreground ,ample/gray :background "gray12"))))
+   `(whitespace-indentation		((t (:foreground ,ample/gray :background "gray20"))))
    `(whitespace-line			((t (:foreground ,ample/purple :background nil))))
    `(whitespace-newline			((t (:foreground ,ample/gray :background nil))))
    `(whitespace-space			((t (:foreground ,ample/gray :background nil))))
-   `(whitespace-space-after-tab		((t (:foreground ,ample/gray :background "gray13"))))
-   `(whitespace-space-before-tab	((t (:foreground ,ample/gray :background "gray14"))))
+   `(whitespace-space-after-tab		((t (:foreground ,ample/gray :background "gray20"))))
+   `(whitespace-space-before-tab	((t (:foreground ,ample/gray :background "gray20"))))
    `(whitespace-tab			((t (:foreground ,ample/gray :background "grey15"))))
    `(whitespace-trailing		((t (:foreground ,ample/rb3 :background ,ample/dark-red :bold t))))
 

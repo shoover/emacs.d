@@ -58,9 +58,9 @@
               scroll-up-aggressively 0.25)
 (setq mouse-wheel-scroll-amount '(1 ((shift) . 1))) ; mouse wheel one line at a time
 
-(setq whitespace-global-modes '(c-mode csharp-mode clojure-mode emacs-lisp-mode ruby-mode)
-      whitespace-style '(face tabs spaces trailing lines indentation::space
-                              space-before-tab space-after-tab)
+(setq whitespace-global-modes '(c-mode csharp-mode clojure-mode emacs-lisp-mode
+                                       python-mode ruby-mode)
+      whitespace-style '(face trailing lines-tail space-before-tab)
       whitespace-line-column 91)
 (global-whitespace-mode 1)
 
@@ -221,8 +221,7 @@
 (define-key 'help-command (kbd "C-k") 'find-function-on-key)
 (define-key 'help-command (kbd "C-v") 'find-variable)
 
-; Shift+(left|right|up|down) to hop around windows quicker than with C-x o
-(windmove-default-keybindings)
+; Hop around windows a little quicker than with C-x o
 (global-set-key (kbd "M-o") 'other-window)
 
 ;; Change font size on the fly.
@@ -293,7 +292,9 @@
  '(rst-level-face-step-light 7)
  '(safe-local-variable-values
    (quote
-    ((eval setq default-directory
+    ((whitespace-line-column . 115)
+     (whitespace-line-column . 100)
+     (eval setq default-directory
            (locate-dominating-file buffer-file-name ".dir-locals.el")))))
  '(special-display-regexps (quote (".*SPEEDBAR.*")))
  '(tool-bar-mode nil)
@@ -311,7 +312,7 @@
   ;;(load-theme 'Shawn)
   ;;(load-theme 'fogus)
   (load-theme 'ample)
-  (load "themes/org-fancy.el")
+  (load "themes/org-fancy")
 
   (global-hl-line-mode t)
 
