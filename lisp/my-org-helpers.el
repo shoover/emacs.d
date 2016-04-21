@@ -199,20 +199,6 @@ directory using the org HTML publisher."
   (unless (file-exists-p dir)
     (error "Org dir %s does not exist" dir))
 
-(defun copy-org-link-at-point ()
-  (interactive)
-  (when (org-in-regexp org-bracket-link-regexp 1)
-    (let ((link (org-link-unescape (org-match-string-no-properties 1))))
-      (kill-new link)
-      (message "Copied link '%s' to the clipboard." link))))
-
-(defun read-org-agenda-file ()
-  "Completing-read for an org agenda file."
-  (let ((org-completion-use-ido t))
-    (org-icompleting-read "Org buffer: "
-                          (mapcar 'list (mapcar 'buffer-name (org-buffer-list 'agenda)))
-                          nil t)))
-
   (let* ((dir-exp (expand-file-name dir))
          (target (or target (concat dir-exp "/html")))
          (project-name (or project-name (file-name-nondirectory dir)))
@@ -231,10 +217,23 @@ directory using the org HTML publisher."
                                        :publishing-function org-publish-attachment))))
     (message "Publishing org dir: %s" dir-exp)
     (org-publish-project project-name
-                         ;t ; set to force publishing files the org cache thinks are ok
+                                        ;t ; set to force publishing files the org cache thinks are ok
                          ;;  ; even if they were deleted :-/
                          )))
 
+(defun copy-org-link-at-point ()
+  (interactive)
+  (when (org-in-regexp org-bracket-link-regexp 1)
+    (let ((link (org-link-unescape (org-match-string-no-properties 1))))
+      (kill-new link)
+      (message "Copied link '%s' to the clipboard." link))))
+
+(defun read-org-agenda-file ()
+  "Completing-read for an org agenda file."
+  (let ((org-completion-use-ido t))
+    (org-icompleting-read "Org buffer: "
+                          (mapcar 'list (mapcar 'buffer-name (org-buffer-list 'agenda)))
+                          nil t)))
 
 ;; org-capture frames, adapted from Lau's remember frames:
 ;; http://github.com/LauJensen/Configs/blob/master/emacs
