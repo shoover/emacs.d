@@ -381,3 +381,35 @@ tree can be found."
   (when (string-match "\\([0-9]+\\)\\:\\([0-9]+\\)" time)
     (+ (string-to-number (match-string 1 time))
        (/ (string-to-number (match-string 2 time)) 60.0))))
+
+(defun org-table-from-dough-table ()
+  "Converts tables copied and pasted from pizzamaking.com dough tools to org tables.
+
+http://www.pizzamaking.com/preferment-calculator.html"
+  (interactive)
+  (save-restriction
+    (org-narrow-to-subtree)
+    (outline-back-to-heading)
+
+    ;; There are already pipe separators between the different units
+    ;; on each line, so we just need to wrap pipes around the first
+    ;; and last columns.
+
+    ;; Example:
+
+    ;; Total Formula:
+    ;; Flour (100%): 	554.97 g  |  19.58 oz | 1.22 lbs
+    ;; Water (82%): 	455.08 g  |  16.05 oz | 1 lbs
+    ;; Salt (1.5%): 	8.32 g | 0.29 oz | 0.02 lbs | 1.49 tsp | 0.5 tbsp
+    ;; IDY (0.194%): 	1.08 g | 0.04 oz | 0 lbs | 0.36 tsp | 0.12 tbsp
+    ;; Oil (1%): 	5.55 g | 0.2 oz | 0.01 lbs | 1.23 tsp | 0.41 tbsp
+    ;; Total (184.694%):	1025 g | 36.16 oz | 2.26 lbs | TF = N/A
+    ;; Single Ball:	256.25 g | 9.04 oz | 0.56 lbs
+
+    ;; HEADER: SPC MEASURES SPC EOL
+    (replace-regexp "^\\([[:alnum:]()% .]+\\):[[:space:]]+\\([[:alnum:] =/.|]+\\) $" "|\\1|\\2|")
+    ;; Go back and cycle each table so the columns are aligned.
+    ;; org-export won't work on an unaligned table.
+    (outline-back-to-heading)
+    (while (re-search-forward "^|")
+      (org-cycle))))
