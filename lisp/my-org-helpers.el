@@ -189,7 +189,7 @@ directory using the org HTML publisher."
   (interactive
    (let* ((dir (ido-read-directory-name "Source dir: "))
           (target (ido-read-directory-name "HTML dir: "
-                                           (concat dir "/html")))
+                                           (concat dir "/publish")))
           ;; strip trailing slash and get the last path part
           (project-name (file-name-nondirectory (directory-file-name dir)))
           (project-name (read-string (format "Project name [%s]: " project-name)
@@ -200,7 +200,7 @@ directory using the org HTML publisher."
     (error "Org dir %s does not exist" dir))
 
   (let* ((dir-exp (expand-file-name dir))
-         (target (or target (concat dir-exp "/html")))
+         (target (or target (concat dir-exp "/publish")))
          (project-name (or project-name (file-name-nondirectory dir)))
          (org-publish-project-alist `((,project-name
                                        :components ("orgfiles" "css"))
@@ -208,18 +208,27 @@ directory using the org HTML publisher."
                                        :base-directory ,dir-exp
                                        :publishing-directory ,target
                                        :publishing-function org-html-publish-to-html
-                                       :auto-sitemap nil ; quieter logs
-                                       :make-index t)
+                                       :auto-sitemap t ; nil for
+                                                       ; quieter logs,
+                                                       ; but then
+                                                       ; cross-file
+                                                       ; links don't
+                                                       ; work
+                                       :make-index t
+                                       )
                                       ("css"
                                        :base-directory ,dir-exp
                                        :base-extension "css"
                                        :publishing-directory ,target
-                                       :publishing-function org-publish-attachment))))
+                                       :publishing-function org-publish-attachment)))
+         ;; bypass coding system prompt for publish cache if some headlines have unicode
+         (default-buffer-file-coding-system 'prefer-utf-8)
+
+         ;; set to force publishing files the org cache thinks are ok
+         ;; even if they were deleted :-/
+         (force t))
     (message "Publishing org dir: %s" dir-exp)
-    (org-publish-project project-name
-                                        ;t ; set to force publishing files the org cache thinks are ok
-                         ;;  ; even if they were deleted :-/
-                         )))
+    (org-publish-project project-name force)))
 
 (defun copy-org-link-at-point ()
   (interactive)
