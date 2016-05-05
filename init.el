@@ -44,7 +44,8 @@
  indent-tabs-mode nil
  tab-width 4
  c-basic-offset 4
- tab-always-indent t)
+ tab-always-indent t
+ ruby-indent-level 4)
 
 ;; Guess indentation style, when activated in language mode hooks. LISP
 (autoload 'guess-style-guess-all "guess-style" nil t)
