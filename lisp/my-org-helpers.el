@@ -372,20 +372,40 @@ tree can be found."
   (save-restriction
     (let* ((year-re "^\\*+[ \t]+\\([12][0-9]\\{3\\}\\)\\(\\s-*?\\([ \t]:[[:alnum:]:_@#%]+:\\)?\\s-*$\\)")
            (prop (or
-                  ;; locate the DATE_TREE property if there is one
-                  (org-find-property "DATE_TREE")
+                  ;; Check for a DATE_TREE property in the current
+                  ;; subtree. This is scoped so it doesn't trigger on
+                  ;; any old datetree at the beginning of the buffer.
+                  (save-restriction
+                    (save-excursion
+                      (outline-back-to-heading)
+                      (org-narrow-to-subtree)
+                      (org-find-property "DATE_TREE")))
 
                   ;; next check for a year heading under the current subtree
                   (when (save-restriction
                           (org-narrow-to-subtree)
                           (search-forward-regexp year-re nil t))
-                    (outline-up-heading 1)
+                    (when (> (funcall outline-level) 1)
+                      (outline-up-heading 1))
                     (point))
 
                   ;; next search back from point for a year heading
                   (when (search-backward-regexp year-re nil t)
-                    (outline-up-heading 1)
-                    (point)))))
+                    (when (> (funcall outline-level) 1)
+                      (outline-up-heading 1))
+                    (point))
+
+                  ;; Recurse up the tree looking for DATE_TREE properties.
+                  ;; (save-restriction
+                  ;;   (save-excursion
+                  ;;     (catch 'exit
+                  ;;       (while (outline-up-heading 1)
+                  ;;         (save-restriction
+                  ;;           (org-narrow-to-subtree)
+                  ;;           (let ((found (org-find-property "DATE_TREE")))
+                  ;;             (when found
+                  ;;               (throw 'exit found))))))))
+)))
       (when prop
         (goto-char prop)
         (org-set-local 'org-datetree-base-level
@@ -413,7 +433,8 @@ tree can be found."
        (/ (string-to-number (match-string 2 time)) 60.0))))
 
 (defun org-table-from-dough-table ()
-  "Converts tables copied and pasted from pizzamaking.com dough tools to org tables.
+  "Converts tables copied and pasted from pizzamaking.com dough
+tools to org tables. Works in the current subtree.
 
 http://www.pizzamaking.com/preferment-calculator.html"
   (interactive)
@@ -438,6 +459,7 @@ http://www.pizzamaking.com/preferment-calculator.html"
 
     ;; HEADER: SPC MEASURES SPC EOL
     (replace-regexp "^\\([[:alnum:]()% .]+\\):[[:space:]]+\\([[:alnum:] =/.|]+\\) $" "|\\1|\\2|")
+
     ;; Go back and cycle each table so the columns are aligned.
     ;; org-export won't work on an unaligned table.
     (outline-back-to-heading)
