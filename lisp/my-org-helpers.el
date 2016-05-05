@@ -249,12 +249,27 @@ directory using the org HTML publisher."
 (defun capture-frame-p ()
   (equal "*Capture*" (frame-parameter nil 'name)))
 
-;; Automatic closing of capture frames
+;; Automatic closing of capture frames.
 (add-hook 'org-capture-after-finalize-hook
-          (lambda ()
-            (when (and (frame-live-p (selected-frame))
-                       (capture-frame-p))
-              (delete-frame))))
+          'my-org-capture-after-finalize-hook)
+(add-hook 'org-after-refile-insert-hook
+          'my-org-after-refile-insert-hook)
+
+(defun my-org-capture-after-finalize-hook ()
+  (when (and (frame-live-p (selected-frame))
+             (capture-frame-p)
+
+             ;; Don't delete the frame yet if we finalized as part of
+             ;; refiling. Refile is not done yet and has to be handled
+             ;; separately.
+             (not (and (boundp 'org-refile-for-capture)
+                       org-refile-for-capture)))
+    (delete-frame)))
+
+(defun my-org-after-refile-insert-hook ()
+  (when (and (frame-live-p (selected-frame))
+             (capture-frame-p))
+    (delete-frame)))
 
 (defun make-capture-frame ()
   "Makes a frame with dialog-like properties and the name
@@ -271,13 +286,16 @@ directory using the org HTML publisher."
   "Opens a new capture frame and invokes BODY. This also hacks
 org-mode variables to make sure org capture template selection
 doesn't divide the frame into a new window; since we're already
-making a dedicated frame, we want one full window in the frame."
+making a dedicated frame, we want one full window in the frame.
+
+Returns with the capture frame ready for entry, i.e. not entered
+and finalized."
   `(progn
      (let ((capture-frame (make-capture-frame)))
-       ;; Capture template selection uses org-mks, which insists on using a
-       ;; separate window to pick the template. This looks weird when we
-       ;; already are making a dedicated frame, so hack it to use the same
-       ;; window.
+       ;; Capture template selection uses org-mks, which insists on
+       ;; using a separate window to pick the template. That looks
+       ;; weird when we already are making a dedicated frame, so hack
+       ;; it to use one window.
        (letf (((symbol-function 'org-switch-to-buffer-other-window)
                (symbol-function 'switch-to-buffer)))
          ,@body))))
@@ -288,7 +306,10 @@ commands, desktop shortcuts, scripts, etc. For example: \"emacsclientw
 -e (my-org-capture-new-frame)\". This ensures that template
 selection is presented in the new frame; using org-capture-hook
 instead would result in the template selection prompt being
-buried in the existing frame."
+buried in the existing frame.
+
+Returns with the capture frame ready for entry, i.e. not entered
+and finalized."
   (interactive)
   (with-capture-frame
    (org-capture)))
