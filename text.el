@@ -147,6 +147,17 @@ the mark is not active."
     (insert "<br><br>")
     (forward-char)))
 
+(defun fill-paragraph-forward ()
+  "Like `fill-paragraph' but only marks forward from the current
+line, not backward to get the whole paragraph. This provides a
+quick way to preserve a preceding line break (but no blank line)
+and fill the rest of the paragraph."
+  (interactive)
+  (beginning-of-line)
+  (let ((beg (point)))
+    (forward-paragraph)
+    (fill-region beg (point))))
+
 ;;; From http://www.emacswiki.org/emacs/basic-edit-toolkit.el
 (defun move-text-internal (arg)
   "Move region (transient-mark-mode active) or current line."

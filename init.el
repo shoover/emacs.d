@@ -194,6 +194,8 @@
 (global-set-key "\M-t" 'transpose-chars)
 (global-set-key "\M-T" 'transpose-words)
 
+(global-set-key "\M-Q" 'fill-paragraph-forward)
+
 (global-set-key [C-tab] 'next-previous-buffer)
 (global-set-key "\M-`" 'other-frame)
 
