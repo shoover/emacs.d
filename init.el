@@ -291,6 +291,9 @@
  '(ns-alternate-modifier (quote alt))
  '(ns-tool-bar-display-mode (quote both) t)
  '(ns-tool-bar-size-mode nil t)
+ '(package-selected-packages
+   (quote
+    (yasnippet yaml-mode twitter swank-clojure ruby-mode project-local-variables project powershell paredit org-plus-contrib org-bullets markdown-mode lua-mode imenu-anywhere htmlize git-rebase-mode git-commit-mode fsharp-mode flymake flycheck find-file-in-project expand-region erc edit-server-htmlize cider ac-inf-ruby)))
  '(rst-level-face-base-light 20)
  '(rst-level-face-step-light 7)
  '(safe-local-variable-values
@@ -299,14 +302,14 @@
      (whitespace-line-column . 100)
      (eval setq default-directory
            (locate-dominating-file buffer-file-name ".dir-locals.el")))))
+ '(select-enable-clipboard t)
  '(special-display-regexps (quote (".*SPEEDBAR.*")))
  '(tool-bar-mode nil)
  '(user-full-name "Shawn Hoover")
  '(user-mail-address "shawn.hoover@gmail.com")
  '(visual-line-mode nil t)
  '(visual-scroll-margin 0)
- '(w32shell-cygwin-bin "C:\\bin")
- '(x-select-enable-clipboard t))
+ '(w32shell-cygwin-bin "C:\\bin"))
 
 ;; Subtle face for parens in lisp modes
 (require 'parenface) ; LISP
