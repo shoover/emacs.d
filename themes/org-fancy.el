@@ -1,8 +1,6 @@
 ;; fancy org faces
 ;; tweaked from http://www.howardism.org/Technical/Emacs/orgmode-wordprocessor.html
 
-(setq org-hide-emphasis-markers t)
-
 ;; fancy list bullets
 (font-lock-add-keywords 'org-mode
                         '(("^ +\\([*]\\) " ; asterisks need a space first to skip headings
@@ -20,9 +18,9 @@
 (let* ((variable-tuple (cond
                         ((x-list-fonts "Calibri")         '(:font "Calibri"))
                         ((x-list-fonts "Verdana")         '(:font "Verdana"))
-                        ((x-list-fonts "InputSans") '(:font "InputSans Bold"))
-                        ((x-list-fonts "Source Sans Pro") '(:font "Source Sans Pro"))
                         ((x-list-fonts "Lucida Grande")   '(:font "Lucida Grande"))
+                        ((x-list-fonts "Source Sans Pro") '(:font "Source Sans Pro"))
+                        ((x-list-fonts "InputSans") '(:font "InputSans Bold"))
                         ((x-family-fonts "Sans Serif")    '(:family "Sans Serif"))
                         (nil (warn "Cannot find a Sans Serif Font.  Install Source Sans Pro."))))
        (base-font-color    (face-foreground 'default nil 'default))
@@ -31,14 +29,14 @@
                                       :underline nil)))
 
   (custom-theme-set-faces 'user
-                          `(org-level-8 ((t (,@headline ,@variable-tuple :height 1.25))))
-                          `(org-level-7 ((t (,@headline ,@variable-tuple :height 1.25))))
-                          `(org-level-6 ((t (,@headline ,@variable-tuple :height 1.25))))
-                          `(org-level-5 ((t (,@headline ,@variable-tuple :height 1.3 :slant italic))))
-                          `(org-level-4 ((t (,@headline ,@variable-tuple :height 1.3 :slant italic))))
+                          `(org-level-8 ((t (,@headline ,@variable-tuple :height 1.4))))
+                          `(org-level-7 ((t (,@headline ,@variable-tuple :height 1.4))))
+                          `(org-level-6 ((t (,@headline ,@variable-tuple :height 1.4))))
+                          `(org-level-5 ((t (,@headline ,@variable-tuple :height 1.4 :slant italic))))
+                          `(org-level-4 ((t (,@headline ,@variable-tuple :height 1.4 :slant italic))))
                           `(org-level-3 ((t (,@headline ,@variable-tuple :height 1.4 :slant italic))))
                           `(org-level-2 ((t (,@headline ,@variable-tuple :height 1.5 :slant italic))))
-                          `(org-level-1 ((t (,@headline ,@variable-tuple :height 1.6))))
+                          `(org-level-1 ((t (,@headline ,@variable-tuple :height 1.5))))
                           `(org-document-title ((t (,@headline ,@variable-tuple :height 1.6 :underline nil))))))
 
 ;; justified tags look terrible with the variable-width heading font,
