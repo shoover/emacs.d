@@ -446,6 +446,14 @@ Uses async-shell-command if a prefix arg is given."
                            (buffer-substring (region-beginning) (region-end))
                          (read-string "Google: "))))))
 
+;; http://emacs.stackexchange.com/a/12614
+(defun capitalize-first-char-x (&optional string)
+  "Capitalize only the first character of the input STRING."
+  (when (and string (> (length string) 0))
+    (let ((first-char (substring string nil 1))
+          (rest-str   (substring string 1)))
+      (concat (capitalize first-char) rest-str))))
+
 (defun save-compile-project ()
   "Saves modified files under the project root (without asking)
 and recompiles. The project root is determined using
@@ -462,7 +470,7 @@ and recompiles. The project root is determined using
                                               (string-prefix-p dir (buffer-file-name))))
 
         ;;
-        (default-directory (capitalize (expand-file-name default-directory)))
+        (default-directory (capitalize-first-char-x (expand-file-name default-directory)))
         (compilation-directory default-directory)
 
         )
