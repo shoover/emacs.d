@@ -314,23 +314,27 @@ and finalized."
   (with-capture-frame
    (org-capture)))
 
-;; If this stops inserting at the right level, check org-capture-place-entry for
-;; http://orgmode.org/w/?p=org-mode.git;a=commitdiff;h=f1583aab467fff999f25eff6a03e771d11139a93
-;; Somehow that patch didn't make it into 8.2.10 even though it's ancient. Hopefully
-;; someday.
 (defun org-datetree-find-date-create-month-x (&optional date)
-  "Find or create a datetree entry for DATE's year and month. DATE defaults to today."
+  "Find or create a datetree entry for DATE's year and month.
+This is useful when you don't want a heading level for the day,
+only for the year and month, as in a workout log that has a table
+for the whole month. DATE defaults to today."
   (require 'org-datetree)
   (let* ((date (or date (calendar-gregorian-from-absolute (org-today))))
          (year (nth 2 date))
          (month (car date))
          (day (nth 1 date)))
-    (org-set-local 'org-datetree-base-level 1) ; needed to get the buffer to widen right
+    (setq-local org-datetree-base-level 1) ; needed to get the buffer to widen right
     (widen)
     (save-restriction
       (goto-char (point-min))
-      (org-datetree-find-year-create year)
-      (org-datetree-find-month-create year month)
+      (org-datetree--find-create
+       "^\\*+[ \t]+\\([12][0-9]\\{3\\}\\)\\(\\s-*?\
+\\([ \t]:[[:alnum:]:_@#%%]+:\\)?\\s-*$\\)"
+       year)
+      (org-datetree--find-create
+       "^\\*+[ \t]+%d-\\([01][0-9]\\) \\w+$"
+       year month)
       (goto-char (prog1 (point) (widen))))))
 
 (defun org-datetree-find-create-here-x (&optional date)
