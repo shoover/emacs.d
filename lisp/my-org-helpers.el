@@ -12,12 +12,15 @@ archives."
 
 (defun org-promote-subtree-x (&optional n)
   "Cut the current subtree and paste it one heading level up.
-With prefix arg N, cut this many sequential subtrees."
+With prefix arg N, cut this many sequential subtrees.
+
+There is a built in `org-promote-subtree', but this cut/paste
+style works more intuitively with respect to the parent level and
+siblings."
   (interactive)
-  (save-excursion
-    (org-cut-subtree n)
-    (outline-up-heading 1)
-    (org-paste-subtree))
+  (org-cut-subtree n)
+  (outline-up-heading 1)
+  (org-paste-subtree)
 
   ;; Workaround so repeated calls don't append to the previous promoted text
   ;; and paste duplicate info. org-cut-subtree leaves last-command set to

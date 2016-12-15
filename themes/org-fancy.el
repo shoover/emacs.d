@@ -35,8 +35,8 @@
                           `(org-level-5 ((t (,@headline ,@variable-tuple :height 1.4 :slant italic))))
                           `(org-level-4 ((t (,@headline ,@variable-tuple :height 1.4 :slant italic))))
                           `(org-level-3 ((t (,@headline ,@variable-tuple :height 1.4 :slant italic))))
-                          `(org-level-2 ((t (,@headline ,@variable-tuple :height 1.5 :slant italic))))
-                          `(org-level-1 ((t (,@headline ,@variable-tuple :height 1.5))))
+                          `(org-level-2 ((t (,@headline ,@variable-tuple :height 1.4 :slant italic))))
+                          `(org-level-1 ((t (,@headline ,@variable-tuple :height 1.45))))
                           `(org-document-title ((t (,@headline ,@variable-tuple :height 1.6 :underline nil))))))
 
 ;; justified tags look terrible with the variable-width heading font,
