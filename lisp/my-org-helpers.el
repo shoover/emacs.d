@@ -340,41 +340,21 @@ for the whole month. DATE defaults to today."
        year month)
       (goto-char (prog1 (point) (widen))))))
 
-(defun org-datetree-find-create-here-x (&optional date)
-  "Add a datetree entry in the current buffer. DATE is optional
-and defaults to today.
-
-The datetree year level defaults to 1. If the property DATE_TREE
-is found (any value) in the current subtree, then that subtree
-defines the level."
-  (interactive)
-  (require 'org-datetree)
-  (let ((date (or date
-                  (calendar-gregorian-from-absolute (org-today)))))
-    (org-datetree-find-date-create date t))
-
-  ;; Insert a line to start an entry if the current datetree
-  ;; entry is empty.
-  (end-of-line)
-  (if (looking-at "\n\\*")
-      (newline)
-    (forward-char)))
-
 (defun org-datetree-find-create-here-x (&optional date keep-restriction)
   "Find or create an entry for DATE, which defaults to today.
 
-This is mostly cribbed from `org-datetree-find-date-create', with
-the main addition being if there is no DATE_TREE property to set
-the level of the tree, the current subtree is also searched
-forward and backward for a year heading.
+This is cribbed from `org-datetree-find-date-create', with the
+main change being if there is no DATE_TREE property to set the
+level of the tree, the current subtree is also searched forward
+and backward for a year heading.
 
-If KEEP-RESTRICTION is non-nil, do not widen the buffer.
-When it is nil, the buffer will be widened to make sure an existing date
+If KEEP-RESTRICTION is non-nil, do not widen the buffer. When it
+is nil, the buffer will be widened to make sure an existing date
 tree can be found."
   (interactive)
   (require 'org-datetree)
   (setq date (or date (calendar-gregorian-from-absolute (org-today))))
-  (org-set-local 'org-datetree-base-level 1)
+  (setq-local org-datetree-base-level 1)
   (or keep-restriction (widen))
   (save-restriction
     (let* ((year-re "^\\*+[ \t]+\\([12][0-9]\\{3\\}\\)\\(\\s-*?\\([ \t]:[[:alnum:]:_@#%]+:\\)?\\s-*$\\)")
@@ -415,17 +395,24 @@ tree can be found."
 )))
       (when prop
         (goto-char prop)
-        (org-set-local 'org-datetree-base-level
-                       (org-get-valid-level (org-current-level) 1))
+        (setq-local org-datetree-base-level
+                    (org-get-valid-level (org-current-level) 1))
         (org-narrow-to-subtree)))
     (goto-char (point-min))
     (message "searching from %s" (point))
     (let ((year (nth 2 date))
           (month (car date))
           (day (nth 1 date)))
-      (org-datetree-find-year-create year)
-      (org-datetree-find-month-create year month)
-      (org-datetree-find-day-create year month day))
+      (org-datetree--find-create
+       "^\\*+[ \t]+\\([12][0-9]\\{3\\}\\)\\(\\s-*?\
+\\([ \t]:[[:alnum:]:_@#%%]+:\\)?\\s-*$\\)"
+       year)
+      (org-datetree--find-create
+       "^\\*+[ \t]+%d-\\([01][0-9]\\) \\w+$"
+       year month)
+      (org-datetree--find-create
+       "^\\*+[ \t]+%d-%02d-\\([0123][0-9]\\) \\w+$"
+       year month day))
     (end-of-line))
   (or keep-restriction (save-excursion
                          (org-show-entry)
