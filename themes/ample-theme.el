@@ -488,7 +488,7 @@
    ;;`(org-sexp-date ((t (:foreground nil :background nil))))
    ;;`(org-special-keyword ((t (:foreground nil :background nil))))
    ;;`(org-table ((t (:foreground nil :background nil))))
-   ;;`(org-tag ((t (:foreground nil :background nil))))
+   `(org-tag ((t (:foreground ,ample/green :background nil :slant italic))))
    ;;`(org-target ((t (:foreground nil :background nil))))
    ;;`(org-time-grid ((t (:foreground nil :background nil))))
    ;;`(org-upcoming-deadline ((t (:foreground nil :background nil))))
