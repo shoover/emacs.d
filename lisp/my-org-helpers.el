@@ -265,8 +265,8 @@ directory using the org HTML publisher."
              ;; Don't delete the frame yet if we finalized as part of
              ;; refiling. Refile is not done yet and has to be handled
              ;; separately.
-             (not (and (boundp 'org-refile-for-capture)
-                       org-refile-for-capture)))
+             (not (and (boundp 'org-capture-is-refiling)
+                       org-capture-is-refiling)))
     (delete-frame)))
 
 (defun my-org-after-refile-insert-hook ()
