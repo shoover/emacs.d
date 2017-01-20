@@ -462,7 +462,7 @@ and recompiles. The project root is determined using
   ;; without asking and give it a predicate to ignore files outside the
   ;; project directory. (Another way would be to set `buffer-save-without-query'
   ;; in all relevant source file mode hooks.)
-  (let ((dir (ffip-get-project-root-directory))
+  (let ((dir (expand-file-name (ffip-get-project-root-directory)))
         (compilation-ask-about-save nil)
         (compilation-save-buffers-predicate (lambda ()
                                               (string-prefix-p dir (buffer-file-name))))
