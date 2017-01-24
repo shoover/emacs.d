@@ -63,13 +63,6 @@
   (lisp-eval-region (point) (mark) nil)
   (jump-to-register 5))
 
-(defun slime-clojure-jar (clojure-jar)
-  "Set up the classpath with a custom clojure jar."
-  (interactive (list (read-string "Clojure jar:")))
-  ;; (setq swank-clojure-classpath (swank-clojure-default-classpath))
-  (let ((swank-clojure-classpath (cons clojure-jar
-                                       (swank-clojure-default-classpath))))
-    (slime)))
 
 ;; dired sorting hooks
 (add-hook 'dired-mode-hook
