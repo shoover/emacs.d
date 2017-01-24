@@ -167,6 +167,9 @@ With argument, positions cursor at end of buffer."
 ;; Make
 (setq compile-command "make ")
 
+;; markdown
+(setq markdown-command "pandoc")
+
 ;; msbuild
 (add-to-list 'auto-mode-alist '("\\.targets$" . nxml-mode))
 
