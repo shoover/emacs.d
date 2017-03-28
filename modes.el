@@ -51,9 +51,6 @@
             (add-to-list 'comint-output-filter-functions
                          'comint-truncate-buffer)
             (setq comint-buffer-maximum-size 5000)))
-(require 'ac-slime) ; LISP
-(add-hook 'slime-mode-hook 'set-up-slime-ac)
-(add-hook 'slime-repl-mode-hook 'set-up-slime-ac)
 
 ;; From nakkaya.com
 (defun lisp-load-buffer-x ()

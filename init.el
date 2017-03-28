@@ -267,30 +267,17 @@
  '(aquamacs-tool-bar-user-customization nil t)
  '(c-doc-comment-style (quote set-from-style))
  '(column-number-mode t)
- '(completion-ignored-extensions
-   (quote
-    (".obj" ".pdb" ".svn/" "CVS/" ".o" "~" ".bin" ".bak" ".obj" ".map" ".ico" ".pif" ".lnk" ".a" ".ln" ".blg" ".bbl" ".dll" ".drv" ".vxd" ".386" ".elc" ".lof" ".glo" ".idx" ".lot" ".fmt" ".tfm" ".class" ".fas" ".lib" ".mem" ".x86f" ".sparcf" ".fasl" ".ufsl" ".fsl" ".dxl" ".pfsl" ".dfsl" ".p64fsl" ".d64fsl" ".dx64fsl" ".lo" ".la" ".gmo" ".mo" ".toc" ".aux" ".cp" ".fn" ".ky" ".pg" ".tp" ".vr" ".cps" ".fns" ".kys" ".pgs" ".tps" ".vrs" ".pyc" ".pyo")))
- '(custom-safe-themes
-   (quote
-    ("9637e95d9e5eb4ea08a4e8ff689356846823bed09f779d188a46c306f69578b0" "4ae3ff20e8c67f6e592ca519a3fcd0245efd60f06bcfbf20f5d640556e7cbf6a" "ef40753cab2d72d4e6a58935e31e50e459b3d8d8d4af1ab44b7e85fb21a75603" "c3d2ba95aa0b113cae54270a18b971bda31262470cc4ae516687cf08360d5e47" "2ce2b0917177236c5af530e08354de4d98004fae5900fd06acc8512cffdd5368" "12d8cb25243aae3137aeebab95119638450eb0de0aed0bca7b55882564d142ef" "edbe2d6a820433a4b4179fecd92dcae318c82d0a60b470e55ab1d48bd56bb8c9" "4f6cb6a7675c0c9931235ad2d60ba820ddf83d9b2754aad04c2ef7c3d0776942" "1d245dd8c1422d8395c85b0d78f6380aad6e97a24da2cbf3d1491ad57ed4ea5d" "6a985479364fbdc04e63fa1d96d0d86b9281e94a100e1b60f795ec53096b6063" "716bb0758bc6ceee435d3efe38fdde8c1252fb6bf51004159229eb2d9a2fc4de" "0e3f7fae39f57a1c49850be1614a285d2ae9c827d9e42ec6f4e48b3ec2a690b6" "d823c26445ba9e5a6a6e28a7a58da756566cfbd6a5737d56f3345b8204e346df" "c8f583441df726c20a7b40a47be63c6a4e6a496783cafdd7f21520b66a7308b7" "1218df7ba75a7d9d51199866d9d7bf1861e54122863366cf097c4cae9c2a625c" "47372e349f9fee5ce5350c03358628f36ccfc25e7a4e73d1a0473511d295c2f8" default)))
+ '(completion-ignored-extensions (quote (".386" ".a" ".aux" ".bak" ".bbl" ".bin" ".blg" ".class" ".cp" ".cps" ".d64fsl" ".dfsl" ".dll" ".drv" ".dx64fsl" ".dxl" ".elc" ".fas" ".fasl" ".fmt" ".fn" ".fns" ".fsl" ".glo" ".gmo" ".ico" ".idx" ".ky" ".kys" ".la" ".lib" ".ln" ".lnk" ".lo" ".lof" ".lot" ".map" ".mem" ".mo" ".o" ".obj" ".p64fsl" ".pdb" ".pfsl" ".pg" ".pgs" ".pif" ".pyc" ".pyo" ".sparcf" ".svn/" ".tfm" ".toc" ".tp" ".tps" ".ufsl" ".vr" ".vrs" ".vxd" ".x86f" "CVS/" "~")))
+ '(custom-safe-themes (quote ()))
  '(default-frame-alist (quote ((width . 95) (height . 55))))
  '(hg-outgoing-repository "")
  '(ns-alternate-modifier (quote alt))
  '(ns-tool-bar-display-mode (quote both) t)
  '(ns-tool-bar-size-mode nil t)
- '(package-selected-packages
-   (quote
-    (yasnippet yaml-mode ruby-mode project-local-variables project powershell paredit org-plus-contrib org-bullets markdown-mode lua-mode imenu-anywhere htmlize git-rebase-mode git-commit-mode fsharp-mode flymake flycheck find-file-in-project expand-region erc edit-server-htmlize ac-inf-ruby)))
+ '(package-selected-packages (quote (yasnippet yaml-mode ruby-mode project-local-variables project powershell paredit org-plus-contrib org-bullets markdown-mode lua-mode imenu-anywhere htmlize git-rebase-mode git-commit-mode fsharp-mode flymake flycheck find-file-in-project expand-region erc edit-server-htmlize ac-inf-ruby)))
  '(rst-level-face-base-light 20)
  '(rst-level-face-step-light 7)
- '(safe-local-variable-values
-   (quote
-    ((lua-default-command-switches "." "--headless")
-     (lua-default-application . "love")
-     (whitespace-line-column . 115)
-     (whitespace-line-column . 100)
-     (eval setq default-directory
-           (locate-dominating-file buffer-file-name ".dir-locals.el")))))
+ '(safe-local-variable-values (quote ((lua-default-command-switches "." "--headless") (lua-default-application . "love") (whitespace-line-column . 115) (whitespace-line-column . 100) (eval setq default-directory (locate-dominating-file buffer-file-name ".dir-locals.el")))))
  '(select-enable-clipboard t)
  '(special-display-regexps (quote (".*SPEEDBAR.*")))
  '(tool-bar-mode nil)
