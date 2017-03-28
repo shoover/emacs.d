@@ -353,7 +353,7 @@ With argument, positions cursor at end of buffer."
         ;; Update HKEY_CLASSES_ROOT\org-protocol\shell\open\command.
         ("c" "org-protocol capture"
          entry (file read-org-agenda-file)
-         "* %?%c\n%i\n%U" :prepend t)
+         "* %?%c\n%i" :prepend t)
 
         ("N" "org-protocol Notes capture"
          entry (file+datetree my-notes-org)
