@@ -39,6 +39,14 @@
 (defun my-calc-mode-hook ()
   (define-key calc-mode-map [C-backspace] 'calc-reset))
 
+(add-hook 'calc-start-hook 'my-calc-start-hook)
+(defun my-calc-start-hook ()
+  ;; Prevent server buffers from popping up in little calc windows.
+  (when-let ((calc (get-buffer-window calc-main-buffer)))
+    (set-window-dedicated-p calc t))
+  (when-let ((trail (get-buffer-window calc-trail-buffer)))
+    (set-window-dedicated-p trail t)))
+
 ;; Clojure
 (add-hook 'clojure-mode-hook 'lisp-enable-paredit-hook)
 (add-hook 'clojure-mode-hook
