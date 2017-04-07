@@ -42,10 +42,9 @@
 (add-hook 'calc-start-hook 'my-calc-start-hook)
 (defun my-calc-start-hook ()
   ;; Prevent server buffers from popping up in little calc windows.
-  (when-let ((calc (get-buffer-window calc-main-buffer)))
-    (set-window-dedicated-p calc t))
-  (when-let ((trail (get-buffer-window calc-trail-buffer)))
-    (set-window-dedicated-p trail t)))
+  (dolist (buf (list calc-main-buffer calc-trail-buffer))
+    (when-let ((win (get-buffer-window buf)))
+      (set-window-dedicated-p win t))))
 
 ;; Clojure
 (add-hook 'clojure-mode-hook 'lisp-enable-paredit-hook)
