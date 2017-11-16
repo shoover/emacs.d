@@ -33,6 +33,7 @@
 
                   csharp-mode
                   edit-server
+                  editorconfig
                   expand-region
                   find-file-in-project
                   htmlize
