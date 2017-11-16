@@ -372,8 +372,8 @@ file name to the kill ring instead."
                                         (buffer-file-name))
                                        new-name)
                    (expand-file-name new-name)))
-  ;; If the file isn't saved yet, skip the file rename, but still update the
-  ;; buffer name and visited file.
+  ;; Only rename if the file was saved before. Update the
+  ;; buffer name and visited file in all cases.
   (if (file-exists-p (buffer-file-name))
       (rename-file (buffer-file-name) new-name 1))
   (let ((was-modified (buffer-modified-p)))
@@ -382,8 +382,11 @@ file name to the kill ring instead."
     (if was-modified
         (save-buffer)
       ;; Clear buffer-modified flag caused by set-visited-file-name
-      (set-buffer-modified-p nil))
-    (message "Renamed to %s." new-name)))
+      (set-buffer-modified-p nil)))
+
+  (setq default-directory (file-name-directory new-name))
+
+  (message "Renamed to %s." new-name))
 
 ;; http://emacsredux.com/blog/2013/04/03/delete-file-and-buffer/
 (defun delete-file-and-buffer ()
