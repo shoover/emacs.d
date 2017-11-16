@@ -37,6 +37,8 @@
 (defvar my-work-org (concat org-directory "/work.org"))
 (defvar my-notes-org (concat org-directory "/notes.org"))
 
+(defvar my-dev-dir "~/dev")
+
 ;;; Settings
 
 ;; Tab defaults: 4 spaces

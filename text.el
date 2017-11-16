@@ -64,6 +64,12 @@ line instead."
   (interactive)
   (find-file my-work-org))
 
+(defun dev ()
+  "Find my dev directory"
+  (interactive)
+  (let ((default-directory my-dev-dir))
+    (ido-find-file)))
+
 (defun banjo ()
   "Find my work org file"
   (interactive)
