@@ -233,7 +233,11 @@ With argument, positions cursor at end of buffer."
            ((org-use-tag-inheritance nil)))
           ("p" "Project list, current buffer"
            tags-tree "prj"
-           ((org-use-tag-inheritance nil)))))
+           ((org-use-tag-inheritance nil)))
+          ("w" "Work-in-progress"
+           tags "WIP"
+           ((org-use-tag-inheritance nil)))
+          ))
   (setq org-refile-targets '((org-agenda-files :maxlevel . 2))
         org-refile-use-outline-path 'file
         org-refile-allow-creating-parent-nodes 'confirm)
