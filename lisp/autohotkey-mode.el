@@ -15,7 +15,7 @@
 
 (define-generic-mode 'autohotkey-mode
   '(";" ("/*" . "*/"))            ; comment char
-  '("catch" "class" "else" "finally" "for" "if" "in" "return" "try") ; keywords
+  '("catch" "class" "else" "finally" "for" "if" "in" "return" "throw" "try") ; keywords
 
   ; other highlighting
   `((,(regexp-opt '("::" ":=" ".=" "=")) . 'font-lock-keyword-face)
@@ -36,6 +36,7 @@
        '("ClipWait"
          "GroupActivate" "GroupAdd"
          "IfInString"
+         "InputBox"
          "IsFunc"
          "IfWinExist"
          "\\bInput\\b"
@@ -43,6 +44,7 @@
          "ListVars"
          "MsgBox"
          "Pause"
+         "RegExMatch" "RegExReplace"
          "Run"
          "Send"
          "SendEvent"
@@ -54,7 +56,8 @@
          "Sleep"
          "StringLower" "StringReplace" "StringTrimRight" "StringUpper"
          "Suspend"
-         "WinActive" "WinClose" "WinHide" "WinMinimize" "WinShow"))
+         "WinActive" "WinActivate" "WinClose" "WinGetClass" "WinHide" "WinMinimize"
+         "WinShow" "WinWait"))
      . 'font-lock-function-name-face)   ; builtin commands
     )
 
