@@ -46,6 +46,9 @@
     (when-let ((win (get-buffer-window buf)))
       (set-window-dedicated-p win t))))
 
+;; Changelog. I don't use it.
+(rassq-delete-all 'change-log-mode auto-mode-alist)
+
 ;; Clojure
 (add-hook 'clojure-mode-hook 'lisp-enable-paredit-hook)
 (add-hook 'clojure-mode-hook
