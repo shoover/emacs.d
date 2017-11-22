@@ -10,7 +10,7 @@
   ;; would bootstrap ELPA from the source, tromey.com, but that sucks,
   ;; because that version of package.el doesn't support multiple archives
   ;; even in 2012. old/package.el is from http://bit.ly/pkg-el23, which is
-  ;; cited at https://github.com/technomancy/package.el as the last emacs23 
+  ;; cited at https://github.com/technomancy/package.el as the last emacs23
   ;; version of package.el.
   (unless (load (expand-file-name "~/.elisp/old/package.el"))
     (error "ELPA is not in Emacs, and local package.el failed to load.")))
@@ -40,7 +40,7 @@
                   org-plus-contrib
                   paredit
                   powershell
-                  ruby-mode ; extra extensions
+                  ruby-mode inf-ruby ; extra extensions
                   yaml-mode
                   yasnippet
                   ))
