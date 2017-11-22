@@ -39,6 +39,16 @@
 (defun my-calc-mode-hook ()
   (define-key calc-mode-map [C-backspace] 'calc-reset))
 
+(add-hook 'calc-start-hook 'my-calc-start-hook)
+(defun my-calc-start-hook ()
+  ;; Prevent server buffers from popping up in little calc windows.
+  (dolist (buf (list calc-main-buffer calc-trail-buffer))
+    (when-let ((win (get-buffer-window buf)))
+      (set-window-dedicated-p win t))))
+
+;; Changelog. I don't use it.
+(rassq-delete-all 'change-log-mode auto-mode-alist)
+
 ;; Clojure
 (add-hook 'clojure-mode-hook 'lisp-enable-paredit-hook)
 (add-hook 'clojure-mode-hook
@@ -187,6 +197,7 @@ With argument, positions cursor at end of buffer."
     ("\C-cl" . 'org-store-link)
     ("\C-cw" . 'copy-org-link-at-point)
     ("\C-cd" . 'org-datetree-find-create-here-x)
+    ("\C-ct" . 'org-toggle-item)
 
     ;; Make links work like chasing definitions in source code.
     ("\M-." . 'org-open-at-point)
@@ -222,7 +233,11 @@ With argument, positions cursor at end of buffer."
            ((org-use-tag-inheritance nil)))
           ("p" "Project list, current buffer"
            tags-tree "prj"
-           ((org-use-tag-inheritance nil)))))
+           ((org-use-tag-inheritance nil)))
+          ("w" "Work-in-progress"
+           tags "WIP"
+           ((org-use-tag-inheritance nil)))
+          ))
   (setq org-refile-targets '((org-agenda-files :maxlevel . 2))
         org-refile-use-outline-path 'file
         org-refile-allow-creating-parent-nodes 'confirm)
@@ -344,7 +359,7 @@ With argument, positions cursor at end of buffer."
         ;; Update HKEY_CLASSES_ROOT\org-protocol\shell\open\command.
         ("c" "org-protocol capture"
          entry (file read-org-agenda-file)
-         "* %?%c\n%i\n%U" :prepend t)
+         "* %?%c\n%i" :prepend t)
 
         ("N" "org-protocol Notes capture"
          entry (file+datetree my-notes-org)

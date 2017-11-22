@@ -27,16 +27,18 @@
   (interactive)
   (unless package-archive-contents (package-refresh-contents))
   (dolist (pack '(
-                  clojure-mode
+                  ;; require emacs-24.4, not available on Ubuntu
+                  ;;clojure-mode
+                  ;;fsharp-mode
+
                   csharp-mode
                   edit-server
+                  editorconfig
                   expand-region
-                  fsharp-mode
                   find-file-in-project
                   htmlize
                   imenu-anywhere
                   markdown-mode
-                  org-mode
                   org-plus-contrib
                   paredit
                   powershell

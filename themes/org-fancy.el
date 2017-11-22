@@ -9,10 +9,12 @@
                            (1 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
 
 ;; heading bullets. It's hard to find characters that look ok without
-;; dominating, but the asterisks are admittedly pretty ugly once you
-;; make the font bigger
-(add-hook 'org-mode-hook 'org-bullets-mode)
-(setq org-bullets-bullet-list '("●")) ; "○"
+;; dominating, but the asterisks are pretty ugly once you make the
+;; font bigger.
+;; I like it but it's slow.
+;; (add-hook 'org-mode-hook 'org-bullets-mode)
+;; (remove-hook 'org-mode-hook 'org-bullets-mode)
+;; (setq org-bullets-bullet-list '("●")) ; "○"
 
 ;; larger, variable-width heading fonts. 2-8 italic, for fun.
 (let* ((variable-tuple (cond
