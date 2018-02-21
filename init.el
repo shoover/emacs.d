@@ -94,8 +94,10 @@
 ;; Expand region by semantic units
 (require 'expand-region)
 
-(setq ispell-program-name "aspell"
-      ispell-extra-args '("--sug-mode=ultra"))
+(setq ispell-program-name "hunspell")
+(setq ispell-dictionary "en_US")
+(setq ispell-dictionary-alist
+      '(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_US") nil utf-8)))
 
 (setq backup-directory-alist
       `(("." . ,(expand-file-name "~/.emacs.d/auto-save"))))
