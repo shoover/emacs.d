@@ -199,6 +199,7 @@ With argument, positions cursor at end of buffer."
     ("\C-cl" . 'org-store-link)
     ("\C-cw" . 'copy-org-link-at-point)
     ("\C-cd" . 'org-datetree-find-create-here-x)
+    ("\C-c\S-d" . 'org-datetree-find-create-here-skip-month-x)
     ("\C-ct" . 'org-toggle-item)
 
     ;; Make links work like chasing definitions in source code.

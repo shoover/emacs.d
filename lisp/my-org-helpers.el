@@ -340,7 +340,12 @@ for the whole month. DATE defaults to today."
        year month)
       (goto-char (prog1 (point) (widen))))))
 
-(defun org-datetree-find-create-here-x (&optional date keep-restriction)
+(defun org-datetree-find-create-here-skip-month-x (&optional date keep-restriction)
+  "Calls `org-datetree-find-create-here-x', set to skip the month level."
+  (interactive)
+  (org-datetree-find-create-here-x date keep-restriction t))
+
+(defun org-datetree-find-create-here-x (&optional date keep-restriction skip-month)
   "Find or create an entry for DATE, which defaults to today.
 
 This is cribbed from `org-datetree-find-date-create', with the
@@ -350,7 +355,10 @@ and backward for a year heading.
 
 If KEEP-RESTRICTION is non-nil, do not widen the buffer. When it
 is nil, the buffer will be widened to make sure an existing date
-tree can be found."
+tree can be found.
+
+If SKIP-MONTH is non-nil, no month level will be inserted, only
+the year and date."
   (interactive)
   (require 'org-datetree)
   (setq date (or date (calendar-gregorian-from-absolute (org-today))))
@@ -392,14 +400,14 @@ tree can be found."
                   ;;           (let ((found (org-find-property "DATE_TREE")))
                   ;;             (when found
                   ;;               (throw 'exit found))))))))
-)))
+                  )))
       (when prop
         (goto-char prop)
         (setq-local org-datetree-base-level
                     (org-get-valid-level (org-current-level) 1))
         (org-narrow-to-subtree)))
     (goto-char (point-min))
-    (message "searching from %s" (point))
+    ;(message "searching from %s" (point))
     (let ((year (nth 2 date))
           (month (car date))
           (day (nth 1 date)))
@@ -407,12 +415,19 @@ tree can be found."
        "^\\*+[ \t]+\\([12][0-9]\\{3\\}\\)\\(\\s-*?\
 \\([ \t]:[[:alnum:]:_@#%%]+:\\)?\\s-*$\\)"
        year)
-      (org-datetree--find-create
-       "^\\*+[ \t]+%d-\\([01][0-9]\\) \\w+$"
-       year month)
-      (org-datetree--find-create
-       "^\\*+[ \t]+%d-%02d-\\([0123][0-9]\\) \\w+$"
-       year month day))
+      (if skip-month
+          ;; Add a tree for the date under the year, no month level
+          (let ((txt (format-time-string "* %Y-%m-%d " (encode-time 0 0 0 day month year)))
+                (level (org-get-valid-level (funcall outline-level) 1)))
+            (org-end-of-subtree t t)
+            (org-back-over-empty-lines)
+            (org-paste-subtree level txt))
+        (org-datetree--find-create
+         "^\\*+[ \t]+%d-\\([01][0-9]\\) \\w+$"
+         year month)
+        (org-datetree--find-create
+         "^\\*+[ \t]+%d-%02d-\\([0123][0-9]\\) \\w+$"
+         year month day)))
     (end-of-line))
   (or keep-restriction (save-excursion
                          (org-show-entry)
