@@ -159,6 +159,7 @@ With argument, positions cursor at end of buffer."
   ("\M-a" . 'backward-sexp)
   ("\M-e" . 'forward-sexp)
   ("\M-k" . 'kill-sexp)
+  ("\C-\M-y" . 'reverse-transpose-sexps)
   ("\C-c\C-u" . 'backward-up-list))
 
 ;; Log files

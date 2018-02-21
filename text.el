@@ -108,6 +108,17 @@ region is commented instead."
       (mark-sexp arg allow-extend))
     (comment-region (region-beginning) (region-end))))
 
+; https://emacs.stackexchange.com/a/12800/11751
+(defun reverse-transpose-sexps (arg)
+  (interactive "*p")
+  (transpose-sexps (- arg))
+  ;; when transpose-sexps can no longer transpose, it throws an error and code
+  ;; below this line won't be executed. So, we don't have to worry about side
+  ;; effects of backward-sexp and forward-sexp.
+  ;; (backward-sexp (1+ arg))
+  ;; (forward-sexp 1)
+  )
+
 (defun fill-buffer ()
   "Fill each of the paragraphs in the buffer."
   (interactive)
