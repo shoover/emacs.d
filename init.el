@@ -137,7 +137,7 @@
 (setq ffip-project-file (if (listp ffip-project-file)
                             ffip-project-file
                           (list ffip-project-file)))
-(add-to-list-n 'ffip-project-file ".hg" ".svn" "build.bat")
+(add-to-list-n 'ffip-project-file ".hg" ".svn" "build.bat" "project.clj")
 (add-to-list-n 'ffip-prune-patterns
                ".lock*"
                "*/\\.vs/*"
@@ -148,6 +148,8 @@
                "*/release/*"                ; project release builds
                "scons-out"
                "waf-*")
+(if (eq system-type 'windows-nt) ; override ffip Windows guessing
+    (setq ffip-find-executable "c:/tools/msys64/usr/bin/find.exe"))
 
 ;;; Custom functions and mode settings
 (load "text")
@@ -198,6 +200,7 @@
 (global-set-key "\C-xb" 'my-switch-to-buffer)
 (global-set-key [f5] 'revert-buffer)
 (global-set-key [f6] 'kill-this-buffer)
+(global-set-key [f7] 'find-file-in-project-by-selected)
 (global-set-key "\C-t" 'switch-to-new-untitled-buffer)
 
 (global-set-key [C-up] 'move-text-up)
@@ -286,12 +289,14 @@
  '(ns-tool-bar-size-mode nil t)
  '(package-selected-packages
    (quote
-    (editorconfig csharp-mode yasnippet yaml-mode ruby-mode project-local-variables project powershell paredit org-plus-contrib org-bullets markdown-mode lua-mode imenu-anywhere htmlize git-rebase-mode git-commit-mode fsharp-mode flymake flycheck find-file-in-project expand-region erc edit-server-htmlize ac-inf-ruby)))
+    (cider editorconfig csharp-mode yasnippet yaml-mode ruby-mode project-local-variables project powershell paredit org-plus-contrib org-bullets markdown-mode lua-mode imenu-anywhere htmlize git-rebase-mode git-commit-mode fsharp-mode flymake flycheck find-file-in-project expand-region erc edit-server-htmlize ac-inf-ruby)))
  '(rst-level-face-base-light 20)
  '(rst-level-face-step-light 7)
  '(safe-local-variable-values
    (quote
-    ((c-basic-offset 2)
+    ((whitespace-style quote
+                       (face trailing lines-tail space-before-tab))
+     (c-basic-offset 2)
      (tab-width 2)
      (ruby-indent-level 2)
      (lua-default-command-switches "." "--headless")
@@ -322,22 +327,22 @@
 
   (show-paren-mode t)
   (setq show-paren-style 'mixed)
-)
+  )
 
 (cd "~")
 
 ;; Check custom-file compatibility
 (when (and (boundp 'aquamacs-version-id)
-	   (< (floor (/ aquamacs-version-id 10))
-	   (floor (/ aquamacs-customization-version-id 10))))
+	       (< (floor (/ aquamacs-version-id 10))
+	          (floor (/ aquamacs-customization-version-id 10))))
   (defadvice frame-notice-user-settings (before show-version-warning activate)
     (defvar aquamacs-backup-custom-file nil "Backup of `custom-file', if any.")
     (setq aquamacs-backup-custom-file "~/emacs/customizations.1.9.el")
     (let ((msg "Aquamacs options were saved by a more recent program version.
 Errors may occur.  Save Options to overwrite the customization file. The original, older customization file was backed up to ~/emacs/customizations.1.9.el."))
       (if window-system
-	  (x-popup-dialog t (list msg '("OK" . nil) 'no-cancel) "Warning")
-	(message msg)))))
+	      (x-popup-dialog t (list msg '("OK" . nil) 'no-cancel) "Warning")
+	    (message msg)))))
 ;; End compatibility check
 
 (custom-set-faces
