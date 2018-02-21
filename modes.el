@@ -53,6 +53,7 @@
 (add-hook 'clojure-mode-hook 'lisp-enable-paredit-hook)
 (add-hook 'clojure-mode-hook
           (lambda ()
+            (set-keymap-parent clojure-mode-map lisp-mode-shared-map)
             (define-key clojure-mode-map "\C-c\C-b" 'lisp-load-buffer-x)
             (set (make-local-variable 'indent-line-function)
                  'my-lisp-indent-line)))

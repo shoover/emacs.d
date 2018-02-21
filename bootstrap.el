@@ -28,7 +28,7 @@
   (unless package-archive-contents (package-refresh-contents))
   (dolist (pack '(
                   ;; require emacs-24.4, not available on Ubuntu
-                  ;;clojure-mode
+                  cider ;;clojure-mode
                   ;;fsharp-mode
 
                   csharp-mode

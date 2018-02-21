@@ -181,7 +181,7 @@
 (when (display-graphic-p)
   (define-key input-decode-map "\C-i" (kbd "H-i")))
 
-; remap transpose so C-t is available to create a buffer like Chrome tabs
+;; remap transpose so C-t is available to create a buffer like Chrome tabs
 (global-set-key "\M-t" 'transpose-chars)
 (global-set-key "\M-T" 'transpose-words)
 
@@ -215,7 +215,7 @@
 (define-key 'help-command (kbd "C-k") 'find-function-on-key)
 (define-key 'help-command (kbd "C-v") 'find-variable)
 
-; Hop around windows a little quicker than with C-x o
+;; Hop around windows a little quicker than with C-x o
 (global-set-key (kbd "M-o") 'other-window)
 
 ;; Change font size on the fly.
