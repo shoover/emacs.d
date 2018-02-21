@@ -40,6 +40,7 @@
   (define-key calc-mode-map [C-backspace] 'calc-reset))
 
 (add-hook 'calc-start-hook 'my-calc-start-hook)
+(require 'subr-x) ; when-let
 (defun my-calc-start-hook ()
   ;; Prevent server buffers from popping up in little calc windows.
   (dolist (buf (list calc-main-buffer calc-trail-buffer))
