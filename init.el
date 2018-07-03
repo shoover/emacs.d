@@ -19,6 +19,7 @@
                 (eq system-type 'darwin)))
 
 (defvar emacs-root "~/emacs/" "emacs load path root")
+(defvar org-directory (expand-file-name "~"))
 
 ;; Add a smattering of elisp under ~/emacs to my load path.
 (add-to-list 'load-path emacs-root)
