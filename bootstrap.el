@@ -49,4 +49,7 @@
     (unless (or (member pack package-activated-list)
                 (functionp pack))
       (message "Installing %s" (symbol-name pack))
-      (package-install pack))))
+      (condition-case err
+          (package-install pack)
+        (error
+         (message "%s failed: %s" (symbol-name pack) (error-message-string err)))))))
