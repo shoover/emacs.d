@@ -95,10 +95,15 @@
 ;; Expand region by semantic units
 (require 'expand-region)
 
-(setq ispell-program-name "hunspell")
-(setq ispell-dictionary "en_US")
-(setq ispell-dictionary-alist
-      '(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_US") nil utf-8)))
+(ignore-errors
+  (require 'ispell)
+  (ispell-create-debug-buffer)
+  (setq ispell-program-name "hunspell")
+  (setq ispell-dictionary "en_US")
+  (setq ispell-dictionary-alist
+        '(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_US") nil utf-8)
+          (nil "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_US") nil utf-8)))
+  (ispell-change-dictionary ispell-dictionary t))
 
 (setq backup-directory-alist
       `(("." . ,(expand-file-name "~/.emacs.d/auto-save"))))
