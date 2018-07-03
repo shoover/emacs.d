@@ -163,6 +163,7 @@
 (global-set-key "\C-r" 'yank)
 (global-set-key "\M-r" 'yank-pop)
 (define-key paredit-mode-map "\M-r" 'paredit-yank-pop)
+(define-key minibuffer-local-shell-command-map "\M-r" 'yank-pop)
 
 (global-set-key "\M-k" 'kill-sexp)
 (global-set-key "\C-\M-k" 'kill-sentence)
