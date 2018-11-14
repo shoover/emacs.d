@@ -296,7 +296,7 @@
  '(ns-tool-bar-size-mode nil t)
  '(package-selected-packages
    (quote
-    (cider editorconfig csharp-mode yasnippet yaml-mode ruby-mode project-local-variables project powershell paredit org-plus-contrib org-bullets markdown-mode lua-mode imenu-anywhere htmlize git-rebase-mode git-commit-mode fsharp-mode flymake flycheck find-file-in-project expand-region erc edit-server-htmlize ac-inf-ruby)))
+    (php-mode cider editorconfig csharp-mode yasnippet yaml-mode ruby-mode project-local-variables project powershell paredit org-plus-contrib org-bullets markdown-mode lua-mode imenu-anywhere htmlize git-rebase-mode git-commit-mode fsharp-mode flymake flycheck find-file-in-project expand-region erc edit-server-htmlize ac-inf-ruby)))
  '(rst-level-face-base-light 20)
  '(rst-level-face-step-light 7)
  '(safe-local-variable-values
