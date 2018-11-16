@@ -124,7 +124,14 @@
       uniquify-separator ":")
 
 (setq tramp-default-method "plinkx")
-(setq tramp-verbose 9)
+(setq tramp-verbose 2)
+
+;; Speed up tramp: https://www.gnu.org/software/emacs/manual/html_node/tramp/Frequently-Asked-Questions.html
+(setq remote-file-name-inhibit-cache nil)
+(setq vc-ignore-dir-regexp
+      (format "%s\\|%s"
+                    vc-ignore-dir-regexp
+                    tramp-file-name-regexp))
 
 (setq eshell-prompt-function (lambda nil (concat "\n" (eshell/pwd) "\n$ "))
       eshell-prompt-regexp "^\$ ")
