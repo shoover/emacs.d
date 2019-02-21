@@ -99,6 +99,16 @@ other Clojure programmers. Mostly cribbed from `lisp-indent-line'."
 (with-region-or-buffer-x indent-region)
 (with-region-or-buffer-x fill-region)
 
+(defun unfill-kill (beginning end)
+  "Save an unfilled copy of the region to the clipboard."
+  (interactive "r")
+  (let ((buf (current-buffer)))
+    (with-temp-buffer
+      (insert-buffer-substring buf beginning end)
+      (unfill-buffer)
+      (kill-ring-save (point-min) (point-max))))
+  (message "Copied region to clipboard unfilled."))
+
 (defun comment-sexp (&optional arg allow-extend)
   "Comment ARG sexps from point. If a region is active, that
 region is commented instead."
@@ -151,6 +161,12 @@ the mark is not active."
     (if mark-active
         (fill-region (region-beginning) (region-end))
       (fill-region (point-min) (point-max)))))
+
+(defun fill-subtree ()
+  (interactive)
+  (save-excursion
+    (org-mark-subtree)
+    (fill-region (region-beginning) (region-end))))
 
 (defun unfill-paragraph-html ()
   "Unfills the current paragraph and inserts HTML breaks at the end."
