@@ -303,7 +303,7 @@
  '(ns-tool-bar-size-mode nil t)
  '(package-selected-packages
    (quote
-    (php-mode cider editorconfig csharp-mode yasnippet yaml-mode ruby-mode project-local-variables project powershell paredit org-plus-contrib org-bullets markdown-mode lua-mode imenu-anywhere htmlize git-rebase-mode git-commit-mode fsharp-mode flymake flycheck find-file-in-project expand-region erc edit-server-htmlize ac-inf-ruby)))
+    (yasnippet-snippets php-mode cider editorconfig csharp-mode yasnippet yaml-mode ruby-mode project-local-variables project powershell paredit org-plus-contrib org-bullets markdown-mode lua-mode imenu-anywhere htmlize git-rebase-mode git-commit-mode fsharp-mode flymake flycheck find-file-in-project expand-region erc edit-server-htmlize ac-inf-ruby)))
  '(rst-level-face-base-light 20)
  '(rst-level-face-step-light 7)
  '(safe-local-variable-values
@@ -328,9 +328,6 @@
  '(visual-scroll-margin 0)
  '(w32shell-cygwin-bin "C:\\bin"))
 
-;; Subtle face for parens in lisp modes
-(require 'parenface) ; LISP
-
 (when (display-graphic-p)
   ;;(load-theme 'Shawn)
   ;;(load-theme 'fogus)
@@ -341,6 +338,9 @@
 
   (show-paren-mode t)
   (setq show-paren-style 'mixed)
+
+  ;; Subtle face for parens in lisp modes
+  (require 'parenface) ; LISP
   )
 
 (cd "~")
