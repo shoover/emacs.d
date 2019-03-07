@@ -80,8 +80,6 @@
 ;; Allow bullet lists starting with - to delimit paragraphs for use with
 ;; fill-paragraph. fill-individual-paragraphs accomplishes what I want, but it
 ;; requires that you have an active region.
-;;
-;; A more generic solution will be needed to work with @param lists in C-code.
 (setq paragraph-start "\f\\|[ 	]*$\\|\\([ ]+- \\)")
 (setq sentence-end-double-space nil)
 
@@ -220,12 +218,13 @@
 (global-set-key [C-up] 'move-text-up)
 (global-set-key [C-down] 'move-text-down)
 
-(global-set-key [S-up] 'scroll-down-line)      ; scroll without moving point
+(global-set-key [S-up] 'scroll-down-line)      ; Scroll without moving point
 (global-set-key [S-down] 'scroll-up-line)
-(global-set-key [C-S-up] 'slide-previous-line) ; scroll and move point
+(global-set-key [C-S-up] 'slide-previous-line) ; Scroll and move point
 (global-set-key [C-S-down] 'slide-next-line)
 
 (global-set-key "\C-c/" 'indent-region) ; Indent region or whole buffer
+(global-set-key (kbd "C-;") 'align)     ; Align inline comment region
 
 (global-set-key (kbd "C-=") 'er/expand-region) ; Expand region by semantic units
 
