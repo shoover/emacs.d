@@ -14,6 +14,11 @@
 (setq make-backup-files nil
       auto-save-default nil)
 
+;; Fix coding prompt when writing ox-publish temp files.
+(set-language-environment "UTF-8")
+;; (add-to-list 'file-coding-system-alist '("" . (undecided . utf-8)) t
+;;              (lambda (a b) (equal (car a) (car b))))
+
 ;; Something about generating the sitemap causes org-publish to prompt
 ;; about file locks if another session is editing a file in the project
 ;; being published. For the purposes of emacs --batch publishing, we
