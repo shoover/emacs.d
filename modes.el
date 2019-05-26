@@ -258,6 +258,7 @@ With argument, positions cursor at end of buffer."
 
       org-tags-column -85
 
+      org-link-search-must-match-exact-headline nil ; Please let fuzzy search work
       org-export-backends '(ascii html latex md odt)
       org-html-validation-link nil)
 
