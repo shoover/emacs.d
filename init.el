@@ -169,7 +169,8 @@
 ;;; Custom keybindings
 
 ;; Paste with one hand
-;; todo: reuse C-y
+;; todo: reuse C-y?
+;; Can't C-r paste into isearch minibuffer because that's reverse search.
 (global-set-key "\C-r" 'yank)
 (global-set-key "\M-r" 'yank-pop)
 (define-key paredit-mode-map "\M-r" 'paredit-yank-pop)
