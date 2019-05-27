@@ -31,7 +31,7 @@
 (when (eq system-type 'windows-nt)
   ;; Put cygwin ahead of system32 for emacs and things it shells out to.
   ;; This is needed by find-file-in-project, at least.
-  (setenv "PATH" (concat "c:/tools/msys64/usr/bin" path-separator (getenv "PATH"))))
+  (setenv "PATH" (concat "c:/msys64/usr/bin" path-separator (getenv "PATH"))))
 
 (defvar my-action-org (concat org-directory "/action.org"))
 (setq org-default-notes-file my-action-org)
@@ -98,6 +98,7 @@
   (ispell-create-debug-buffer)
   (setq ispell-program-name "hunspell")
   (setq ispell-dictionary "en_US")
+  (setenv "DICPATH" (expand-file-name (concat emacs-root "dict")))
   (setq ispell-dictionary-alist
         '(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_US") nil utf-8)
           (nil "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_US") nil utf-8)))
