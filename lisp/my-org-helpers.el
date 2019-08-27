@@ -186,6 +186,13 @@ used. Otherwise a temp file is used."
     (browse-url-of-file
      (org-export-to-file 'latex file async subtreep visible-only))))
 
+(defun sitemap-file-title (entry style project)
+  ":sitemap-format-entry implemention to link the filename and title, and add a date."
+  (format "[[file:%s][%s]] %s"
+          entry
+          (file-name-base entry)
+          (org-publish-find-title entry project)))
+
 (defun org-publish-dir-x (dir &optional target project-name)
   "Publishes all the .org files .css files in DIR to the TARGET
 directory using the org HTML publisher."
@@ -211,12 +218,11 @@ directory using the org HTML publisher."
                                        :base-directory ,dir-exp
                                        :publishing-directory ,target
                                        :publishing-function org-html-publish-to-html
-                                       :auto-sitemap t ; nil for
-                                                       ; quieter logs,
-                                                       ; but then
-                                                       ; cross-file
-                                                       ; links don't
-                                                       ; work
+                                       :auto-sitemap t
+                                       :sitemap-format-entry sitemap-file-title
+                                       ;; default alphabetic sort (uses title, not configurable)
+                                       :sitemap-ignore-case t
+                                       :sitemap-title ,(format "%s index" project-name)
                                        :make-index t
                                        )
                                       ("css"
@@ -227,9 +233,14 @@ directory using the org HTML publisher."
          ;; bypass coding system prompt for publish cache if some headlines have unicode
          (default-buffer-file-coding-system 'prefer-utf-8)
 
-         ;; set to force publishing files the org cache thinks are ok
-         ;; even if they were deleted :-/
-         (force t))
+         ;; set to t to bypass the cache and force publishing deleted files
+         (force nil))
+
+    ;; Fix coding prompt when writing ox-publish temp files.
+    (set-language-environment "UTF-8")
+    ;; (add-to-list 'file-coding-system-alist '("" . (undecided . utf-8)) t
+    ;;              (lambda (a b) (equal (car a) (car b))))
+
     (message "Publishing org dir: %s" dir-exp)
     (org-publish-project project-name force)))
 
