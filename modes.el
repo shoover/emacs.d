@@ -191,7 +191,13 @@ With argument, positions cursor at end of buffer."
           (scroll-preserve-screen-position nil))
       (apply orig-fun args))))
 
-(add-hook 'org-mode-hook 'turn-on-auto-fill)
+(add-hook 'org-mode-hook 'my-org-mode-hook)
+(defun my-org-mode-hook ()
+  (turn-on-auto-fill)
+
+  ;; orgmode defines a comment syntax; make sure regular paragraphs auto-fill, too.
+  (setq-local comment-auto-fill-only-comments nil))
+
 (add-hook 'org-load-hook 'my-org-load-hook)
 (defun my-org-load-hook ()
   (define-keys org-mode-map
