@@ -186,6 +186,18 @@ used. Otherwise a temp file is used."
     (browse-url-of-file
      (org-export-to-file 'latex file async subtreep visible-only))))
 
+(defun my-org-html-postamble (options)
+  "Custom postamble function, because you can't customize the
+`org-html-postamble-format' alist in #+options, %d doesn't work,
+and dir-locals don't work either.
+
+Set org-html-postamble or #+options: html-postamble."
+  (format "<p class=\"author\">%s</p>
+<p class=\"date\">Updated %s</p>
+<p class=\"creator\"><a href=\"https://orgmode.org\">orgmode</a></p"
+          (car (plist-get options ':author))
+          (format-time-string "%d %b %Y")))
+
 (defun sitemap-file-title (entry style project)
   ":sitemap-format-entry implemention to link the filename and title, and add a date."
   (format "[[file:%s][%s]] %s"

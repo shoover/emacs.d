@@ -9,7 +9,7 @@
 (require 'org)
 (message "Using org-version %s" org-version)
 
-(load "my-org-helpers.el") ; org-publish-dir-x
+(load "my-org-helpers.el") ; org-publish-dir-x, my-org-html-postamble
 
 (setq make-backup-files nil
       auto-save-default nil)
