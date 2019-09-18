@@ -251,7 +251,8 @@ With argument, positions cursor at end of buffer."
         org-refile-use-outline-path 'file
         org-refile-allow-creating-parent-nodes 'confirm)
 
-  (setq org-src-fontify-natively t)
+  (setq org-src-fontify-natively t
+        org-edit-src-content-indentation 0)
   (org-babel-do-load-languages
    'org-babel-load-languages
    '(; (fsharp . t); I got a babel helper from https://github.com/fradav/ob-fsharp/blob/master/ob-fsharp.el,
