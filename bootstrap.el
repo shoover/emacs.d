@@ -27,10 +27,8 @@
   (interactive)
   (unless package-archive-contents (package-refresh-contents))
   (dolist (pack '(
-                  ;; require emacs-24.4, not available on Ubuntu
                   cider ;;clojure-mode
                   ;;fsharp-mode
-
                   csharp-mode
                   edit-server
                   editorconfig
@@ -39,6 +37,7 @@
                   htmlize
                   imenu-anywhere
                   markdown-mode
+                  nginx-mode
                   org-plus-contrib
                   paredit
                   powershell
