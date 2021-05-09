@@ -36,6 +36,7 @@
                   find-file-in-project
                   htmlize
                   imenu-anywhere
+                  magit
                   markdown-mode
                   nginx-mode
                   org-plus-contrib
