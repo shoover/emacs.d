@@ -64,6 +64,11 @@ line instead."
   (interactive)
   (find-file my-work-org))
 
+(defun notes ()
+  "Find my notes org file"
+  (interactive)
+  (find-file my-notes-org))
+
 (defun dev ()
   "Find my dev directory"
   (interactive)
