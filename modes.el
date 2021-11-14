@@ -52,12 +52,13 @@
 
 ;; Clojure
 (add-hook 'clojure-mode-hook 'lisp-enable-paredit-hook)
-(add-hook 'clojure-mode-hook
-          (lambda ()
-            (set-keymap-parent clojure-mode-map lisp-mode-shared-map)
-            (define-key clojure-mode-map "\C-c\C-b" 'lisp-load-buffer-x)
-            (set (make-local-variable 'indent-line-function)
-                 'my-lisp-indent-line)))
+(add-hook 'clojure-mode-hook 'my-clojure-mode-hook)
+(defun my-clojure-mode-hook ()
+  (set-keymap-parent clojure-mode-map lisp-mode-shared-map)
+  (define-key clojure-mode-map "\C-c\C-b" 'lisp-load-buffer-x)
+  ;; (set (make-local-variable 'indent-line-function)
+  ;;      'my-lisp-indent-line)
+  )
 (add-hook 'inferior-lisp-mode-hook
           (lambda ()
             (add-to-list 'comint-output-filter-functions
@@ -418,6 +419,11 @@ With argument, positions cursor at end of buffer."
   '(define-keys inf-ruby-minor-mode-map
      ("\C-c\C-l" . 'ruby-load-line-x)
      ("\C-c\C-b" . 'ruby-load-buffer-x)))
+
+;; Script
+(add-hook 'after-save-hook
+          'executable-make-buffer-file-executable-if-script-p)
+(add-to-list 'file-coding-system-alist '("\\.sh\\'" . utf-8-unix))
 
 ;; Text
 (add-hook 'text-mode-hook 'turn-on-auto-fill)
