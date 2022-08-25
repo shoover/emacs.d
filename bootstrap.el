@@ -18,8 +18,7 @@
 
 (require 'package)
 (dolist (archive '(("melpa" . "https://melpa.org/packages/")
-                   ("marmalade" . "http://marmalade-repo.org/packages/")
-                   ("org" . "http://orgmode.org/elpa/")))
+                   ("marmalade" . "http://marmalade-repo.org/packages/")))
   (add-to-list 'package-archives archive t))
 (package-initialize)
 
