@@ -394,10 +394,14 @@ With argument, positions cursor at end of buffer."
 ;; prog-mode derivees
 (add-hook 'prog-mode-hook 'my-prog-mode-hook)
 (defun my-prog-mode-hook ()
-  ;; make a hook local to prog modes to delete trailing whitespace. I
+  ;; Make a hook local to prog modes to delete trailing whitespace. I
   ;; have whitespace mode configured to show problems, but it may be a
   ;; bit aggressive to clean all those things up automatically.
-  (add-hook 'before-save-hook 'delete-trailing-whitespace nil 'make-it-local))
+
+  ;; Don't treat snippet-mode as a progmode for this purpose. I want to leave trailing
+  ;; spaces in some templates.
+  (when (not (derived-mode-p 'snippet-mode))
+    (add-hook 'before-save-hook 'delete-trailing-whitespace nil 'make-it-local)))
 
 ;; Python
 (add-to-mode-alist 'python-mode "scons" "SConstruct" "SConscript" "wscript")
