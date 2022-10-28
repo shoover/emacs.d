@@ -285,46 +285,24 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   '("73f7374c18e446d7e2e135c580247e0a696ec373d2f446cc617ea6beb1c47788" default))
  '(ansi-color-for-comint-mode t)
  '(ansi-color-names-vector
-   ["#454545" "#cd7542" "#6aaf50" "#baba36" "#5180b3" "#ab75c3" "#bdbc61" "#bdbdb3"])
- '(aquamacs-additional-fontsets nil t)
- '(aquamacs-customization-version-id 307 t)
- '(aquamacs-tool-bar-user-customization nil t)
+    ["#454545" "#cd7542" "#6aaf50" "#baba36" "#5180b3" "#ab75c3" "#bdbc61" "#bdbdb3"])
  '(c-doc-comment-style 'set-from-style)
  '(column-number-mode t)
  '(completion-ignored-extensions
    '(".obj" ".pdb" ".svn/" "CVS/" ".o" "~" ".bin" ".bak" ".obj" ".map" ".ico" ".pif" ".lnk" ".a" ".ln" ".blg" ".bbl" ".dll" ".drv" ".vxd" ".386" ".elc" ".lof" ".glo" ".idx" ".lot" ".fmt" ".tfm" ".class" ".fas" ".lib" ".mem" ".x86f" ".sparcf" ".fasl" ".ufsl" ".fsl" ".dxl" ".pfsl" ".dfsl" ".p64fsl" ".d64fsl" ".dx64fsl" ".lo" ".la" ".gmo" ".mo" ".toc" ".aux" ".cp" ".fn" ".ky" ".pg" ".tp" ".vr" ".cps" ".fns" ".kys" ".pgs" ".tps" ".vrs" ".pyc" ".pyo"))
- '(custom-safe-themes
-   '("73f7374c18e446d7e2e135c580247e0a696ec373d2f446cc617ea6beb1c47788" "0ccd096ff14837520f33066d1266ba3566679577475b8d06b6b29789a99641ec" "9637e95d9e5eb4ea08a4e8ff689356846823bed09f779d188a46c306f69578b0" default))
- '(hg-outgoing-repository "")
- '(ns-alternate-modifier 'alt)
- '(ns-tool-bar-display-mode 'both t)
- '(ns-tool-bar-size-mode nil t)
- '(package-selected-packages
-   '(magit edit-server gnu-elpa-keyring-update nginx-mode inf-ruby yasnippet-snippets php-mode cider editorconfig csharp-mode yasnippet yaml-mode ruby-mode project-local-variables project powershell paredit org-plus-contrib org-bullets markdown-mode lua-mode imenu-anywhere htmlize git-rebase-mode git-commit-mode fsharp-mode flymake flycheck find-file-in-project expand-region erc edit-server-htmlize ac-inf-ruby))
- '(rst-level-face-base-light 20)
- '(rst-level-face-step-light 7)
- '(safe-local-variable-values
-   '((whitespace-style quote
-                       (face trailing lines-tail space-before-tab))
-     (c-basic-offset 2)
-     (tab-width 2)
-     (ruby-indent-level 2)
-     (lua-default-command-switches "." "--headless")
-     (lua-default-application . "love")
-     (whitespace-line-column . 115)
-     (whitespace-line-column . 100)
-     (eval setq default-directory
-           (locate-dominating-file buffer-file-name ".dir-locals.el"))))
  '(select-enable-clipboard t)
- '(special-display-regexps '(".*SPEEDBAR.*"))
  '(tool-bar-mode nil)
  '(user-full-name "Shawn Hoover")
  '(user-mail-address "shawn.hoover@gmail.com")
  '(visual-line-mode nil t)
  '(visual-scroll-margin 0)
- '(w32shell-cygwin-bin "C:\\bin"))
+
+ '(package-selected-packages
+   '(org yasnippet yaml-mode inf-ruby powershell paredit org-plus-contrib nginx-mode markdown-mode magit imenu-anywhere htmlize find-file-in-project expand-region editorconfig edit-server csharp-mode cider)))
 
 (when (display-graphic-p)
   ;;(load-theme 'Shawn)
@@ -356,3 +334,17 @@ Errors may occur.  Save Options to overwrite the customization file. The origina
 	      (x-popup-dialog t (list msg '("OK" . nil) 'no-cancel) "Warning")
 	    (message msg)))))
 ;; End compatibility check
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(org-document-title ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :font "Verdana" :height 1.6 :underline nil))))
+ '(org-level-1 ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :font "Verdana" :height 1.45))))
+ '(org-level-2 ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :font "Verdana" :height 1.4 :slant italic))))
+ '(org-level-3 ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :font "Verdana" :height 1.4 :slant italic))))
+ '(org-level-4 ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :font "Verdana" :height 1.4 :slant italic))))
+ '(org-level-5 ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :font "Verdana" :height 1.4 :slant italic))))
+ '(org-level-6 ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :font "Verdana" :height 1.4))))
+ '(org-level-7 ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :font "Verdana" :height 1.4))))
+ '(org-level-8 ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :font "Verdana" :height 1.4)))))
