@@ -83,7 +83,7 @@
 (setq paragraph-start "\f\\|[ 	]*$\\|\\([ ]+- \\)")
 (setq sentence-end-double-space nil)
 
-(setq fill-column 78)
+(setq-default fill-column 80)
 
 (setq comment-auto-fill-only-comments 1)
 
