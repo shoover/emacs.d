@@ -33,6 +33,7 @@
                   editorconfig
                   expand-region
                   find-file-in-project
+                  go-mode
                   htmlize
                   imenu-anywhere
                   magit
@@ -41,6 +42,7 @@
                   org-plus-contrib
                   paredit
                   powershell
+                  protobuf-mode
                   ruby-mode inf-ruby ; extra extensions
                   yaml-mode
                   yasnippet
