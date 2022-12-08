@@ -326,7 +326,7 @@ table determines which characters these are."
                                      (cdr cmdlist)))))
     (pop-to-buffer new-buf)))
 
-;; see also: built in DB access
+;; (Why didn't I just use the built in sql-sqlite?)
 (defun sqlite (db)
   "Opens an interactive sqlite session in a comint buffer."
   (interactive
