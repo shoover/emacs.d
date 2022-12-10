@@ -1,4 +1,4 @@
-;; Interactive query support using Emacs 29's built-in sqlite.
+;; Interactive query support for Emacs 29's built-in sqlite.
 ;;
 ;; Usage:
 ;; - M-x sqlite-mode-open-file
