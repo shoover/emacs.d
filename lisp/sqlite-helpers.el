@@ -1,22 +1,11 @@
+;; Interactive query support using Emacs 29's built-in sqlite.
+;;
 ;; Usage:
 ;; - M-x sqlite-mode-open-file
 ;; - Select a query
 ;; - M-x sqlite-query-region-to-csv
 ;;
-;; It always executes against the last visited sqlite-mode buffer.
-
-(if nil
-    (progn
-      (sqlite--mode--csv-data "*SQLite test.db*" "select addressId as a,addressId from sessions limit 100;")
-
-
-      (sqlite-query-region-to-csv)
-
-      (comment
-       "select * from sessions limit 5000;"
-       "select count(*) as count from shards;"
-       )
-      ))
+;; The query is executed against the last visited sqlite-mode buffer's DB.
 
 
 ;; sqlite-mode buffer tracking
@@ -81,7 +70,8 @@
 ;; Interactive command + temp buffer management
 
 (defun sqlite-query-region-to-csv (start end)
-  "Execute the query from the current region and write the results to a temp buffer as CSV."
+  "Executes the query in the region against the last `sqlite-mode`
+buffer. Captures the results in a temp buffer formatted as CSV."
   (interactive "r")
 
   (if (buffer-live-p sqlite--current-db-buffer)
@@ -97,3 +87,16 @@
                     (sqlite--mode--csv-data sqlite--current-db-buffer query)
                     (buffer-string)))
           (beginning-of-buffer)))))
+
+
+(if nil
+    (progn
+      (sqlite--mode--csv-data
+       "*SQLite test.db*"
+       "select addressId as a, addressId from sessions limit 100;")
+      (sqlite-query-region-to-csv)
+
+      (comment
+       "select * from sessions limit 5000;"
+       "select count(*) as count from shards;"
+       )))
