@@ -238,6 +238,9 @@ With argument, positions cursor at end of buffer."
         '(("A" "Multi-occur, agenda files and archives"
            search ""
            ((org-agenda-files (find-org-files-x "\\.org$\\|org_archive$"))))
+          ("M" "Tags, agenda files and archives"
+           tags ""
+           ((org-agenda-files (find-org-files-x "\\.org$\\|org_archive$"))))
           ("P" "Project list"
            tags "prj"
            ((org-use-tag-inheritance nil)))
