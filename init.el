@@ -284,26 +284,26 @@
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
    '("73f7374c18e446d7e2e135c580247e0a696ec373d2f446cc617ea6beb1c47788" default))
- '(ansi-color-for-comint-mode t)
- '(ansi-color-names-vector
-    ["#454545" "#cd7542" "#6aaf50" "#baba36" "#5180b3" "#ab75c3" "#bdbc61" "#bdbdb3"])
- '(c-doc-comment-style 'set-from-style)
- '(column-number-mode t)
- '(completion-ignored-extensions
-   '(".obj" ".pdb" ".svn/" "CVS/" ".o" "~" ".bin" ".bak" ".obj" ".map" ".ico" ".pif" ".lnk" ".a" ".ln" ".blg" ".bbl" ".dll" ".drv" ".vxd" ".386" ".elc" ".lof" ".glo" ".idx" ".lot" ".fmt" ".tfm" ".class" ".fas" ".lib" ".mem" ".x86f" ".sparcf" ".fasl" ".ufsl" ".fsl" ".dxl" ".pfsl" ".dfsl" ".p64fsl" ".d64fsl" ".dx64fsl" ".lo" ".la" ".gmo" ".mo" ".toc" ".aux" ".cp" ".fn" ".ky" ".pg" ".tp" ".vr" ".cps" ".fns" ".kys" ".pgs" ".tps" ".vrs" ".pyc" ".pyo"))
- '(select-enable-clipboard t)
- '(tool-bar-mode nil)
- '(user-full-name "Shawn Hoover")
- '(user-mail-address "shawn.hoover@gmail.com")
- '(visual-line-mode nil t)
- '(visual-scroll-margin 0)
-
  '(package-selected-packages
-   '(org yasnippet yaml-mode inf-ruby powershell paredit org-plus-contrib nginx-mode markdown-mode magit imenu-anywhere htmlize find-file-in-project expand-region editorconfig edit-server csharp-mode cider)))
+   '(org-modern yasnippet yaml-mode protobuf-mode powershell paredit org nginx-mode markdown-mode magit inf-ruby imenu-anywhere htmlize go-mode find-file-in-project expand-region editorconfig edit-server csharp-mode cider)))
+
+
+;; Pull these customized variables out of the generated custom block that gets overwritten on OS X for some reason.
+(setq
+ ansi-color-for-comint-mode t
+ ansi-color-names-vector ["#454545" "#cd7542" "#6aaf50" "#baba36" "#5180b3" "#ab75c3" "#bdbc61" "#bdbdb3"]
+ c-doc-comment-style 'set-from-style
+ column-number-mode t
+ completion-ignored-extensions
+ '(".obj" ".pdb" ".svn/" "CVS/" ".o" "~" ".bin" ".bak" ".obj" ".map" ".ico" ".pif" ".lnk" ".a" ".ln" ".blg" ".bbl" ".dll" ".drv" ".vxd" ".386" ".elc" ".lof" ".glo" ".idx" ".lot" ".fmt" ".tfm" ".class" ".fas" ".lib" ".mem" ".x86f" ".sparcf" ".fasl" ".ufsl" ".fsl" ".dxl" ".pfsl" ".dfsl" ".p64fsl" ".d64fsl" ".dx64fsl" ".lo" ".la" ".gmo" ".mo" ".toc" ".aux" ".cp" ".fn" ".ky" ".pg" ".tp" ".vr" ".cps" ".fns" ".kys" ".pgs" ".tps" ".vrs" ".pyc" ".pyo")
+ select-enable-clipboard t
+ visual-line-mode t
+ visual-scroll-margin 0)
+(tool-bar-mode 0)
+(setq user-full-name "Shawn Hoover")
+;;(customize-set-variable 'user-mail-address "shawn.hoover@gmail.com")
 
 (when (display-graphic-p)
-  ;;(load-theme 'Shawn)
-  ;;(load-theme 'fogus)
   (load-theme 'ample)
   (load "themes/org-fancy")
 
