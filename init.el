@@ -251,7 +251,7 @@
 (when (eq system-type 'darwin)
   (setq mac-command-modifier (quote meta))
   (setq mac-option-modifier (quote alt))
-  (global-set-key (kbd "A-M-o") 'ns-do-hide-others) ; Command-Option-O, Win-Alt-O
+  (global-set-key (kbd "A-M-h") 'ns-do-hide-others) ; Command-Option-O, Win-Alt-O
   )
 
 ;; Snippets. Enable TAB expansion globally, but only after typing something;
