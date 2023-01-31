@@ -250,9 +250,6 @@
 ;; OS X-specific setup
 (setq mac-command-modifier (quote meta))
 (setq mac-option-modifier (quote alt))
-(when (featurep 'aquamacs)
-  (tabbar-mode -1)
-  (define-key osx-key-mode-map `[(control z)] 'iconify-or-deiconify-frame))
 
 ;; Snippets. Enable TAB expansion globally, but only after typing something;
 ;; if I'm moving around and press tab, I want it to indent the line.
@@ -321,19 +318,6 @@
 
 (cd "~")
 
-;; Check custom-file compatibility
-(when (and (boundp 'aquamacs-version-id)
-	       (< (floor (/ aquamacs-version-id 10))
-	          (floor (/ aquamacs-customization-version-id 10))))
-  (defadvice frame-notice-user-settings (before show-version-warning activate)
-    (defvar aquamacs-backup-custom-file nil "Backup of `custom-file', if any.")
-    (setq aquamacs-backup-custom-file "~/emacs/customizations.1.9.el")
-    (let ((msg "Aquamacs options were saved by a more recent program version.
-Errors may occur.  Save Options to overwrite the customization file. The original, older customization file was backed up to ~/emacs/customizations.1.9.el."))
-      (if window-system
-	      (x-popup-dialog t (list msg '("OK" . nil) 'no-cancel) "Warning")
-	    (message msg)))))
-;; End compatibility check
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
