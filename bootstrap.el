@@ -29,6 +29,7 @@
                   cider ;;clojure-mode
                   ;;fsharp-mode
                   csharp-mode
+                  dockerfile-mode
                   edit-server
                   editorconfig
                   expand-region
