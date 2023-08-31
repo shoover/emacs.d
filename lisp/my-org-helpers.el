@@ -193,8 +193,7 @@ and dir-locals don't work either.
 
 Set org-html-postamble or #+options: html-postamble."
   (format "<p class=\"author\">%s</p>
-<p class=\"date\">Updated %s</p>
-<p class=\"creator\"><a href=\"https://orgmode.org\">orgmode</a></p"
+<p class=\"date\">Updated %s</p>"
           (car (plist-get options ':author))
           (format-time-string "%d %b %Y")))
 
