@@ -315,6 +315,16 @@ With argument, positions cursor at end of buffer."
      ("\\paragraph{%s}" . "\\paragraph*{%s}")
      ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
 
+(defun create-blog-draft (slug)
+	"Create an orgmode blog post in my blog drafts folder. .org is
+appended to SLUG to create a filename. Invokes my `blog' snippet
+to template the post."
+	(interactive
+     (list (read-string "Slug: ")))
+	(let* ((draft (expand-file-name (format "_drafts/%s.org" slug) my-blog-dir)))
+	  (find-file draft)
+      (yas-expand-snippet (yas-lookup-snippet "blog"))))
+
 (require 'org-protocol)
 
 ;; Advise org-protocol-capture to always wrap in a new capture frame. This

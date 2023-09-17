@@ -38,6 +38,7 @@
 (defvar my-work-org (concat org-directory "/work.org"))
 (defvar my-notes-org (concat org-directory "/notes.org"))
 
+(defvar my-blog-dir "~/dev/shawnhoover.dev/notes/")
 (defvar my-dev-dir "~/dev")
 
 ;;; Settings

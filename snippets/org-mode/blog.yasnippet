@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: blog
+# key: blog
+# --
+#+title: $1
+#+description: $2
+#+date: <`(format-time-string (cdr org-time-stamp-formats))`$3>
+#+setupfile: org.txt
+
+$0
