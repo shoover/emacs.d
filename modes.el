@@ -51,7 +51,7 @@
 (rassq-delete-all 'change-log-mode auto-mode-alist)
 
 ;; Clojure
-(add-hook 'clojure-mode-hook 'lisp-enable-paredit-hook)
+(add-hook 'clojure-mode-hook 'enable-paredit-mode)
 (add-hook 'clojure-mode-hook 'my-clojure-mode-hook)
 (defun my-clojure-mode-hook ()
   (set-keymap-parent clojure-mode-map lisp-mode-shared-map)
@@ -84,12 +84,12 @@
     ("\C-c\C-b" . 'eval-buffer)
     ("\C-c\C-r" . 'eval-region))
 
-  (paredit-mode 1))
+  (enable-paredit-mode))
 
 (add-hook 'emacs-lisp-mode-hook 'my-emacs-lisp-mode-hook)
 
-(add-hook 'eval-expression-minibuffer-setup-hook #'eldoc-mode)
-(add-hook 'eval-expression-minibuffer-setup-hook #'paredit-mode)
+(add-hook 'eval-expression-minibuffer-setup-hook 'eldoc-mode)
+(add-hook 'eval-expression-minibuffer-setup-hook 'eval-minibuffer-enable-paredit-hook)
 
 ;; F#
 (defvar inferior-fsharp-program "\"c:\\Program Files (x86)\\Microsoft F#\\v4.0\\Fsi.exe\"")
@@ -162,6 +162,7 @@ With argument, positions cursor at end of buffer."
   ("\M-k" . 'kill-sexp)
   ("\C-\M-y" . 'reverse-transpose-sexps)
   ("\C-c\C-u" . 'backward-up-list))
+(add-hook 'lisp-mode-hook 'enable-paredit-mode)
 
 ;; Log files
 (autoload 'log-mode "log-mode" "View log files" t)
@@ -394,12 +395,14 @@ to template the post."
 
 ;; Paredit
 (require 'paredit)
-(defun lisp-enable-paredit-hook () (paredit-mode 1))
+(defun eval-minibuffer-enable-paredit-hook ()
+  (enable-paredit-mode)
+  (unbind-key (kbd "RET") paredit-mode-map))
 (eval-after-load 'paredit
   '(progn
      (define-keys paredit-mode-map
-       ("\M-s" . nil)                   ; override splice
-       ("\M-S" . nil))))                ; split
+                  ("\M-s" . nil)        ; override splice
+                  ("\M-S" . nil))))                ; split
 
 ;; PHP
 (add-to-list 'auto-mode-alist '("\\.php$" . html-mode))
