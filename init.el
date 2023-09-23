@@ -260,7 +260,7 @@
 (require 'yasnippet)
 (add-to-list 'yas-snippet-dirs (concat emacs-root "/snippets"))
 (yas-global-mode 1)
-(setq yas-expand-only-for-last-commands '(self-insert-command))
+(setq yas-expand-only-for-last-commands '(self-insert-command org-self-insert-command))
 
 ;; scpaste; this is available on ELPA, but I have patched it to work with pscp/plink
 (require 'scpaste) ; LISP
