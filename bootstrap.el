@@ -2,25 +2,7 @@
 ;; Use the above for moving into a new machine.
 ;; From Augie Fackler https://bitbucket.org/durin42/dotfiles and hacked.
 
-(add-to-list 'load-path "~/emacs/lisp")
-
-;; emacs 23 compat hack from Lucas Bergman
-(unless (fboundp 'package-refresh-contents)
-  ;; If ELPA support isn't built in, we're in Emacs <=23. Normally, one
-  ;; would bootstrap ELPA from the source, tromey.com, but that sucks,
-  ;; because that version of package.el doesn't support multiple archives
-  ;; even in 2012. old/package.el is from http://bit.ly/pkg-el23, which is
-  ;; cited at https://github.com/technomancy/package.el as the last emacs23
-  ;; version of package.el.
-  (unless (load (expand-file-name "~/.elisp/old/package.el"))
-    (error "ELPA is not in Emacs, and local package.el failed to load.")))
-
-
-(require 'package)
-(dolist (archive '(("melpa" . "https://melpa.org/packages/")
-                   ("marmalade" . "http://marmalade-repo.org/packages/")))
-  (add-to-list 'package-archives archive t))
-(package-initialize)
+(add-to-list 'load-path (expand-file-name "~/emacs/lisp"))
 
 (defun my-bootstrap-packages ()
   (interactive)
@@ -28,7 +10,6 @@
   (dolist (pack '(
                   cider ;;clojure-mode
                   ;;fsharp-mode
-                  csharp-mode
                   dockerfile-mode
                   edit-server
                   editorconfig
@@ -40,7 +21,7 @@
                   magit
                   markdown-mode
                   nginx-mode
-                  org-plus-contrib
+                  org org-contrib
                   paredit
                   powershell
                   protobuf-mode

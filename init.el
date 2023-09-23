@@ -18,15 +18,15 @@
                 (eq system-type 'linux)
                 (eq system-type 'darwin)))
 
-(defvar emacs-root "~/emacs/" "emacs load path root")
+(defvar emacs-root (expand-file-name "~/emacs") "emacs load path root")
 (defvar org-directory (expand-file-name "~"))
 
 ;; Add a smattering of elisp under ~/emacs to my load path.
 (add-to-list 'load-path emacs-root)
-(add-to-list 'load-path (concat emacs-root "lisp"))
+(add-to-list 'load-path (concat emacs-root "/lisp"))
 
 ;; This makes load-theme work on anything in "themes"
-(setq custom-theme-directory (concat emacs-root "themes"))
+(setq custom-theme-directory (concat emacs-root "/themes"))
 
 (when (eq system-type 'windows-nt)
   ;; Put cygwin ahead of system32 for emacs and things it shells out to.
@@ -99,7 +99,7 @@
   (ispell-create-debug-buffer)
   (setq ispell-program-name "hunspell")
   (setq ispell-dictionary "en_US")
-  (setenv "DICPATH" (expand-file-name (concat emacs-root "dict")))
+  (setenv "DICPATH" (expand-file-name (concat emacs-root "/dict")))
   (setq ispell-dictionary-alist
         '(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_US") nil utf-8)
           (nil "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_US") nil utf-8)))
@@ -258,7 +258,7 @@
 ;; Snippets. Enable TAB expansion globally, but only after typing something;
 ;; if I'm moving around and press tab, I want it to indent the line.
 (require 'yasnippet)
-(add-to-list 'yas-snippet-dirs (concat emacs-root "snippets"))
+(add-to-list 'yas-snippet-dirs (concat emacs-root "/snippets"))
 (yas-global-mode 1)
 (setq yas-expand-only-for-last-commands '(self-insert-command))
 
@@ -289,7 +289,7 @@
  '(custom-safe-themes
    '("73f7374c18e446d7e2e135c580247e0a696ec373d2f446cc617ea6beb1c47788" default))
  '(package-selected-packages
-   '(org-modern yasnippet yaml-mode protobuf-mode powershell paredit org nginx-mode markdown-mode magit inf-ruby imenu-anywhere htmlize go-mode find-file-in-project expand-region editorconfig edit-server csharp-mode cider)))
+   '(compat org-contrib org-modern yasnippet yaml-mode protobuf-mode powershell paredit org nginx-mode markdown-mode magit inf-ruby imenu-anywhere go-mode find-file-in-project expand-region editorconfig edit-server cider)))
 
 
 ;; Pull these customized variables out of the generated custom block that gets overwritten on OS X for some reason.
@@ -327,12 +327,12 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(org-document-title ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :font "Verdana" :height 1.6 :underline nil))))
- '(org-level-1 ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :font "Verdana" :height 1.45))))
- '(org-level-2 ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :font "Verdana" :height 1.4 :slant italic))))
- '(org-level-3 ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :font "Verdana" :height 1.4 :slant italic))))
- '(org-level-4 ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :font "Verdana" :height 1.4 :slant italic))))
- '(org-level-5 ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :font "Verdana" :height 1.4 :slant italic))))
- '(org-level-6 ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :font "Verdana" :height 1.4))))
- '(org-level-7 ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :font "Verdana" :height 1.4))))
- '(org-level-8 ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :font "Verdana" :height 1.4)))))
+ '(org-document-title ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :font "Calibri" :height 1.6 :underline nil))))
+ '(org-level-1 ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :font "Calibri" :height 1.45))))
+ '(org-level-2 ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :font "Calibri" :height 1.4 :slant italic))))
+ '(org-level-3 ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :font "Calibri" :height 1.4 :slant italic))))
+ '(org-level-4 ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :font "Calibri" :height 1.4 :slant italic))))
+ '(org-level-5 ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :font "Calibri" :height 1.4 :slant italic))))
+ '(org-level-6 ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :font "Calibri" :height 1.4))))
+ '(org-level-7 ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :font "Calibri" :height 1.4))))
+ '(org-level-8 ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :font "Calibri" :height 1.4)))))
