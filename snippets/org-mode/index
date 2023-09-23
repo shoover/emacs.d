@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: Add INDEX
+# key: ind
+# --
+#+index: $0
