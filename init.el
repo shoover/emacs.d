@@ -84,7 +84,8 @@
 (setq paragraph-start "\f\\|[ 	]*$\\|\\([ ]+- \\)")
 (setq sentence-end-double-space nil)
 
-(setq-default fill-column 80)
+(setq-default fill-column 80
+              emacs-lisp-docstring-fill-column 70)
 
 (setq comment-auto-fill-only-comments 1)
 
