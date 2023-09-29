@@ -262,7 +262,8 @@ With argument, positions cursor at end of buffer."
    'org-babel-load-languages
    '(; (fsharp . t); I got a babel helper from https://github.com/fradav/ob-fsharp/blob/master/ob-fsharp.el,
                    ; but it doesn't work
-     (ruby . t))))
+     (ruby . t)
+     (shell . t))))
 
 (setq org-indent-mode t
       org-hide-leading-stars t
