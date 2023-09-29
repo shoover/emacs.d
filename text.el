@@ -287,6 +287,18 @@ table determines which characters these are."
              (message
               "The region has %d words." count))))))
 
+;; Adapted from https://www.emacswiki.org/emacs/SortWords
+(defun sort-words (reverse beg end)
+  "Sort words in region alphabetically, in REVERSE if negative.
+Prefixed with negative \\[universal-argument], sorts in reverse.
+
+The variable `sort-fold-case' determines whether alphabetic case
+affects the sort order.
+
+    See `sort-regexp-fields'."
+      (interactive "*P\nr")
+      (sort-regexp-fields reverse "[[:word:]-]+" "\\&" beg end))
+
 ;; adapted from http://blog.bookworm.at/2007/03/pretty-print-xml-with-emacs.html
 (defun nxml-format-region (begin end)
   "Formats XML markup in the region with line breaks and indentation."
