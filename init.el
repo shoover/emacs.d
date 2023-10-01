@@ -168,6 +168,8 @@
 ;;; Custom functions and mode settings
 (load "text")
 (load "modes")
+(when (sqlite-available-p)
+  (require 'sqlite-query))
 
 ;;; Custom keybindings
 
