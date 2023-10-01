@@ -20,6 +20,20 @@
 ;; - M-x sqlite-mode-open-file OR M-x sql-sqlite
 ;; - Select a query
 ;; - M-x sqlite-query-string-to-csv, sqlite-query-paragraph-to-csv, sqlite-query-region-to-csv
+;;
+;; Copyright (C) 2023 Shawn Hoover
+
+;; sqlite-query.el is free software; you can redistribute it and/or modify it
+;; under the terms of the GNU General Public License version 2 or any later
+;; version.
+
+;; sqlite-query.el is distributed in the hope that it will be useful, but
+;; WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+;; FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+;; details.
+
+;; You should have received a copy of the GNU General Public License along with
+;; sqlite-query.el or GNU Emacs. If not, see <http://www.gnu.org/licenses/>.
 
 ;; sqlite-mode last visited buffer tracking
 
