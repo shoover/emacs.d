@@ -257,11 +257,13 @@ With argument, positions cursor at end of buffer."
         org-refile-allow-creating-parent-nodes 'confirm)
 
   (setq org-src-fontify-natively t
-        org-edit-src-content-indentation 0)
+        org-edit-src-content-indentation 0
+        org-babel-python-command "python3")
   (org-babel-do-load-languages
    'org-babel-load-languages
    '(; (fsharp . t); I got a babel helper from https://github.com/fradav/ob-fsharp/blob/master/ob-fsharp.el,
                    ; but it doesn't work
+     (python . t)
      (ruby . t)
      (shell . t))))
 
@@ -318,7 +320,7 @@ With argument, positions cursor at end of buffer."
      ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
 
 (defun create-blog-draft (slug)
-	"Create an orgmode blog post in my blog drafts folder. .org is
+	"Create an orgmode blog post in \"_drafts\" under `my-blog-dir'. .org is
 appended to SLUG to create a filename. Invokes my `blog' snippet
 to template the post."
 	(interactive

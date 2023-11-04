@@ -292,7 +292,7 @@
  '(custom-safe-themes
    '("73f7374c18e446d7e2e135c580247e0a696ec373d2f446cc617ea6beb1c47788" default))
  '(package-selected-packages
-   '(cider edit-server editorconfig expand-region find-file-in-project go-mode htmlize imenu-anywhere inf-ruby magit markdown-mode nginx-mode org org-contrib org-modern paredit powershell protobuf-mode transpose-frame yaml-mode yasnippet)))
+   '(websocket cider edit-server editorconfig expand-region find-file-in-project go-mode htmlize imenu-anywhere inf-ruby magit markdown-mode nginx-mode org org-contrib org-modern paredit powershell protobuf-mode transpose-frame yaml-mode yasnippet)))
 
 ;; Pull these customized variables out of the generated custom block that gets overwritten on OS X for some reason.
 (setq
