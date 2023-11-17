@@ -193,6 +193,10 @@
 (define-key ido-common-completion-map "\M-s" 'ido-prev-match)
 (define-key ido-file-dir-completion-map "\M-s" 'ido-prev-match)
 
+;; Multiple cursors, similar to IntelliJ multiselect
+(global-set-key (kbd "C->") 'mc/mark-next-like-this)
+(define-key mc/keymap (kbd "<return>") nil) ; Require C-g to get out of multiple cursors
+
 (global-set-key (kbd "C-.") 'ido-imenu-anywhere)
 
 ;; I want to remap C-i in text-mode but leave tab working as normal. This is
@@ -292,7 +296,7 @@
  '(custom-safe-themes
    '("73f7374c18e446d7e2e135c580247e0a696ec373d2f446cc617ea6beb1c47788" default))
  '(package-selected-packages
-   '(websocket cider edit-server editorconfig expand-region find-file-in-project go-mode htmlize imenu-anywhere inf-ruby magit markdown-mode nginx-mode org org-contrib org-modern paredit powershell protobuf-mode transpose-frame yaml-mode yasnippet)))
+   '(cider edit-server editorconfig expand-region find-file-in-project go-mode htmlize imenu-anywhere inf-ruby magit markdown-mode multiple-cursors nginx-mode org org-contrib org-modern paredit powershell protobuf-mode transpose-frame websocket yaml-mode yasnippet)))
 
 ;; Pull these customized variables out of the generated custom block that gets overwritten on OS X for some reason.
 (setq
