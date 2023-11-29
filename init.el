@@ -195,6 +195,7 @@
 
 ;; Multiple cursors, similar to IntelliJ multiselect
 (global-set-key (kbd "C->") 'mc/mark-next-like-this)
+(require 'multiple-cursors-core)
 (define-key mc/keymap (kbd "<return>") nil) ; Require C-g to get out of multiple cursors
 
 (global-set-key (kbd "C-.") 'ido-imenu-anywhere)
