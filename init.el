@@ -297,7 +297,7 @@
  '(custom-safe-themes
    '("73f7374c18e446d7e2e135c580247e0a696ec373d2f446cc617ea6beb1c47788" default))
  '(package-selected-packages
-   '(cider edit-server editorconfig expand-region find-file-in-project go-mode htmlize imenu-anywhere inf-ruby magit markdown-mode multiple-cursors nginx-mode org org-contrib org-modern paredit powershell protobuf-mode transpose-frame websocket yaml-mode yasnippet)))
+   '(cider dockerfile-mode edit-server editorconfig expand-region find-file-in-project go-mode htmlize imenu-anywhere inf-ruby magit markdown-mode multiple-cursors nginx-mode org org-modern paredit powershell protobuf-mode transpose-frame yaml-mode yasnippet)))
 
 ;; Pull these customized variables out of the generated custom block that gets overwritten on OS X for some reason.
 (setq
@@ -334,12 +334,4 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(org-document-title ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :font "Calibri" :height 1.6 :underline nil))))
- '(org-level-1 ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :font "Calibri" :height 1.45))))
- '(org-level-2 ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :font "Calibri" :height 1.4 :slant italic))))
- '(org-level-3 ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :font "Calibri" :height 1.4 :slant italic))))
- '(org-level-4 ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :font "Calibri" :height 1.4 :slant italic))))
- '(org-level-5 ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :font "Calibri" :height 1.4 :slant italic))))
- '(org-level-6 ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :font "Calibri" :height 1.4))))
- '(org-level-7 ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :font "Calibri" :height 1.4))))
- '(org-level-8 ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :font "Calibri" :height 1.4)))))
+ )
