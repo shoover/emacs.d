@@ -78,7 +78,7 @@ line instead."
 (defun banjo ()
   "Find my work org file"
   (interactive)
-  (find-file (expand-file-name (concat org-directory "/../banjo/banjo.org"))))
+  (find-file (expand-file-name (concat org-directory "/music/banjo/banjo.org"))))
 
 (defun indent-buffer-x ()
   "Indent the entire buffer."

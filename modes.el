@@ -81,8 +81,8 @@
 ;; elisp
 (defun my-emacs-lisp-mode-hook ()
   (define-keys emacs-lisp-mode-map
-    ("\C-c\C-b" . 'eval-buffer)
-    ("\C-c\C-r" . 'eval-region))
+               ("\C-c\C-b" . 'eval-buffer)
+               ("\C-c\C-r" . 'eval-region))
 
   (enable-paredit-mode))
 
@@ -95,14 +95,14 @@
 (defvar inferior-fsharp-program "\"c:\\Program Files (x86)\\Microsoft F#\\v4.0\\Fsi.exe\"")
 (defvar fsharp-compiler "\"c:\\Program Files (x86)\\Microsoft F#\\v4.0\\Fsc.exe\"")
 (setq fsharp-tab-always-indent nil) ; try to prevent it from indenting the
-                                    ; previous line when pressing Enter
+                                        ; previous line when pressing Enter
 (add-hook 'fsharp-mode-hook
           (lambda ()
             (define-keys fsharp-mode-map
-              ("\C-c\C-b" . 'fsharp-load-buffer-x)
-              ("\C-c\C-l" . 'fsharp-load-line-x)
-              ("\C-c\C-u" . 'fsharp-goto-block-up)
-              ("\C-x\C-e" . 'fsharp-eval-phrase))))
+                         ("\C-c\C-b" . 'fsharp-load-buffer-x)
+                         ("\C-c\C-l" . 'fsharp-load-line-x)
+                         ("\C-c\C-u" . 'fsharp-goto-block-up)
+                         ("\C-x\C-e" . 'fsharp-eval-phrase))))
 (add-hook 'inferior-fsharp-mode-hooks
           (lambda ()
             (add-to-list 'comint-output-filter-functions
@@ -133,15 +133,15 @@
 (add-hook 'lua-mode-hook
           (lambda ()
             (define-keys lua-mode-map
-              ("\C-x\C-e" . 'lua-send-defun)
-              ("\C-\M-x" . 'lua-send-defun))
+                         ("\C-x\C-e" . 'lua-send-defun)
+                         ("\C-\M-x" . 'lua-send-defun))
             (define-keys lua-prefix-mode-map ; C-c
-              ("\C-s" . 'lua-show-process-buffer)
-              ("\C-z" . 'lua-switch-to-inf)
-              ("\C-u" . 'lua-beginning-of-proc)
-              ("\C-l" . 'lua-send-current-line)
-              ("\C-b" . 'lua-send-buffer)
-              ("\C-r" . 'lua-send-region))))
+                         ("\C-s" . 'lua-show-process-buffer)
+                         ("\C-z" . 'lua-switch-to-inf)
+                         ("\C-u" . 'lua-beginning-of-proc)
+                         ("\C-l" . 'lua-send-current-line)
+                         ("\C-b" . 'lua-send-buffer)
+                         ("\C-r" . 'lua-send-region))))
 
 ;; Borrowed from inf-ruby and cut down
 (defun lua-switch-to-inf (eob-p)
@@ -157,11 +157,11 @@ With argument, positions cursor at end of buffer."
 ;; Lisp
 (require 'lisp-mode)
 (define-keys lisp-mode-shared-map
-  ("\M-a" . 'backward-sexp)
-  ("\M-e" . 'forward-sexp)
-  ("\M-k" . 'kill-sexp)
-  ("\C-\M-y" . 'reverse-transpose-sexps)
-  ("\C-c\C-u" . 'backward-up-list))
+             ("\M-a" . 'backward-sexp)
+             ("\M-e" . 'forward-sexp)
+             ("\M-k" . 'kill-sexp)
+             ("\C-\M-y" . 'reverse-transpose-sexps)
+             ("\C-c\C-u" . 'backward-up-list))
 (add-hook 'lisp-mode-hook 'enable-paredit-mode)
 
 ;; Log files
@@ -203,34 +203,34 @@ With argument, positions cursor at end of buffer."
 (add-hook 'org-load-hook 'my-org-load-hook)
 (defun my-org-load-hook ()
   (define-keys org-mode-map
-    ("\C-ca" . 'org-agenda)
-    ("\C-cl" . 'org-store-link)
-    ("\C-cw" . 'copy-org-link-at-point)
-    ("\C-cd" . 'org-datetree-find-create-here-x)
-    ("\C-c\S-d" . 'org-datetree-find-create-here-skip-month-x)
-    ("\C-ct" . 'org-toggle-item)
+               ("\C-ca" . 'org-agenda)
+               ("\C-cl" . 'org-store-link)
+               ("\C-cw" . 'copy-org-link-at-point)
+               ("\C-cd" . 'org-datetree-find-create-here-x)
+               ("\C-c\S-d" . 'org-datetree-find-create-here-skip-month-x)
+               ("\C-ct" . 'org-toggle-item)
 
-    ;; Make links work like chasing definitions in source code.
-    ("\M-." . 'org-open-at-point)
-    ("\M-," . 'org-mark-ring-goto)
+               ;; Make links work like chasing definitions in source code.
+               ("\M-." . 'org-open-at-point)
+               ("\M-," . 'org-mark-ring-goto)
 
-    ("\C-\M-a" . 'org-archive-subtree)
-    ("\C-\M-p" . 'org-promote-subtree-x)
+               ("\C-\M-a" . 'org-archive-subtree)
+               ("\C-\M-p" . 'org-promote-subtree-x)
 
-    ;; Compatibility with my isearch keys
-    ("\C-c\C-x\C-r" . 'org-paste-special)
+               ;; Compatibility with my isearch keys
+               ("\C-c\C-x\C-r" . 'org-paste-special)
 
-    ;; clear this so next- previous-buffer works
-    ([C-tab] . nil)
+               ;; clear this so next- previous-buffer works
+               ([C-tab] . nil)
 
-    ;; clear up/down priority/clock keys for scrolling
-    ([S-up] . nil)
-    ([S-down] . nil)
-    ([C-S-up] . nil)
-    ([C-S-down] . nil))
+               ;; clear up/down priority/clock keys for scrolling
+               ([S-up] . nil)
+               ([S-down] . nil)
+               ([C-S-up] . nil)
+               ([C-S-down] . nil))
 
   (setq org-directories (list org-directory))
-  (let ((b (concat org-directory "/../banjo")))
+  (let ((b (concat org-directory "/music")))
     (when (file-exists-p b)
       (add-to-list 'org-directories b)))
 
@@ -262,7 +262,7 @@ With argument, positions cursor at end of buffer."
   (org-babel-do-load-languages
    'org-babel-load-languages
    '(; (fsharp . t); I got a babel helper from https://github.com/fradav/ob-fsharp/blob/master/ob-fsharp.el,
-                   ; but it doesn't work
+                                        ; but it doesn't work
      (python . t)
      (ruby . t)
      (shell . t))))
@@ -286,11 +286,11 @@ With argument, positions cursor at end of buffer."
 ;; Use by setting #+LATEX_CLASS: sah-org-article
 (require 'ox-latex)
 (setq org-latex-pdf-process
- '("xelatex -interaction nonstopmode %f"
-   "xelatex -interaction nonstopmode %f"))
+      '("xelatex -interaction nonstopmode %f"
+        "xelatex -interaction nonstopmode %f"))
 (add-to-list 'org-latex-classes
-  '("sah-org-article"
-"\\documentclass[12pt,letterpaper]{article}
+             '("sah-org-article"
+               "\\documentclass[12pt,letterpaper]{article}
 \\usepackage{geometry}
 \\geometry{letterpaper, margin=1.25in,
            marginparsep=7pt, marginparwidth=.6in}
@@ -313,21 +313,33 @@ With argument, positions cursor at end of buffer."
       [NO-DEFAULT-PACKAGES]
       [NO-PACKAGES]
 "
-     ("\\section{%s}" . "\\section*{%s}")
-     ("\\subsection{%s}" . "\\subsection*{%s}")
-     ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-     ("\\paragraph{%s}" . "\\paragraph*{%s}")
-     ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+               ("\\section{%s}" . "\\section*{%s}")
+               ("\\subsection{%s}" . "\\subsection*{%s}")
+               ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+               ("\\paragraph{%s}" . "\\paragraph*{%s}")
+               ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
 
-(defun create-blog-draft (slug)
-	"Create an orgmode blog post in \"_drafts\" under `my-blog-dir'. .org is
+(defun create-blog-post (slug)
+  "Create an orgmode blog post in `my-blog-dir'. .org is
 appended to SLUG to create a filename. Invokes my `blog' snippet
-to template the post."
-	(interactive
-     (list (read-string "Slug: ")))
-	(let* ((draft (expand-file-name (format "_drafts/%s.org" slug) my-blog-dir)))
-	  (find-file draft)
-      (yas-expand-snippet (yas-lookup-snippet "blog"))))
+to template the post. Pre-creates an images directory using the same slug."
+  (interactive
+   (list (read-string "Slug: ")))
+  (let* ((draft (expand-file-name (format "%s.org" slug) my-blog-dir)))
+	(find-file draft)
+    (yas-expand-snippet (yas-lookup-snippet "blog"))))
+
+(defun insert-blog-image (img-filename)
+  "Create an image file link in an orgmode blog post. The link is
+implicitly rooted in an images directory under `my-blog-dir' and named
+from the slug of the current buffer file. The directory is precreated.
+A blank caption is also inserted."
+  (interactive
+   (list (read-string "Image filename: ")))
+  (let* ((slug (file-name-sans-extension (file-name-nondirectory (buffer-file-name))))
+         (img-dir (format "../assets/images/notes/%s" slug)))
+    (make-directory img-dir t)
+    (insert "#+CAPTION: \n" (format "[[file:%s/%s]]" img-dir img-filename))))
 
 (require 'org-protocol)
 
@@ -440,8 +452,8 @@ to template the post."
 
 (eval-after-load 'inf-ruby
   '(define-keys inf-ruby-minor-mode-map
-     ("\C-c\C-l" . 'ruby-load-line-x)
-     ("\C-c\C-b" . 'ruby-load-buffer-x)))
+                ("\C-c\C-l" . 'ruby-load-line-x)
+                ("\C-c\C-b" . 'ruby-load-buffer-x)))
 
 ;; Script
 (add-hook 'after-save-hook
@@ -458,16 +470,16 @@ to template the post."
 
 (defun turn-on-ispell-keys ()
   (interactive)
-	(local-set-key (kbd "H-i") 'ispell-word) ; ispell word; this is really C-i
+  (local-set-key (kbd "H-i") 'ispell-word) ; ispell word; this is really C-i
   (local-set-key "\M-i" 'ispell))          ; ispell region or buffer
 
 ;; VC -- Bring back some of that old mercurial.el feeling to VC mode. I miss the
 ;; single step commit without having to set up a fileset but let's give this a whirl.
 (eval-after-load 'vc-hooks
   '(define-keys vc-prefix-map
-     ("=" . 'vc-root-diff)
-     ("D" . 'vc-diff)
-     ("n" . 'vc-next-action)))
+                ("=" . 'vc-root-diff)
+                ("D" . 'vc-diff)
+                ("n" . 'vc-next-action)))
 
 ;; YAML
 (autoload 'yaml-mode "yaml-mode" "Edit YAML files" t)

@@ -1,9 +1,8 @@
 
 (defun find-org-files-x (&optional regexp)
-  "Returns a list of files in `org-directories' (searched
-recursively) whose names match REGEXP. The search pattern
-defaults to .org. You can override, for example, to also search
-archives."
+  "Returns a list of files in `org-directories' whose names match REGEXP.
+The search pattern defaults to .org. You can override, for example, to
+also search archives."
   (let ((regexp (or regexp "\\.org$")))
     (apply 'append
            (mapcar (lambda (dir)
