@@ -301,7 +301,7 @@
  '(custom-safe-themes
    '("73f7374c18e446d7e2e135c580247e0a696ec373d2f446cc617ea6beb1c47788" default))
  '(package-selected-packages
-   '(cider dockerfile-mode edit-server editorconfig expand-region find-file-in-project go-mode htmlize imenu-anywhere inf-ruby magit markdown-mode multiple-cursors nginx-mode org org-modern paredit powershell protobuf-mode transpose-frame yaml-mode yasnippet)))
+   '(transient gptel multiple-cursors yasnippet yaml-mode websocket simple-httpd powershell paredit org-contrib nginx-mode markdown-mode magit inf-ruby imenu-anywhere htmlize go-mode find-file-in-project expand-region editorconfig edit-server dockerfile-mode cider)))
 
 ;; Pull these customized variables out of the generated custom block that gets overwritten on OS X for some reason.
 (setq
