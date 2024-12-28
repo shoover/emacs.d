@@ -12,6 +12,10 @@
 ;; emacs/lisp. Otherwise it should be installed in the package system by
 ;; running bootstrap.el.
 
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+(package-initialize)
+
 ;;; Paths
 (defvar nix (or (eq system-type 'cygwin)
                 (eq system-type 'gnu/linux)
