@@ -455,6 +455,10 @@ A blank caption is also inserted."
                 ("\C-c\C-l" . 'ruby-load-line-x)
                 ("\C-c\C-b" . 'ruby-load-buffer-x)))
 
+;; SQL
+(add-to-list 'process-coding-system-alist '("[dD]uck[dD][bB]" . utf-8-unix))
+(require 'sql-duckdb)
+
 ;; Script
 (add-hook 'after-save-hook
           'executable-make-buffer-file-executable-if-script-p)
