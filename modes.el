@@ -455,6 +455,9 @@ A blank caption is also inserted."
                 ("\C-c\C-l" . 'ruby-load-line-x)
                 ("\C-c\C-b" . 'ruby-load-buffer-x)))
 
+;; Shell
+(add-to-list 'auto-mode-alist '("\\.envrc$" . sh-mode))
+
 ;; SQL
 (add-to-list 'process-coding-system-alist '("[dD]uck[dD][bB]" . utf-8-unix))
 (require 'sql-duckdb)
