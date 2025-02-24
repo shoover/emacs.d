@@ -18,11 +18,15 @@
 
 ;; larger, variable-width heading fonts. 2-8 italic, for fun.
 (let* ((variable-tuple (cond
-                        ((x-list-fonts "Calibri")         '(:font "Calibri"))
-                        ((x-list-fonts "Verdana")         '(:font "Verdana"))
-                        ((x-list-fonts "Lucida Grande")   '(:font "Lucida Grande"))
-                        ((x-list-fonts "Source Sans Pro") '(:font "Source Sans Pro"))
-                        ((x-list-fonts "InputSans") '(:font "InputSans Bold"))
+                        ;; On MacOS, I'd like to use SF Pro; it *appears* to
+                        ;; work when set but actually maps to Helvetica? And it
+                        ;; is never listed. So just use Helvetica.
+                        ((x-list-fonts "Helvetica")       '(:family "Helvetica"))
+                        ((x-list-fonts "Calibri")         '(:family "Calibri"))
+                        ((x-list-fonts "Verdana")         '(:family "Verdana"))
+                        ((x-list-fonts "Lucida Grande")   '(:family "Lucida Grande"))
+                        ((x-list-fonts "Source Sans Pro") '(:family "Source Sans Pro"))
+                        ((x-list-fonts "InputSans") '(:family "InputSans Bold"))
                         ((x-family-fonts "Sans Serif")    '(:family "Sans Serif"))
                         (nil (warn "Cannot find a Sans Serif Font.  Install Source Sans Pro."))))
        (base-font-color    (face-foreground 'default nil 'default))
@@ -31,15 +35,15 @@
                                       :underline nil)))
 
   (custom-theme-set-faces 'user
-                          `(org-level-8 ((t (,@headline ,@variable-tuple :height 1.4))))
-                          `(org-level-7 ((t (,@headline ,@variable-tuple :height 1.4))))
-                          `(org-level-6 ((t (,@headline ,@variable-tuple :height 1.4))))
-                          `(org-level-5 ((t (,@headline ,@variable-tuple :height 1.4 :slant italic))))
-                          `(org-level-4 ((t (,@headline ,@variable-tuple :height 1.4 :slant italic))))
-                          `(org-level-3 ((t (,@headline ,@variable-tuple :height 1.4 :slant italic))))
-                          `(org-level-2 ((t (,@headline ,@variable-tuple :height 1.4 :slant italic))))
-                          `(org-level-1 ((t (,@headline ,@variable-tuple :height 1.45))))
-                          `(org-document-title ((t (,@headline ,@variable-tuple :height 1.6 :underline nil))))))
+                          `(org-level-8 ((t (,@headline ,@variable-tuple :height 1.3))))
+                          `(org-level-7 ((t (,@headline ,@variable-tuple :height 1.3))))
+                          `(org-level-6 ((t (,@headline ,@variable-tuple :height 1.3))))
+                          `(org-level-5 ((t (,@headline ,@variable-tuple :height 1.3))))
+                          `(org-level-4 ((t (,@headline ,@variable-tuple :height 1.3 :slant italic))))
+                          `(org-level-3 ((t (,@headline ,@variable-tuple :height 1.3))))
+                          `(org-level-2 ((t (,@headline ,@variable-tuple :height 1.3 :slant italic))))
+                          `(org-level-1 ((t (,@headline ,@variable-tuple :height 1.4))))
+                          `(org-document-title ((t (,@headline ,@variable-tuple :height 1.5 :underline nil))))))
 
 ;; justified tags look terrible with the variable-width heading font,
 ;; so turn that off
