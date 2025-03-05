@@ -6,7 +6,7 @@
 
 (defun my-bootstrap-packages ()
   (interactive)
-  (unless package-archive-contents (package-refresh-contents))
+  (package-refresh-contents)
   (dolist (pack '(
                   cider ;;clojure-mode
                   ;;fsharp-mode
@@ -20,6 +20,7 @@
                   imenu-anywhere
                   magit
                   markdown-mode
+                  multiple-cursors
                   nginx-mode
                   org org-contrib
                   paredit
