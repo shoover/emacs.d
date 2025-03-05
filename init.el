@@ -226,7 +226,7 @@
 (global-set-key "\C-xk" 'my-ido-kill-buffer)
 (global-set-key "\C-xb" 'my-switch-to-buffer)
 (global-set-key [f5] 'revert-buffer)
-(global-set-key [f6] 'kill-this-buffer)
+(global-set-key [f6] 'kill-current-buffer)
 (global-set-key [f7] 'find-file-in-project-by-selected)
 (global-set-key "\C-t" 'switch-to-new-untitled-buffer)
 
