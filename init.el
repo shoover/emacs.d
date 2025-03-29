@@ -71,7 +71,7 @@
 
 (setq whitespace-global-modes '(c-mode csharp-mode clojure-mode emacs-lisp-mode
                                        python-mode ruby-mode)
-      whitespace-style '(face trailing lines-tail space-before-tab)
+      whitespace-style '(face trailing lines-char space-before-tab)
       whitespace-line-column 91)
 (global-whitespace-mode 1)
 
