@@ -260,6 +260,8 @@
 
 (global-set-key (kbd "C-S-b") 'save-compile-project)
 
+(global-set-key [remap keyboard-quit] #'er-keyboard-quit)
+
 ;; OS X-specific keys
 (when (eq system-type 'darwin)
   (setq mac-command-modifier (quote meta))
