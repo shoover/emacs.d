@@ -220,14 +220,18 @@ With argument, positions cursor at end of buffer."
                ;; Compatibility with my isearch keys
                ("\C-c\C-x\C-r" . 'org-paste-special)
 
-               ;; clear this so next- previous-buffer works
+               ;; Clear M-h org-mark-element so hide emacs works on Mac
+               ("\M-h" . nil)
+
+               ;; Clear C-tab so next- previous-buffer works
                ([C-tab] . nil)
 
-               ;; clear up/down priority/clock keys for scrolling
+               ;; Clear up/down priority/clock keys for scrolling
                ([S-up] . nil)
                ([S-down] . nil)
                ([C-S-up] . nil)
-               ([C-S-down] . nil))
+               ([C-S-down] . nil)
+               )
 
   (setq org-directories (list org-directory))
   (let ((b (concat org-directory "/music")))

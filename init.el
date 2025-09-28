@@ -212,7 +212,7 @@
 (when (display-graphic-p)
   (define-key input-decode-map "\C-i" (kbd "H-i")))
 
-;; remap transpose so C-t is available to create a buffer like Chrome tabs
+;; Remap transpose so C-t is available to create a buffer like Chrome tabs
 (global-set-key "\M-t" 'transpose-chars)
 (global-set-key "\M-T" 'transpose-words)
 
@@ -266,8 +266,9 @@
 (when (eq system-type 'darwin)
   (setq mac-command-modifier (quote meta))
   (setq mac-option-modifier (quote alt))
-  (global-set-key (kbd "A-M-h") 'ns-do-hide-others) ; Command-Option-O, Win-Alt-O
-  )
+  (global-set-key (kbd "A-M-h") 'ns-do-hide-others) ; Cmd-Option-H, Win-Alt-H
+  (global-set-key (kbd "M-h") 'ns-do-hide-emacs) ; Cmd-H
+                  )
 
 ;; Snippets. Enable TAB expansion globally, but only after typing something;
 ;; if I'm moving around and press tab, I want it to indent the line.
@@ -303,7 +304,12 @@
  '(custom-safe-themes
    '("73f7374c18e446d7e2e135c580247e0a696ec373d2f446cc617ea6beb1c47788" default))
  '(package-selected-packages
-   '(cider csv-mode dockerfile-mode edit-server editorconfig expand-region find-file-in-project go-mode gptel htmlize imenu-anywhere inf-ruby magit markdown-mode multiple-cursors nginx-mode org-contrib paredit powershell simple-httpd sql-indent swift-mode transient websocket yaml-mode yasnippet)))
+   '(caddyfile-mode cider csv-mode dockerfile-mode edit-server editorconfig
+                    exec-path-from-shell expand-region find-file-in-project
+                    go-mode gptel htmlize imenu-anywhere inf-ruby magit
+                    markdown-mode multiple-cursors nginx-mode org-contrib
+                    paredit powershell simple-httpd sql-indent swift-mode
+                    transient websocket yaml-mode yasnippet)))
 
 ;; Pull these customized variables out of the generated custom block that gets overwritten on OS X for some reason.
 (setq
@@ -334,3 +340,17 @@
   )
 
 (cd "~")
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(org-document-title ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :family "Helvetica" :height 1.5 :underline nil))))
+ '(org-level-1 ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :family "Helvetica" :height 1.4))))
+ '(org-level-2 ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :family "Helvetica" :height 1.3 :slant italic))))
+ '(org-level-3 ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :family "Helvetica" :height 1.3))))
+ '(org-level-4 ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :family "Helvetica" :height 1.3 :slant italic))))
+ '(org-level-5 ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :family "Helvetica" :height 1.3))))
+ '(org-level-6 ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :family "Helvetica" :height 1.3))))
+ '(org-level-7 ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :family "Helvetica" :height 1.3))))
+ '(org-level-8 ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :family "Helvetica" :height 1.3)))))
