@@ -506,21 +506,19 @@ Uses async-shell-command if a prefix arg is given."
       (concat (capitalize first-char) rest-str))))
 
 (defun save-compile-project ()
-  "Saves modified files under the project root (without asking)
-and recompiles. The project root is determined using
-`ffip-get-project-root-directory'."
+  "Saves modified files under the current `project' root (without asking)
+and recompiles."
   (interactive)
 
   ;; `compile' calls `save-some-buffers' implicitly. We configure it to save
   ;; without asking and give it a predicate to ignore files outside the
   ;; project directory. (Another way would be to set `buffer-save-without-query'
   ;; in all relevant source file mode hooks.)
-  (let ((dir (expand-file-name (ffip-get-project-root-directory)))
+  (let ((dir (expand-file-name (project-root (project-current))))
         (compilation-ask-about-save nil)
         (compilation-save-buffers-predicate (lambda ()
                                               (string-prefix-p dir (buffer-file-name))))
 
-        ;;
         (default-directory (capitalize-first-char-x (expand-file-name default-directory)))
         (compilation-directory default-directory)
 

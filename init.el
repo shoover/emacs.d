@@ -33,9 +33,10 @@
 (setq custom-theme-directory (concat emacs-root "/themes"))
 
 (when (eq system-type 'windows-nt)
-  ;; Put cygwin ahead of system32 for emacs and things it shells out to.
-  ;; This is needed by find-file-in-project, at least.
-  (setenv "PATH" (concat "c:/msys64/usr/bin" path-separator (getenv "PATH"))))
+  ;; Put msys ahead of system32 for emacs and things it shells out to.
+  ;; This was needed by find-file-in-project. Not sure it's still needed.
+  ;; (setenv "PATH" (concat "c:/msys64/usr/bin" path-separator (getenv "PATH")))
+  )
 
 (defvar my-action-org (concat org-directory "/action.org"))
 (setq org-default-notes-file my-action-org)
@@ -146,29 +147,6 @@
   (dolist (i elements)
     (add-to-list list-var i)))
 
-;; Project setup
-(require 'find-file-in-project)
-
-;; patterns defaults to "", which includes everything not in ffip-prune-patterns,
-;; which is probably easier than stewarding the include patterns
-;;(add-to-list-n 'ffip-patterns "*.c" "*.cs" "*.h" "*.t")
-(setq ffip-project-file (if (listp ffip-project-file)
-                            ffip-project-file
-                          (list ffip-project-file)))
-(add-to-list-n 'ffip-project-file ".hg" ".svn" "build.bat" "project.clj")
-(add-to-list-n 'ffip-prune-patterns
-               ".lock*"
-               "*/\\.vs/*"
-               "build-*"
-               "html"                   ; doxygen builds
-               "*/obj/*"
-               "*/packages/*"
-               "*/release/*"                ; project release builds
-               "scons-out"
-               "waf-*")
-(if (eq system-type 'windows-nt) ; override ffip Windows guessing
-    (setq ffip-find-executable "c:/tools/msys64/usr/bin/find.exe"))
-
 ;;; Custom functions and mode settings
 (load "text")
 (load "modes")
@@ -193,6 +171,8 @@
 (define-key isearch-mode-map "\M-s" 'isearch-repeat-backward)
 (global-set-key "\C-xs" 'isearch-forward-regexp)
 (global-set-key "\C-x\M-s" 'isearch-backward-regexp)
+
+(global-set-key "\M-F" 'project-find-regexp)
 
 (define-key ido-common-completion-map "\M-s" 'ido-prev-match)
 (define-key ido-file-dir-completion-map "\M-s" 'ido-prev-match)
@@ -227,7 +207,6 @@
 (global-set-key "\C-xb" 'my-switch-to-buffer)
 (global-set-key [f5] 'revert-buffer)
 (global-set-key [f6] 'kill-current-buffer)
-(global-set-key [f7] 'find-file-in-project-by-selected)
 (global-set-key "\C-t" 'switch-to-new-untitled-buffer)
 
 (global-set-key [C-up] 'move-text-up)
@@ -305,7 +284,7 @@
    '("73f7374c18e446d7e2e135c580247e0a696ec373d2f446cc617ea6beb1c47788" default))
  '(package-selected-packages
    '(caddyfile-mode cider csv-mode dockerfile-mode edit-server editorconfig
-                    exec-path-from-shell expand-region find-file-in-project
+                    exec-path-from-shell expand-region
                     go-mode gptel htmlize imenu-anywhere inf-ruby magit
                     markdown-mode multiple-cursors nginx-mode org-contrib
                     paredit powershell simple-httpd sql-indent swift-mode

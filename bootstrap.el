@@ -14,7 +14,6 @@
                   edit-server
                   editorconfig
                   expand-region
-                  find-file-in-project
                   go-mode
                   htmlize
                   imenu-anywhere
