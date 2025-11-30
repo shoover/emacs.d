@@ -301,10 +301,17 @@
  select-enable-clipboard t
  visual-line-mode t
  visual-scroll-margin 0)
+
 (tool-bar-mode 0)
+
 (setq user-full-name "Shawn Hoover")
 ;;(customize-set-variable 'user-mail-address "shawn.hoover@gmail.com")
 
+;; Default font
+(when (eq system-type 'darwin)
+  (set-face-attribute 'default nil :family "Monaco" :height 140))
+
+;; Theme
 (when (display-graphic-p)
   (load-theme 'ample)
   (load "themes/org-fancy")
@@ -319,6 +326,7 @@
   )
 
 (cd "~")
+
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
