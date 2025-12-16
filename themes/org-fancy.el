@@ -16,8 +16,11 @@
 ;; (remove-hook 'org-mode-hook 'org-bullets-mode)
 ;; (setq org-bullets-bullet-list '("●")) ; "○"
 
-;; larger, variable-width heading fonts. 2-8 italic, for fun.
+;; Larger, variable-width heading fonts. 2-8 italic, for fun.
+;; Reference `(font-family-list)'
 (let* ((variable-tuple (cond
+                        ((x-list-fonts "IBM Plex Sans")   '(:family "IBM Plex Sans"))
+
                         ;; On MacOS, I'd like to use SF Pro; it *appears* to
                         ;; work when set but actually maps to Helvetica? And it
                         ;; is never listed. So just use Helvetica.
@@ -30,7 +33,7 @@
                         ((x-family-fonts "Sans Serif")    '(:family "Sans Serif"))
                         (nil (warn "Cannot find a Sans Serif Font.  Install Source Sans Pro."))))
        (base-font-color    (face-foreground 'default nil 'default))
-       (base-font-color "#bdbc91") ; pale yellow/tan
+       (base-font-color "#bdbc91")      ; pale yellow/tan
        (headline           `(:inherit default :weight bold :foreground ,base-font-color
                                       :underline nil)))
 
