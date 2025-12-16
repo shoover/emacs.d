@@ -309,7 +309,7 @@
 
 ;; Default font
 (when (eq system-type 'darwin)
-  (set-face-attribute 'default nil :family "Monaco" :height 140))
+  (set-face-attribute 'default nil :family "IBM Plex Mono" :height 150))
 
 ;; Theme
 (when (display-graphic-p)
