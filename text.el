@@ -251,6 +251,7 @@ and fill the rest of the paragraph."
   (scroll-up-line)
   (next-line))
 
+(require 'cl-lib)
 (defun count-chars-region (beginning end)
   "Displays a message with the number of characters in the region."
   (interactive "r")
@@ -259,7 +260,7 @@ and fill the rest of the paragraph."
     (let ((count 0))
       (while (< (point) end)
         (forward-char)
-        (incf count))
+        (cl-incf count))
       (message "%d characters" count))))
 
 (defun count-words-region (beginning end)
