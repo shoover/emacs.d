@@ -17,6 +17,7 @@
                   go-mode
                   htmlize
                   imenu-anywhere
+                  just-mode
                   magit
                   markdown-mode
                   multiple-cursors
