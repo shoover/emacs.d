@@ -466,6 +466,25 @@ A blank caption is also inserted."
 (add-to-list 'process-coding-system-alist '("[dD]uck[dD][bB]" . utf-8-unix))
 (require 'sql-duckdb)
 
+(sql-add-connection 'duckdb-mem
+                    '((sql-product 'duckdb)
+                      (sql-database "")))
+(sql-add-connection 'local-postgres
+                    '((sql-product 'postgres)
+                      (sql-database "github_data")
+                      (sql-user "admin")
+                      (sql-server "localhost")
+                      (sql-port 5432)))
+
+(defun sql-duckdb-mem ()
+  (interactive)
+  (sql-connect 'duckdb-mem))
+
+(defun my-sql-postgres-local ()
+  "Connect to the local PostgreSQL instance."
+  (interactive)
+  (sql-connect 'local-postgres))
+
 ;; Script
 (add-hook 'after-save-hook
           'executable-make-buffer-file-executable-if-script-p)
