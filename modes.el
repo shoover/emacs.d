@@ -240,7 +240,23 @@ With argument, positions cursor at end of buffer."
 
   (setq org-agenda-files (find-org-files-x))
   (setq org-agenda-custom-commands
-        '(("A" "Multi-occur, agenda files and archives"
+        '(("0" "Inbox 0"
+           ((tags "SCHEDULED<\"<today>\"|DEADLINE<\"<today>\""
+                  ((org-agenda-overriding-header "Overdue")
+                   (org-agenda-skip-function
+                    '(org-agenda-skip-entry-if 'todo 'done))))
+            (alltodo ""
+                     ((org-agenda-overriding-header "Unscheduled")
+                      (org-agenda-skip-function
+                       '(org-agenda-skip-entry-if 'scheduled 'deadline))))
+            (agenda ""
+                    ((org-agenda-span 7)
+                     (org-agenda-start-day "0d")
+                     (org-agenda-start-on-weekday nil)
+                     (org-agenda-overriding-header "Upcoming")
+                     (org-scheduled-past-days 0)
+                     (org-deadline-past-days 0)))))
+          ("A" "Multi-occur, agenda files and archives"
            search ""
            ((org-agenda-files (find-org-files-x "\\.org$\\|org_archive$"))))
           ("M" "Tags, agenda files and archives"
@@ -254,22 +270,22 @@ With argument, positions cursor at end of buffer."
            ((org-use-tag-inheritance nil)))
           ("w" "Work-in-progress"
            tags "WIP"
-           ((org-use-tag-inheritance nil)))
-          ))
-  (setq org-refile-targets '((org-agenda-files :maxlevel . 2))
-        org-refile-use-outline-path 'file
-        org-refile-allow-creating-parent-nodes 'confirm)
+           ((org-use-tag-inheritance nil))))
+        ))
+(setq org-refile-targets '((org-agenda-files :maxlevel . 2))
+      org-refile-use-outline-path 'file
+      org-refile-allow-creating-parent-nodes 'confirm)
 
-  (setq org-src-fontify-natively t
-        org-edit-src-content-indentation 0
-        org-babel-python-command "python3")
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '(; (fsharp . t); I got a babel helper from https://github.com/fradav/ob-fsharp/blob/master/ob-fsharp.el,
+(setq org-src-fontify-natively t
+      org-edit-src-content-indentation 0
+      org-babel-python-command "python3")
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '(; (fsharp . t); I got a babel helper from https://github.com/fradav/ob-fsharp/blob/master/ob-fsharp.el,
                                         ; but it doesn't work
-     (python . t)
-     (ruby . t)
-     (shell . t))))
+   (python . t)
+   (ruby . t)
+   (shell . t)))
 
 (setq org-indent-mode t
       org-hide-leading-stars t
