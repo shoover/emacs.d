@@ -305,6 +305,10 @@ directory using the org HTML publisher."
             (yas-expand-snippet snippet))))))
   (org-reveal))
 
+(defun my-org-agenda-switch-to-full-frame ()
+  (interactive)
+  (org-agenda-switch-to t))
+
 ;; org-capture frames, adapted from Lau's remember frames:
 ;; http://github.com/LauJensen/Configs/blob/master/emacs
 (defun capture-frame-p ()
@@ -359,7 +363,7 @@ and finalized."
        ;; it to use one window.
        (letf (((symbol-function 'org-switch-to-buffer-other-window)
                (symbol-function 'switch-to-buffer)))
-         ,@body))))
+             ,@body))))
 
 (defun my-org-capture-new-frame ()
   "Create a new frame and run org capture, good for slickrun
@@ -465,7 +469,7 @@ the year and date."
                     (org-get-valid-level (org-current-level) 1))
         (org-narrow-to-subtree)))
     (goto-char (point-min))
-    ;(message "searching from %s" (point))
+                                        ;(message "searching from %s" (point))
     (let ((year (nth 2 date))
           (month (car date))
           (day (nth 1 date)))

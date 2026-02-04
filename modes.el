@@ -272,6 +272,11 @@ With argument, positions cursor at end of buffer."
            tags "WIP"
            ((org-use-tag-inheritance nil))))
         ))
+
+(add-hook 'org-agenda-mode-hook 'my-org-agenda-mode-hook)
+(defun my-org-agenda-mode-hook ()
+  (define-key org-agenda-mode-map (kbd "RET") #'my-org-agenda-switch-to-full-frame))
+
 (setq org-refile-targets '((org-agenda-files :maxlevel . 2))
       org-refile-use-outline-path 'file
       org-refile-allow-creating-parent-nodes 'confirm)
