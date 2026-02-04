@@ -269,13 +269,6 @@ directory using the org HTML publisher."
                           (mapcar 'list (mapcar 'buffer-name (org-buffer-list 'agenda)))
                           nil t)))
 
-(defun my-org-standup--current-week-heading (&optional date)
-  "Return the STANDUP week heading for DATE (defaults to today)."
-  (require 'calendar)
-  (let* ((date (or date (calendar-gregorian-from-absolute (org-today))))
-         (time (encode-time 0 0 0 (nth 1 date) (nth 0 date) (nth 2 date))))
-    (format-time-string "%Gw%V" time)))
-
 (defun standup-today ()
   "Insert today's standup entry template at top of current week in work *STANDUP."
   (interactive)
@@ -285,50 +278,32 @@ directory using the org HTML publisher."
   (save-restriction
     (widen)
     (goto-char (point-min))
-    (let ((standup-pos (org-find-exact-headline-in-buffer "STANDUP")))
-      (unless standup-pos
-        (error "STANDUP heading not found in %s" my-work-org))
+    (let* ((now (current-time))
+           (week-heading (format-time-string "%Gw%V" now))
+           (day-heading (format-time-string "%m/%d" now))
+           (snippet (yas-lookup-snippet "standup"))
+           (standup-pos (org-find-exact-headline-in-buffer "STANDUP")))
+      (unless standup-pos (error "STANDUP heading not found in %s" my-work-org))
+      (unless snippet (error "Yasnippet 'standup' not found"))
       (goto-char standup-pos)
-      (org-show-subtree)
-      (let* ((standup-level (org-current-level))
-             (date (calendar-gregorian-from-absolute (org-today)))
-             (time (encode-time 0 0 0 (nth 1 date) (nth 0 date) (nth 2 date)))
-             (week-heading (my-org-standup--current-week-heading date))
-             (day-heading (format-time-string "%m/%d" time))
-             (snippet (yas-lookup-snippet "standup"))
-             week-pos
-             week-level)
-        (unless standup-level
-          (error "STANDUP heading level not found"))
-        (setq week-level (org-get-valid-level standup-level 1))
-        (unless snippet
-          (error "Yasnippet 'standup' not found"))
+      (let ((week-level (org-get-valid-level (org-current-level) 1)))
         (save-restriction
           (org-narrow-to-subtree)
-          (goto-char (point-min))
-          (setq week-pos (org-find-exact-headline-in-buffer week-heading))
-          (unless week-pos
+          (unless (setq standup-pos (org-find-exact-headline-in-buffer week-heading))
             (goto-char (point-max))
             (org-back-over-empty-lines)
-            (setq week-pos (point))
-            (insert (make-string week-level ?*) " " week-heading "\n")
-            (insert ":PROPERTIES:\n:VISIBILITY: children\n:END:\n"))
-          (goto-char week-pos)
-          (org-show-subtree)
-          (save-restriction
-            (org-narrow-to-subtree)
+            (setq standup-pos (point))
+            (insert (make-string week-level ?*) " " week-heading "\n"
+                    ":PROPERTIES:\n:VISIBILITY: children\n:END:\n"))
+          (goto-char standup-pos)
+          (org-narrow-to-subtree)
+          (if-let ((day-pos (org-find-exact-headline-in-buffer day-heading)))
+              (progn (goto-char day-pos) (forward-line 1))
             (goto-char (point-min))
-            (let ((day-pos (org-find-exact-headline-in-buffer day-heading)))
-              (if day-pos
-                  (progn
-                    (goto-char day-pos)
-                    (org-show-subtree)
-                    (forward-line 1))
-                (goto-char (point-min))
-                (forward-line 1)
-                (org-end-of-meta-data t)
-                (unless (bolp) (insert "\n"))
-                (yas-expand-snippet snippet)))))))))
+            (org-end-of-meta-data t)
+            (unless (bolp) (insert "\n"))
+            (yas-expand-snippet snippet))))))
+  (org-reveal))
 
 ;; org-capture frames, adapted from Lau's remember frames:
 ;; http://github.com/LauJensen/Configs/blob/master/emacs
