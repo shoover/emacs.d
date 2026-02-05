@@ -240,7 +240,7 @@ With argument, positions cursor at end of buffer."
 
   (setq org-agenda-files (find-org-files-x))
   (setq org-agenda-custom-commands
-        '(("0" "Inbox 0"
+        '(("i" "Inbox 0"
            ((tags "SCHEDULED<\"<today>\"|DEADLINE<\"<today>\""
                   ((org-agenda-overriding-header "Overdue")
                    (org-agenda-skip-function
