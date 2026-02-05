@@ -275,7 +275,14 @@ With argument, positions cursor at end of buffer."
 
 (add-hook 'org-agenda-mode-hook 'my-org-agenda-mode-hook)
 (defun my-org-agenda-mode-hook ()
-  (define-key org-agenda-mode-map (kbd "RET") #'my-org-agenda-switch-to-full-frame))
+  (define-keys org-agenda-mode-map
+               ("n" . 'org-agenda-next-item) ; Override, defaults to next line
+               ((kbd "RET") . 'my-org-agenda-switch-to-full-frame)
+               ))
+
+(add-hook 'org-agenda-finalize-hook 'my-org-agenda-finalize-hook)
+(defun my-org-agenda-finalize-hook ()
+  (org-agenda-next-item 1))
 
 (setq org-refile-targets '((org-agenda-files :maxlevel . 2))
       org-refile-use-outline-path 'file
