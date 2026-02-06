@@ -1,6 +1,6 @@
-;; I keep all my emacs-related stuff under ~/emacs. ~/.emacs should be pretty
-;; thin. It contains machine-specific settings, but mainly it exists to load
-;; this file. Something like this:
+;; I keep all my emacs-related stuff under ~/emacs. ~/.emacs should be thin. It
+;; contains machine-specific settings, but mainly it exists to load this file.
+;; Something like this:
 ;;
 ;; (setq org-directory "~/Dropbox/action")
 ;; (setq custom-file "~/emacs/init.el")

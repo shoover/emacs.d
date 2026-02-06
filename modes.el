@@ -187,11 +187,20 @@ With argument, positions cursor at end of buffer."
 ;; Fix weird scrolling of the org export dispatch buffer by unsetting my
 ;; typical scroll variables.
 (when (functionp 'advice-add) ;; emacs >= 24.4
-  (advice-add 'org-export-dispatch :around #'my-org-export-dispatch-advice)
-  (defun my-org-export-dispatch-advice (orig-fun &rest args)
+  (advice-add 'org-export-dispatch :around #'my/org-export-dispatch-advice)
+  (defun my/org-export-dispatch-advice (orig-fun &rest args)
     (let ((scroll-margin 0)
           (scroll-preserve-screen-position nil))
       (apply orig-fun args))))
+
+(advice-add 'org-archive-subtree :around #'my/org-archive-subtree-fix-mark-done)
+(defun my/org-archive-subtree-fix-mark-done (orig-fn &optional find-done)
+  "Only mark DONE if heading actually has a TODO keyword. Work around
+behavior opposite of documentation."
+  (let ((org-archive-mark-done
+         (and org-archive-mark-done
+              (org-get-todo-state))))
+    (funcall orig-fn find-done)))
 
 (add-hook 'org-mode-hook 'my-org-mode-hook)
 (defun my-org-mode-hook ()
@@ -277,6 +286,7 @@ With argument, positions cursor at end of buffer."
 (defun my-org-agenda-mode-hook ()
   (define-keys org-agenda-mode-map
                ("n" . 'org-agenda-next-item) ; Override; defaults to next line
+               ("p" . 'org-agenda-previous-item)
                ((kbd "RET") . 'my-org-agenda-switch-to-full-frame)
                ))
 
@@ -309,6 +319,7 @@ With argument, positions cursor at end of buffer."
       org-hide-leading-stars t
       org-startup-indented 'overview
 
+      org-archive-mark-done t
       org-tags-column -85
 
       org-link-search-must-match-exact-headline nil ; Please let fuzzy search work
