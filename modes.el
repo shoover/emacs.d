@@ -213,6 +213,7 @@ behavior opposite of documentation."
 (defun my-org-load-hook ()
   (define-keys org-mode-map
                ("\C-ca" . 'org-agenda)
+               ("\C-c\C-w" . 'my/org-refile)
                ("\C-cl" . 'org-store-link)
                ("\C-cw" . 'copy-org-link-at-point)
                ("\C-cd" . 'org-datetree-find-create-here-x)
@@ -300,9 +301,33 @@ behavior opposite of documentation."
   ;; previously hidden item.
   (org-reveal))
 
-(setq org-refile-targets '((org-agenda-files :maxlevel . 2))
-      org-refile-use-outline-path 'file
-      org-refile-allow-creating-parent-nodes 'confirm)
+;; Refile defaults: target current buffer headings, outline path without any
+;; buffer/file prefix.
+(setq org-refile-targets '((nil :maxlevel . 3))
+      org-refile-use-outline-path t
+      org-refile-allow-creating-parent-nodes 'confirm
+      org-reverse-note-order t
+      org-outline-path-complete-in-steps nil)
+
+(defun my/org-refile-agenda (goto-p)
+  "Refile or jump to agenda files.
+If GOTO-P is non-nil, jump to heading instead of refiling."
+  (let ((org-refile-targets '((org-agenda-files :maxlevel . 3)))
+        (org-refile-use-outline-path 'file))
+    (org-refile (when goto-p '(4)))))
+
+(defun my/org-refile (arg)
+  "Override default refile prefix behavior.
+
+Prefix arg:
+C-7: refile to agenda files.
+C-77: jump to agenda files.
+Else: default/global settings."
+  (interactive "P")
+  (pcase arg
+    (7  (my/org-refile-agenda nil))
+    (77 (my/org-refile-agenda t))
+    (_  (org-refile arg))))
 
 (setq org-src-fontify-natively t
       org-edit-src-content-indentation 0
