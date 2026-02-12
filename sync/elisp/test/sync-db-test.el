@@ -75,6 +75,20 @@
     (org-rem-db-delete-by-org-id db "ORG-2")
     (should-not (org-rem-db-get-by-org-id db "ORG-2"))))
 
+(ert-deftest org-rem-db-delete-by-reminder-id ()
+  (org-rem--with-temp-db
+    (org-rem-db-upsert-mapping
+     db
+     '((org_id . "ORG-3")
+       (org_file . "/tmp/c.org")
+       (org_locator . "c>1")
+       (org_hash . "h1")
+       (reminder_external_id . "RID-3")
+       (reminder_last_modified . "2026-02-12T22:00:00Z")
+       (last_synced_at . "2026-02-12T22:01:00Z")))
+    (org-rem-db-delete-by-reminder-id db "RID-3")
+    (should-not (org-rem-db-get-by-org-id db "ORG-3"))))
+
 (ert-deftest org-rem-db-list-all-mappings ()
   (org-rem--with-temp-db
     (org-rem-db-upsert-mapping

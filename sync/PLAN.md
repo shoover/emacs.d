@@ -15,6 +15,43 @@
    and passes tests.
 4. Do not add placeholder task-runner targets.
 
+## Progress Snapshot (2026-02-12)
+
+1. `Completed`:
+   - Phase 1 repository skeleton and test harnesses.
+   - Phase 2 Swift contract models, command parser, runner, and EventKit
+     store for `list` and `apply`.
+   - Phase 3 DB layer and lock handling.
+   - Phase 4 core Org read path: file discovery, file-local TODO mapping,
+     tag handling, canonical hash, and snapshot collection with ID
+     creation.
+   - Phase 5 planning path: merge planner and engine composition.
+   - Phase 5 reminder apply execution path:
+     - plan -> reminder apply ops
+     - `orgrem apply` invocation
+     - DB mapping updates from apply results
+   - Phase 6 dry-run CLI path: config load, `orgrem list`, and plan
+     generation.
+   - Phase 6 non-dry-run reminder execution path with guard that blocks
+     runs requiring Org writeback mutations.
+2. `In Progress`:
+   - Phase 4 Org write mutations (`create/update/delete` subtree
+     operations in live sync flow).
+   - Phase 5 writeback completion for plans that include Org-side
+     changes.
+3. `Not Started`:
+   - Phase 7 integration tests against live temporary Reminders lists.
+   - Phase 7 hardening tasks (retry/logging/recovery docs).
+4. `Immediate Next Steps`:
+   - Implement Org mutation/writeback operations for:
+     - `create-org`
+     - `update-org`
+     - `delete-org` (cut subtree)
+   - Add opt-in integration test suite that creates and deletes a
+     temporary Reminders list per test and uses a temporary sync DB.
+   - Wire non-dry-run end-to-end so reminder-side apply and Org-side
+     writeback run in one execution path.
+
 ## Phase 1: Repository Skeleton
 
 1. Create directories:

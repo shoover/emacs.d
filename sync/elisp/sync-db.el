@@ -106,6 +106,13 @@
   "Delete mapping row by ORG-ID."
   (sqlite-execute db "DELETE FROM mappings WHERE org_id = ?" (list org-id)))
 
+(defun org-rem-db-delete-by-reminder-id (db reminder-external-id)
+  "Delete mapping row by REMINDER-EXTERNAL-ID."
+  (sqlite-execute
+   db
+   "DELETE FROM mappings WHERE reminder_external_id = ?"
+   (list reminder-external-id)))
+
 (provide 'sync-db)
 
 ;;; sync-db.el ends here

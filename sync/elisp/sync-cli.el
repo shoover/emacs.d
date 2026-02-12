@@ -5,6 +5,7 @@
 (require 'cl-lib)
 (require 'sync-db)
 (require 'sync-engine)
+(require 'sync-reminders-json)
 
 (defun org-rem--config-get (config key)
   "Get KEY from CONFIG plist or error."
@@ -23,6 +24,28 @@
                exit-code
                (buffer-string)))
       (buffer-string))))
+
+(defun org-rem--run-orgrem-apply (orgrem-bin list-id apply-request-json)
+  "Run ORGREM-BIN apply command for LIST-ID using APPLY-REQUEST-JSON."
+  (let ((ops-file (make-temp-file "org-rem-ops" nil ".json")))
+    (unwind-protect
+        (progn
+          (with-temp-file ops-file
+            (insert apply-request-json))
+          (with-temp-buffer
+            (let ((exit-code (call-process orgrem-bin nil (current-buffer) nil
+                                           "apply"
+                                           "--list-id"
+                                           list-id
+                                           "--ops-file"
+                                           ops-file)))
+              (unless (eq exit-code 0)
+                (error "orgrem apply failed with exit code %s: %s"
+                       exit-code
+                       (buffer-string)))
+              (buffer-string))))
+      (when (file-exists-p ops-file)
+        (delete-file ops-file)))))
 
 (defun org-rem-parse-cli-args (args)
   "Parse command line ARGS into a plist."
@@ -63,10 +86,31 @@ arguments for runtime behavior."
     (unwind-protect
         (let* ((_ (org-rem-db-init db))
                (reminders-json (org-rem--run-orgrem-list orgrem-bin list-id))
-               (plan (org-rem-build-plan org-root db reminders-json)))
+               (sync-state (org-rem-build-sync-state org-root db reminders-json))
+               (plan (plist-get sync-state :plan)))
           (if dry-run
               plan
-            (error "Non-dry-run execution not implemented yet")))
+            (progn
+              (when (org-rem-pending-org-mutations-p plan)
+                (error "Non-dry-run requires Org writeback ops that are not implemented yet"))
+              (let* ((request (org-rem-build-reminder-apply-request sync-state))
+                     (ops (plist-get request :ops)))
+                (when ops
+                  (let* ((apply-request-json
+                          (org-rem-encode-apply-request-json ops))
+                         (apply-response-json
+                          (org-rem--run-orgrem-apply
+                           orgrem-bin
+                           list-id
+                           apply-request-json))
+                         (apply-response
+                          (org-rem-decode-apply-response-json
+                           apply-response-json)))
+                    (org-rem-apply-reminder-results-to-db
+                     db
+                     request
+                     apply-response))))
+              plan)))
       (org-rem-db-close db))))
 
 (provide 'sync-cli)
