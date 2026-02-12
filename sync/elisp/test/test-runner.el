@@ -7,5 +7,6 @@
 (require 'sync-org-test)
 (require 'sync-paths-test)
 (require 'sync-db-test)
+(require 'sync-lock-test)
 
 ;;; test-runner.el ends here
