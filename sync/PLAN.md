@@ -45,6 +45,7 @@
      - initial opt-in Swift integration suite is in place
      - one live Org+DB end-to-end scenario is in place (Emacs sync with
        temporary Org root + temporary DB)
+     - delete propagation is covered in both directions in live flow
      - broader matrix coverage is still pending
 3. `Not Started`:
    - Phase 7 hardening tasks (retry/logging/recovery docs).
@@ -58,6 +59,7 @@
      - org->reminder create/update/delete
      - DB mapping transitions across live runs
      - conflict + not_found handling in live flows
+     - repeated idempotent runs with no-op plans
 
 ## Phase 1: Repository Skeleton
 
