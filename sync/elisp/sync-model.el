@@ -72,7 +72,7 @@ tokens at the end of TITLE are interpreted as tags."
     (scheduled . ,(org-rem--normalize-scheduled (alist-get 'scheduled item)))
     (notes . ,(org-rem--normalize-notes (alist-get 'notes item)))
     (url . ,(org-rem--normalize-url (alist-get 'url item)))
-    (completed . ,(if (alist-get 'completed item) t :json-false))))
+    (completed . ,(if (eq (alist-get 'completed item) t) t :json-false))))
 
 (defun org-rem-canonical-hash (item)
   "Return SHA-256 hex for canonical ITEM."

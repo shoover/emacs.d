@@ -10,5 +10,6 @@
 (require 'sync-lock-test)
 (require 'sync-cli-test)
 (require 'sync-merge-test)
+(require 'sync-org-snapshot-test)
 
 ;;; test-runner.el ends here
