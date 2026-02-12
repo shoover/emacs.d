@@ -513,6 +513,57 @@ private func createReminder(
     #expect(response.results[1].status == .notFound)
 }
 
+@Test func liveEndToEndSecondRunIsIdempotent() async throws {
+    guard integrationEnabled() else { return }
+
+    let orgremBin = try requiredEnv("ORGREM_INTEGRATION_BIN")
+    let repoRoot = try requiredEnv("ORGREM_REPO_ROOT")
+    let emacsBin = ProcessInfo.processInfo.environment["ORGREM_INTEGRATION_EMACS"] ?? "emacs"
+    let store = EKEventStore()
+    try await ensureRemindersAccess(store)
+
+    let list = try createTemporaryList(store)
+    defer { try? store.removeCalendar(list, commit: true) }
+
+    let tmp = URL(fileURLWithPath: NSTemporaryDirectory())
+        .appendingPathComponent("orgrem-e2e-idempotent-\(UUID().uuidString)", isDirectory: true)
+    try FileManager.default.createDirectory(at: tmp, withIntermediateDirectories: true)
+    defer { try? FileManager.default.removeItem(at: tmp) }
+
+    let orgRoot = tmp.appendingPathComponent("org", isDirectory: true)
+    try FileManager.default.createDirectory(at: orgRoot, withIntermediateDirectories: true)
+    let inboxFile = orgRoot.appendingPathComponent("inbox.org")
+    let tasksFile = orgRoot.appendingPathComponent("tasks.org")
+    let dbPath = tmp.appendingPathComponent("sync.sqlite").path
+    let configPath = tmp.appendingPathComponent("sync-config.el").path
+    try writeSyncConfig(
+        path: configPath,
+        orgRoot: orgRoot.path,
+        inboxFile: inboxFile.path,
+        dbPath: dbPath,
+        listID: list.calendarIdentifier,
+        orgremBin: orgremBin
+    )
+
+    let orgTitle = "idempotent-org-\(UUID().uuidString)"
+    let orgFixture = "* TODO \(orgTitle) :work:\nfirst body\n"
+    try orgFixture.write(to: tasksFile, atomically: true, encoding: .utf8)
+
+    try runEmacsSync(repoRoot: repoRoot, configPath: configPath, emacsBin: emacsBin)
+    let fileAfterFirstRun = try String(contentsOf: tasksFile, encoding: .utf8)
+    try runEmacsSync(repoRoot: repoRoot, configPath: configPath, emacsBin: emacsBin)
+    let fileAfterSecondRun = try String(contentsOf: tasksFile, encoding: .utf8)
+
+    #expect(fileAfterFirstRun == fileAfterSecondRun)
+
+    let listed = try runList(bin: orgremBin, listID: list.calendarIdentifier)
+    let createdCount = listed.items.filter { $0.title.contains(orgTitle) }.count
+    #expect(createdCount == 1)
+
+    let mappingCount = try readMappingCount(repoRoot: repoRoot, dbPath: dbPath, emacsBin: emacsBin)
+    #expect(mappingCount == 1)
+}
+
 #else
 
 @Test func liveListAndApplyRoundTripUnavailablePlatform() {

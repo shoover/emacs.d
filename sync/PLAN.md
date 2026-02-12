@@ -47,6 +47,7 @@
        temporary Org root + temporary DB)
      - delete propagation is covered in both directions in live flow
      - reminder apply conflict + not_found statuses are covered live
+     - repeated no-op second-run idempotency is covered live
      - broader matrix coverage is still pending
 3. `Not Started`:
    - Phase 7 hardening tasks (retry/logging/recovery docs).
@@ -56,10 +57,11 @@
      - temporary Org root fixtures
      - temporary sync DB path
    - Expand integration coverage for:
-     - reminder->org create/update/delete
-     - org->reminder create/update/delete
-     - DB mapping transitions across live runs
-     - repeated idempotent runs with no-op plans
+      - reminder->org create/update/delete
+      - org->reminder create/update/delete
+      - DB mapping transitions across live runs
+      - reminder->org update field mutations and completion toggles
+      - org->reminder update field mutations
 
 ## Phase 1: Repository Skeleton
 
