@@ -9,5 +9,6 @@
 (require 'sync-db-test)
 (require 'sync-lock-test)
 (require 'sync-cli-test)
+(require 'sync-merge-test)
 
 ;;; test-runner.el ends here
