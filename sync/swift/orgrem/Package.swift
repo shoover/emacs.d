@@ -21,5 +21,9 @@ let package = Package(
             name: "OrgRemCoreTests",
             dependencies: ["OrgRemCore"]
         ),
+        .testTarget(
+            name: "OrgRemIntegrationTests",
+            dependencies: ["OrgRemCore"]
+        ),
     ]
 )

@@ -37,6 +37,8 @@ two-way synchronization between Org files and a macOS Reminders list.
 - `sync/scripts/test-swift.sh`
 - `sync/scripts/test-elisp.sh`
 - `sync/scripts/test-all.sh`
+- `sync/scripts/test-integration.sh` (opt-in live Reminders integration;
+  requires macOS Reminders access)
 
 ## Known Gaps
 

@@ -42,11 +42,15 @@
      writeback execution.
 2. `In Progress`:
    - Phase 7 integration tests against live temporary Reminders lists.
+     - initial opt-in Swift integration suite is in place
+     - full Org+DB end-to-end integration scenarios still pending
 3. `Not Started`:
    - Phase 7 hardening tasks (retry/logging/recovery docs).
 4. `Immediate Next Steps`:
-   - Add opt-in integration test suite that creates and deletes a
-     temporary Reminders list per test and uses a temporary sync DB.
+   - Add end-to-end integration scenarios that use:
+     - temporary Reminders list
+     - temporary Org root fixtures
+     - temporary sync DB path
    - Expand integration coverage for:
      - reminder->org create/update/delete
      - org->reminder create/update/delete
