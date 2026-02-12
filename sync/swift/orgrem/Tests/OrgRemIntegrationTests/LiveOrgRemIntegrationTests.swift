@@ -647,6 +647,104 @@ private func createReminder(
     #expect(orgUpdatedReminder.completed)
 }
 
+@Test func liveEndToEndScheduledDateMappingBothDirections() async throws {
+    guard integrationEnabled() else { return }
+
+    let orgremBin = try requiredEnv("ORGREM_INTEGRATION_BIN")
+    let repoRoot = try requiredEnv("ORGREM_REPO_ROOT")
+    let emacsBin = ProcessInfo.processInfo.environment["ORGREM_INTEGRATION_EMACS"] ?? "emacs"
+    let store = EKEventStore()
+    try await ensureRemindersAccess(store)
+
+    let list = try createTemporaryList(store)
+    defer { try? store.removeCalendar(list, commit: true) }
+
+    let tmp = URL(fileURLWithPath: NSTemporaryDirectory())
+        .appendingPathComponent("orgrem-e2e-dates-\(UUID().uuidString)", isDirectory: true)
+    try FileManager.default.createDirectory(at: tmp, withIntermediateDirectories: true)
+    defer { try? FileManager.default.removeItem(at: tmp) }
+
+    let orgRoot = tmp.appendingPathComponent("org", isDirectory: true)
+    try FileManager.default.createDirectory(at: orgRoot, withIntermediateDirectories: true)
+    let inboxFile = orgRoot.appendingPathComponent("inbox.org")
+    let tasksFile = orgRoot.appendingPathComponent("tasks.org")
+    let dbPath = tmp.appendingPathComponent("sync.sqlite").path
+    let configPath = tmp.appendingPathComponent("sync-config.el").path
+    try writeSyncConfig(
+        path: configPath,
+        orgRoot: orgRoot.path,
+        inboxFile: inboxFile.path,
+        dbPath: dbPath,
+        listID: list.calendarIdentifier,
+        orgremBin: orgremBin
+    )
+
+    let orgTitle = "org-date-\(UUID().uuidString)"
+    let orgFixture = """
+    * TODO \(orgTitle)
+    SCHEDULED: <2026-03-10 Tue 09:30>
+    org-date-notes
+    """
+    try orgFixture.write(to: tasksFile, atomically: true, encoding: .utf8)
+    try runEmacsSync(repoRoot: repoRoot, configPath: configPath, emacsBin: emacsBin)
+
+    let listedAfterOrgCreate = try runList(bin: orgremBin, listID: list.calendarIdentifier)
+    guard let orgCreatedReminder = listedAfterOrgCreate.items.first(where: { $0.title.contains(orgTitle) }) else {
+        throw IntegrationError.missingItem("reminder created from scheduled org task")
+    }
+    #expect(orgCreatedReminder.due?.year == 2026)
+    #expect(orgCreatedReminder.due?.month == 3)
+    #expect(orgCreatedReminder.due?.day == 10)
+    #expect(orgCreatedReminder.due?.hour == 9)
+    #expect(orgCreatedReminder.due?.minute == 30)
+    #expect(orgCreatedReminder.start?.year == 2026)
+    #expect(orgCreatedReminder.start?.month == 3)
+    #expect(orgCreatedReminder.start?.day == 10)
+    #expect(orgCreatedReminder.start?.hour == 9)
+    #expect(orgCreatedReminder.start?.minute == 30)
+
+    let reminderTitle = "rem-date-\(UUID().uuidString) #home"
+    _ = try runApply(
+        bin: orgremBin,
+        listID: list.calendarIdentifier,
+        ops: [
+            ApplyOp(
+                op: .create,
+                clientRef: nil,
+                externalID: nil,
+                ifLastModified: nil,
+                fields: ApplyOpFields(
+                    title: reminderTitle,
+                    notes: "rem-date-notes",
+                    completed: false,
+                    start: ReminderDateComponents(
+                        year: 2026,
+                        month: 4,
+                        day: 5,
+                        hour: nil,
+                        minute: nil,
+                        timeZone: nil
+                    ),
+                    due: ReminderDateComponents(
+                        year: 2026,
+                        month: 4,
+                        day: 5,
+                        hour: nil,
+                        minute: nil,
+                        timeZone: nil
+                    ),
+                    url: nil
+                )
+            )
+        ]
+    )
+    try runEmacsSync(repoRoot: repoRoot, configPath: configPath, emacsBin: emacsBin)
+
+    let inboxText = try String(contentsOf: inboxFile, encoding: .utf8)
+    #expect(inboxText.contains("rem-date-"))
+    #expect(inboxText.contains("SCHEDULED: <2026-04-05"))
+}
+
 #else
 
 @Test func liveListAndApplyRoundTripUnavailablePlatform() {

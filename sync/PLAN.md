@@ -50,6 +50,7 @@
      - repeated no-op second-run idempotency is covered live
      - field update propagation is covered in both directions in live
        flow
+     - scheduled date mapping is covered in both directions in live flow
      - broader matrix coverage is still pending
 3. `Not Started`:
    - Phase 7 hardening tasks (retry/logging/recovery docs).
@@ -63,6 +64,8 @@
       - org->reminder create/update/delete
       - DB mapping transitions across live runs
       - recurrence/time-zone edge cases for due/start mapping
+      - explicit null-vs-omitted semantics once partial-update encoding
+        is improved
 
 ## Phase 1: Repository Skeleton
 
