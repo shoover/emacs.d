@@ -20,4 +20,26 @@ two-way synchronization between Org files and a macOS Reminders list.
 ## Current Status
 
 - Design/spec completed.
-- Implementation scaffolding in progress.
+- Swift CLI skeleton implemented:
+  - command parsing
+  - JSON list/apply contract models
+  - EventKit-backed list/apply store
+- Elisp core implemented:
+  - Org snapshot collection with ID creation
+  - canonical hashing
+  - file-local TODO semantics
+  - sqlite mapping store
+  - lock handling
+  - merge planner and engine composition
+
+## Test Commands
+
+- `sync/scripts/test-swift.sh`
+- `sync/scripts/test-elisp.sh`
+- `sync/scripts/test-all.sh`
+
+## Known Gaps
+
+- Full end-to-end sync execution and writeback loop is not wired yet.
+- `apply` field semantics do not yet distinguish omitted fields from
+  explicit JSON `null` for partial updates.
