@@ -48,6 +48,8 @@
      - delete propagation is covered in both directions in live flow
      - reminder apply conflict + not_found statuses are covered live
      - repeated no-op second-run idempotency is covered live
+     - field update propagation is covered in both directions in live
+       flow
      - broader matrix coverage is still pending
 3. `Not Started`:
    - Phase 7 hardening tasks (retry/logging/recovery docs).
@@ -60,8 +62,7 @@
       - reminder->org create/update/delete
       - org->reminder create/update/delete
       - DB mapping transitions across live runs
-      - reminder->org update field mutations and completion toggles
-      - org->reminder update field mutations
+      - recurrence/time-zone edge cases for due/start mapping
 
 ## Phase 1: Repository Skeleton
 

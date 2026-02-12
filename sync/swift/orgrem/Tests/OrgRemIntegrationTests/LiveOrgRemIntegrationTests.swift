@@ -564,6 +564,89 @@ private func createReminder(
     #expect(mappingCount == 1)
 }
 
+@Test func liveEndToEndFieldUpdatesBothDirections() async throws {
+    guard integrationEnabled() else { return }
+
+    let orgremBin = try requiredEnv("ORGREM_INTEGRATION_BIN")
+    let repoRoot = try requiredEnv("ORGREM_REPO_ROOT")
+    let emacsBin = ProcessInfo.processInfo.environment["ORGREM_INTEGRATION_EMACS"] ?? "emacs"
+    let store = EKEventStore()
+    try await ensureRemindersAccess(store)
+
+    let list = try createTemporaryList(store)
+    defer { try? store.removeCalendar(list, commit: true) }
+
+    let tmp = URL(fileURLWithPath: NSTemporaryDirectory())
+        .appendingPathComponent("orgrem-e2e-updates-\(UUID().uuidString)", isDirectory: true)
+    try FileManager.default.createDirectory(at: tmp, withIntermediateDirectories: true)
+    defer { try? FileManager.default.removeItem(at: tmp) }
+
+    let orgRoot = tmp.appendingPathComponent("org", isDirectory: true)
+    try FileManager.default.createDirectory(at: orgRoot, withIntermediateDirectories: true)
+    let inboxFile = orgRoot.appendingPathComponent("inbox.org")
+    let tasksFile = orgRoot.appendingPathComponent("tasks.org")
+    let dbPath = tmp.appendingPathComponent("sync.sqlite").path
+    let configPath = tmp.appendingPathComponent("sync-config.el").path
+    try writeSyncConfig(
+        path: configPath,
+        orgRoot: orgRoot.path,
+        inboxFile: inboxFile.path,
+        dbPath: dbPath,
+        listID: list.calendarIdentifier,
+        orgremBin: orgremBin
+    )
+
+    let remBase = "rem-update-\(UUID().uuidString)"
+    try createReminder(store, calendar: list, title: "\(remBase)-v1 #home", notes: "rem-notes-1")
+    try runEmacsSync(repoRoot: repoRoot, configPath: configPath, emacsBin: emacsBin)
+
+    let listAfterInitial = try runList(bin: orgremBin, listID: list.calendarIdentifier)
+    guard let seededReminder = listAfterInitial.items.first(where: { $0.title.contains(remBase) }) else {
+        throw IntegrationError.missingItem("seed reminder for reminder->org update")
+    }
+    _ = try runApply(
+        bin: orgremBin,
+        listID: list.calendarIdentifier,
+        ops: [
+            ApplyOp(
+                op: .update,
+                clientRef: nil,
+                externalID: seededReminder.externalID,
+                ifLastModified: seededReminder.lastModified,
+                fields: ApplyOpFields(
+                    title: "\(remBase)-v2 #home #sync",
+                    notes: "rem-notes-2",
+                    completed: true,
+                    start: nil,
+                    due: nil,
+                    url: nil
+                )
+            )
+        ]
+    )
+    try runEmacsSync(repoRoot: repoRoot, configPath: configPath, emacsBin: emacsBin)
+
+    let inboxAfterUpdate = try String(contentsOf: inboxFile, encoding: .utf8)
+    #expect(inboxAfterUpdate.contains("\(remBase)-v2"))
+    #expect(inboxAfterUpdate.contains("rem-notes-2"))
+
+    let orgBase = "org-update-\(UUID().uuidString)"
+    let initialOrg = "* TODO \(orgBase)-v1 :work:\norg-notes-1\n"
+    try initialOrg.write(to: tasksFile, atomically: true, encoding: .utf8)
+    try runEmacsSync(repoRoot: repoRoot, configPath: configPath, emacsBin: emacsBin)
+
+    let updatedOrg = "* DONE \(orgBase)-v2 :work:sync:\norg-notes-2\n"
+    try updatedOrg.write(to: tasksFile, atomically: true, encoding: .utf8)
+    try runEmacsSync(repoRoot: repoRoot, configPath: configPath, emacsBin: emacsBin)
+
+    let listedAfterOrgUpdate = try runList(bin: orgremBin, listID: list.calendarIdentifier)
+    guard let orgUpdatedReminder = listedAfterOrgUpdate.items.first(where: { $0.title.contains("\(orgBase)-v2") }) else {
+        throw IntegrationError.missingItem("updated org->reminder title")
+    }
+    #expect(orgUpdatedReminder.notes == "org-notes-2")
+    #expect(orgUpdatedReminder.completed)
+}
+
 #else
 
 @Test func liveListAndApplyRoundTripUnavailablePlatform() {
