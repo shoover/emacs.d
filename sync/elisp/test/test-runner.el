@@ -12,5 +12,6 @@
 (require 'sync-merge-test)
 (require 'sync-org-snapshot-test)
 (require 'sync-reminders-json-test)
+(require 'sync-engine-test)
 
 ;;; test-runner.el ends here
