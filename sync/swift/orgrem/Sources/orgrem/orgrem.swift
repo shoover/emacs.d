@@ -1,17 +1,33 @@
 import Foundation
 import OrgRemCore
 
+private struct NotImplementedStore: ReminderStore {
+    func list(listID: String) throws -> (ReminderListRecord, [ReminderRecord]) {
+        throw NSError(
+            domain: "orgrem",
+            code: 1,
+            userInfo: [NSLocalizedDescriptionKey: "EventKit adapter not implemented yet."]
+        )
+    }
+
+    func apply(listID: String, request: ApplyRequest) throws -> ApplyResponse {
+        throw NSError(
+            domain: "orgrem",
+            code: 1,
+            userInfo: [NSLocalizedDescriptionKey: "EventKit adapter not implemented yet."]
+        )
+    }
+}
+
 @main
 struct OrgRemCLI {
     static func main() {
         do {
-            let command = try CommandParser.parse(Array(CommandLine.arguments.dropFirst()))
-            switch command {
-            case .list(let listID):
-                print("list not implemented yet (list-id=\(listID))")
-            case .apply(let listID, let opsFile):
-                print("apply not implemented yet (list-id=\(listID), ops-file=\(opsFile))")
-            }
+            let output = try Runner.run(
+                args: Array(CommandLine.arguments.dropFirst()),
+                store: NotImplementedStore()
+            )
+            print(output)
         } catch {
             fputs("\(error)\n", stderr)
             exit(2)

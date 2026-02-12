@@ -190,3 +190,80 @@ public struct ApplyRequest: Codable, Equatable, Sendable {
         self.ops = ops
     }
 }
+
+public enum ApplyStatus: String, Codable, Equatable, Sendable {
+    case ok
+    case notFound = "not_found"
+    case conflict
+    case error
+}
+
+public struct ApplyResultItem: Codable, Equatable, Sendable {
+    public let externalID: String
+    public let localID: String
+    public let lastModified: String
+
+    enum CodingKeys: String, CodingKey {
+        case externalID = "external_id"
+        case localID = "local_id"
+        case lastModified = "last_modified"
+    }
+
+    public init(externalID: String, localID: String, lastModified: String) {
+        self.externalID = externalID
+        self.localID = localID
+        self.lastModified = lastModified
+    }
+}
+
+public struct ApplyResultRecord: Codable, Equatable, Sendable {
+    public let opIndex: Int
+    public let status: ApplyStatus
+    public let clientRef: String?
+    public let item: ApplyResultItem?
+    public let code: String?
+    public let message: String?
+
+    enum CodingKeys: String, CodingKey {
+        case opIndex = "op_index"
+        case status
+        case clientRef = "client_ref"
+        case item
+        case code
+        case message
+    }
+
+    public init(
+        opIndex: Int,
+        status: ApplyStatus,
+        clientRef: String?,
+        item: ApplyResultItem?,
+        code: String?,
+        message: String?
+    ) {
+        self.opIndex = opIndex
+        self.status = status
+        self.clientRef = clientRef
+        self.item = item
+        self.code = code
+        self.message = message
+    }
+}
+
+public struct ApplyResponse: Codable, Equatable, Sendable {
+    public let schemaVersion: Int
+    public let appliedAt: String
+    public let results: [ApplyResultRecord]
+
+    enum CodingKeys: String, CodingKey {
+        case schemaVersion = "schema_version"
+        case appliedAt = "applied_at"
+        case results
+    }
+
+    public init(schemaVersion: Int, appliedAt: String, results: [ApplyResultRecord]) {
+        self.schemaVersion = schemaVersion
+        self.appliedAt = appliedAt
+        self.results = results
+    }
+}
