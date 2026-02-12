@@ -3,5 +3,6 @@
 ;;; Code:
 
 (require 'sync-core-test)
+(require 'sync-model-test)
 
 ;;; test-runner.el ends here
