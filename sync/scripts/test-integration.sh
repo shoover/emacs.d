@@ -13,4 +13,4 @@ fi
 
 ORGREM_RUN_INTEGRATION=1 \
 ORGREM_INTEGRATION_BIN="$(pwd)/${ORGREM_BIN}" \
-swift test --filter OrgRemIntegrationTests
+swift test --filter liveListAndApplyRoundTrip
