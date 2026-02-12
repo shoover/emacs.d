@@ -8,5 +8,6 @@
 (require 'sync-paths-test)
 (require 'sync-db-test)
 (require 'sync-lock-test)
+(require 'sync-cli-test)
 
 ;;; test-runner.el ends here
