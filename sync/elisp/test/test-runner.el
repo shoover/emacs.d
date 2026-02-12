@@ -5,5 +5,6 @@
 (require 'sync-core-test)
 (require 'sync-model-test)
 (require 'sync-org-test)
+(require 'sync-paths-test)
 
 ;;; test-runner.el ends here
