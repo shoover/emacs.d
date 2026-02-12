@@ -7,6 +7,7 @@
 (require 'sync-db)
 (require 'sync-merge)
 (require 'sync-model)
+(require 'sync-org)
 (require 'sync-org-snapshot)
 (require 'sync-reminders-json)
 
@@ -158,6 +159,10 @@
       (plist-get plan :update-org)
       (plist-get plan :delete-org)))
 
+(defun org-rem--utc-now-iso8601 ()
+  "Return current UTC timestamp in ISO-8601 format."
+  (format-time-string "%Y-%m-%dT%H:%M:%SZ" (current-time) t))
+
 (defun org-rem--upsert-mapping-from-context (db context result applied-at)
   "Persist mapping in DB for CONTEXT using RESULT and APPLIED-AT."
   (let* ((org-item (alist-get 'org_item context))
@@ -236,6 +241,93 @@
       (unless committed
         (ignore-errors (sqlite-execute db "ROLLBACK"))))
     summary))
+
+(defun org-rem--apply-org-create-op (inbox-file inbox-heading rem-by-id rem-id)
+  "Apply create-org op for REM-ID using REM-BY-ID."
+  (let ((reminder-item (gethash rem-id rem-by-id)))
+    (unless reminder-item
+      (error "Missing reminder item for create-org op: %s" rem-id))
+    (unless (and inbox-file inbox-heading)
+      (error "create-org operations require :inbox-file and :inbox-heading"))
+    (cons (org-rem-create-entry-from-reminder
+           inbox-file
+           inbox-heading
+           reminder-item)
+          rem-id)))
+
+(defun org-rem--apply-org-update-op (org-root rem-by-id pair)
+  "Apply update-org op PAIR under ORG-ROOT."
+  (let* ((org-id (car pair))
+         (rem-id (cdr pair))
+         (reminder-item (gethash rem-id rem-by-id)))
+    (unless reminder-item
+      (error "Missing reminder item for update-org op: %s" rem-id))
+    (when (org-rem-update-entry-by-id org-root org-id reminder-item)
+      (cons org-id rem-id))))
+
+(defun org-rem--db-upsert-org-side (db org-item rem-id rem-by-id synced-at)
+  "Upsert DB mapping for ORG-ITEM linked to REM-ID."
+  (let ((reminder-item (gethash rem-id rem-by-id)))
+    (when (and org-item reminder-item)
+      (org-rem-db-upsert-mapping
+       db
+       `((org_id . ,(alist-get 'org_id org-item))
+         (org_file . ,(alist-get 'org_file org-item))
+         (org_locator . ,(alist-get 'org_locator org-item))
+         (org_hash . ,(alist-get 'org_hash org-item))
+         (reminder_external_id . ,rem-id)
+         (reminder_last_modified . ,(alist-get 'last_modified reminder-item))
+         (last_synced_at . ,synced-at))))))
+
+(defun org-rem-apply-org-writeback (org-root db sync-state inbox-file inbox-heading)
+  "Apply Org-side mutations for SYNC-STATE and persist DB updates."
+  (let* ((plan (plist-get sync-state :plan))
+         (rem-by-id (org-rem--engine-index-by
+                     (alist-get 'items (plist-get sync-state :reminder-list))
+                     'external_id))
+         (created-pairs nil)
+         (updated-pairs nil)
+         (deleted-org-ids nil))
+    (dolist (org-id (plist-get plan :delete-org))
+      (when (org-rem-delete-entry-by-id org-root org-id)
+        (push org-id deleted-org-ids)))
+    (dolist (pair (plist-get plan :update-org))
+      (when-let ((updated (org-rem--apply-org-update-op org-root rem-by-id pair)))
+        (push updated updated-pairs)))
+    (dolist (rem-id (plist-get plan :create-org))
+      (push (org-rem--apply-org-create-op inbox-file inbox-heading rem-by-id rem-id)
+            created-pairs))
+    (when (or created-pairs updated-pairs deleted-org-ids)
+      (let* ((snapshot (org-rem-read-org-snapshot org-root))
+             (org-by-id (org-rem--engine-index-by snapshot 'org_id))
+             (synced-at (org-rem--utc-now-iso8601))
+             (committed nil))
+        (sqlite-execute db "BEGIN")
+        (unwind-protect
+            (progn
+              (dolist (org-id deleted-org-ids)
+                (org-rem-db-delete-by-org-id db org-id))
+              (dolist (pair updated-pairs)
+                (org-rem--db-upsert-org-side
+                 db
+                 (gethash (car pair) org-by-id)
+                 (cdr pair)
+                 rem-by-id
+                 synced-at))
+              (dolist (pair created-pairs)
+                (org-rem--db-upsert-org-side
+                 db
+                 (gethash (car pair) org-by-id)
+                 (cdr pair)
+                 rem-by-id
+                 synced-at))
+              (sqlite-execute db "COMMIT")
+              (setq committed t))
+          (unless committed
+            (ignore-errors (sqlite-execute db "ROLLBACK"))))))
+    (list :create-org (length created-pairs)
+          :update-org (length updated-pairs)
+          :delete-org (length deleted-org-ids))))
 
 (provide 'sync-engine)
 

@@ -43,9 +43,11 @@
                      :reminders-list-id "LIST1"
                      :orgrem-bin ,orgrem-path)
                    (current-buffer)))
-          (let ((plan (org-rem-sync-run config-path :dry-run t)))
-            (should (= (length (plist-get plan :create-reminders)) 1))
-            (should-not (plist-get plan :create-org)))))
+          (let ((org-agenda-files nil)
+                (org-agenda-skip-unavailable-files t))
+            (let ((plan (org-rem-sync-run config-path :dry-run t)))
+              (should (= (length (plist-get plan :create-reminders)) 1))
+              (should-not (plist-get plan :create-org))))))
       (when (file-exists-p db-path)
         (delete-file db-path))
       (when (file-exists-p orgrem-path)
@@ -84,8 +86,10 @@
                      :reminders-list-id "LIST1"
                      :orgrem-bin ,orgrem-path)
                    (current-buffer)))
-          (let ((plan (org-rem-sync-run config-path)))
-            (should (= (length (plist-get plan :create-reminders)) 1)))
+          (let ((org-agenda-files nil)
+                (org-agenda-skip-unavailable-files t))
+            (let ((plan (org-rem-sync-run config-path)))
+              (should (= (length (plist-get plan :create-reminders)) 1))))
           (let ((db (org-rem-db-open db-path)))
             (unwind-protect
                 (let ((mapping (org-rem-db-get-by-org-id db "ORG-1")))
@@ -102,7 +106,7 @@
         (delete-file config-path))
       (delete-directory root t))))
 
-(ert-deftest org-rem-sync-run-non-dry-run-errors-when-org-writeback-is-needed ()
+(ert-deftest org-rem-sync-run-non-dry-run-applies-org-writeback-create ()
   (let* ((root (make-temp-file "org-rem-cli-root" t))
          (db-path (make-temp-file "org-rem-cli-db" nil ".sqlite"))
          (orgrem-path (make-temp-file "orgrem-fake"))
@@ -115,7 +119,7 @@
             (insert "#!/usr/bin/env zsh\n"
                     "set -euo pipefail\n"
                     "if [[ \"$1\" == \"list\" ]]; then\n"
-                    "  echo '{\"schema_version\":1,\"generated_at\":\"2026-02-12T21:40:00Z\",\"list\":{\"id\":\"LIST1\",\"title\":\"Personal\"},\"items\":[{\"external_id\":\"RID-NEW\",\"local_id\":\"L1\",\"title\":\"Phone task\",\"notes\":null,\"completed\":false,\"completion_date\":null,\"start\":null,\"due\":null,\"url\":null,\"last_modified\":\"2026-02-12T21:39:00Z\"}]}'\n"
+                    "  echo '{\"schema_version\":1,\"generated_at\":\"2026-02-12T21:40:00Z\",\"list\":{\"id\":\"LIST1\",\"title\":\"Personal\"},\"items\":[{\"external_id\":\"RID-NEW\",\"local_id\":\"L1\",\"title\":\"Phone task #home\",\"notes\":\"From reminders\",\"completed\":false,\"completion_date\":null,\"start\":null,\"due\":null,\"url\":null,\"last_modified\":\"2026-02-12T21:39:00Z\"}]}'\n"
                     "elif [[ \"$1\" == \"apply\" ]]; then\n"
                     "  touch " apply-marker "\n"
                     "  echo '{\"schema_version\":1,\"applied_at\":\"2026-02-12T22:00:00Z\",\"results\":[]}'\n"
@@ -125,13 +129,30 @@
           (set-file-modes orgrem-path #o755)
           (with-temp-file config-path
             (prin1 `(:org-root ,root
+                     :inbox-file ,(expand-file-name "inbox.org" root)
+                     :inbox-heading "* Reminders"
                      :db-path ,db-path
                      :reminders-list-id "LIST1"
                      :orgrem-bin ,orgrem-path)
                    (current-buffer)))
-          (should-error (org-rem-sync-run config-path)
-                        :type 'error)
-          (should-not (file-exists-p apply-marker)))
+          (let ((org-agenda-files nil)
+                (org-agenda-skip-unavailable-files t))
+            (let ((plan (org-rem-sync-run config-path)))
+              (should (= (length (plist-get plan :create-org)) 1))
+              (should-not (file-exists-p apply-marker)))
+            (let* ((items (org-rem-read-org-snapshot root))
+                   (created (car items)))
+              (should (= (length items) 1))
+              (should (equal (alist-get 'title created) "Phone task"))
+              (should (equal (alist-get 'tags created) '("home"))))
+            (let ((db (org-rem-db-open db-path)))
+              (unwind-protect
+                  (let* ((items (org-rem-read-org-snapshot root))
+                         (org-id (alist-get 'org_id (car items)))
+                         (mapping (org-rem-db-get-by-org-id db org-id)))
+                    (should mapping)
+                    (should (equal (alist-get 'reminder_external_id mapping) "RID-NEW")))
+                (org-rem-db-close db)))))
       (when (file-exists-p db-path)
         (delete-file db-path))
       (when (file-exists-p orgrem-path)

@@ -91,8 +91,6 @@ arguments for runtime behavior."
           (if dry-run
               plan
             (progn
-              (when (org-rem-pending-org-mutations-p plan)
-                (error "Non-dry-run requires Org writeback ops that are not implemented yet"))
               (let* ((request (org-rem-build-reminder-apply-request sync-state))
                      (ops (plist-get request :ops)))
                 (when ops
@@ -110,6 +108,13 @@ arguments for runtime behavior."
                      db
                      request
                      apply-response))))
+              (when (org-rem-pending-org-mutations-p plan)
+                (org-rem-apply-org-writeback
+                 org-root
+                 db
+                 sync-state
+                 (plist-get config :inbox-file)
+                 (plist-get config :inbox-heading)))
               plan)))
       (org-rem-db-close db))))
 

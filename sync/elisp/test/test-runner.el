@@ -2,6 +2,16 @@
 
 ;;; Code:
 
+(setq org-agenda-files nil)
+(setq org-agenda-skip-unavailable-files t)
+
+(require 'org-agenda)
+(advice-add
+ 'org-check-agenda-file
+ :override
+ (lambda (file)
+   (file-exists-p file)))
+
 (require 'sync-core-test)
 (require 'sync-model-test)
 (require 'sync-org-test)

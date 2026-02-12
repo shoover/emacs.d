@@ -30,27 +30,27 @@
      - plan -> reminder apply ops
      - `orgrem apply` invocation
      - DB mapping updates from apply results
+   - Phase 4 Org write mutations in live flow:
+     - `create-org` under configured inbox heading
+     - `update-org` by Org ID
+     - `delete-org` subtree cut by Org ID
+   - Phase 5 writeback completion for Org-side plan actions with DB
+     persistence after Org mutations.
    - Phase 6 dry-run CLI path: config load, `orgrem list`, and plan
      generation.
-   - Phase 6 non-dry-run reminder execution path with guard that blocks
-     runs requiring Org writeback mutations.
+   - Phase 6 non-dry-run end-to-end path for reminder apply plus Org
+     writeback execution.
 2. `In Progress`:
-   - Phase 4 Org write mutations (`create/update/delete` subtree
-     operations in live sync flow).
-   - Phase 5 writeback completion for plans that include Org-side
-     changes.
-3. `Not Started`:
    - Phase 7 integration tests against live temporary Reminders lists.
+3. `Not Started`:
    - Phase 7 hardening tasks (retry/logging/recovery docs).
 4. `Immediate Next Steps`:
-   - Implement Org mutation/writeback operations for:
-     - `create-org`
-     - `update-org`
-     - `delete-org` (cut subtree)
    - Add opt-in integration test suite that creates and deletes a
      temporary Reminders list per test and uses a temporary sync DB.
-   - Wire non-dry-run end-to-end so reminder-side apply and Org-side
-     writeback run in one execution path.
+   - Expand integration coverage for:
+     - reminder->org create/update/delete
+     - org->reminder create/update/delete
+     - DB mapping transitions across live runs
 
 ## Phase 1: Repository Skeleton
 
