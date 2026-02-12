@@ -43,7 +43,9 @@
 2. `In Progress`:
    - Phase 7 integration tests against live temporary Reminders lists.
      - initial opt-in Swift integration suite is in place
-     - full Org+DB end-to-end integration scenarios still pending
+     - one live Org+DB end-to-end scenario is in place (Emacs sync with
+       temporary Org root + temporary DB)
+     - broader matrix coverage is still pending
 3. `Not Started`:
    - Phase 7 hardening tasks (retry/logging/recovery docs).
 4. `Immediate Next Steps`:
@@ -55,6 +57,7 @@
      - reminder->org create/update/delete
      - org->reminder create/update/delete
      - DB mapping transitions across live runs
+     - conflict + not_found handling in live flows
 
 ## Phase 1: Repository Skeleton
 

@@ -11,6 +11,7 @@ private enum IntegrationError: Error, CustomStringConvertible {
     case noReminderSource
     case cliFailed(Int32, String)
     case missingItem(String)
+    case parseFailure(String)
 
     var description: String {
         switch self {
@@ -24,6 +25,8 @@ private enum IntegrationError: Error, CustomStringConvertible {
             return "orgrem failed (\(code)): \(stderr)"
         case .missingItem(let message):
             return "Missing expected item: \(message)"
+        case .parseFailure(let message):
+            return "Parse failure: \(message)"
         }
     }
 }
@@ -40,10 +43,24 @@ private func requiredEnv(_ key: String) throws -> String {
     return value
 }
 
-private func runCLI(bin: String, args: [String]) throws -> String {
+@discardableResult
+private func runProcess(
+    executable: String,
+    args: [String],
+    env: [String: String] = [:],
+    cwd: String? = nil
+) throws -> (stdout: String, stderr: String) {
     let process = Process()
-    process.executableURL = URL(fileURLWithPath: bin)
+    process.executableURL = URL(fileURLWithPath: executable)
     process.arguments = args
+    if let cwd {
+        process.currentDirectoryURL = URL(fileURLWithPath: cwd, isDirectory: true)
+    }
+    if !env.isEmpty {
+        var merged = ProcessInfo.processInfo.environment
+        env.forEach { merged[$0.key] = $0.value }
+        process.environment = merged
+    }
 
     let stdout = Pipe()
     let stderr = Pipe()
@@ -58,7 +75,11 @@ private func runCLI(bin: String, args: [String]) throws -> String {
     guard process.terminationStatus == 0 else {
         throw IntegrationError.cliFailed(process.terminationStatus, stderrText)
     }
-    return stdoutText
+    return (stdoutText, stderrText)
+}
+
+private func runCLI(bin: String, args: [String]) throws -> String {
+    try runProcess(executable: bin, args: args).stdout
 }
 
 private func runList(bin: String, listID: String) throws -> ListResponse {
@@ -82,6 +103,89 @@ private func runApply(bin: String, listID: String, ops: [ApplyOp]) throws -> App
         args: ["apply", "--list-id", listID, "--ops-file", opsURL.path]
     )
     return try JSONDecoder().decode(ApplyResponse.self, from: Data(json.utf8))
+}
+
+private func elispStringLiteral(_ raw: String) -> String {
+    raw.replacingOccurrences(of: "\\", with: "\\\\")
+        .replacingOccurrences(of: "\"", with: "\\\"")
+}
+
+private func runEmacsSync(
+    repoRoot: String,
+    configPath: String,
+    emacsBin: String
+) throws {
+    let escapedConfig = elispStringLiteral(configPath)
+    let form = """
+    (progn
+      (setq org-agenda-files nil)
+      (setq org-agenda-skip-unavailable-files t)
+      (require 'sync-cli)
+      (org-rem-sync-run "\(escapedConfig)"))
+    """
+    _ = try runProcess(
+        executable: "/usr/bin/env",
+        args: [
+            emacsBin,
+            "--batch",
+            "-Q",
+            "-L", "\(repoRoot)/sync/elisp",
+            "--eval", form,
+        ],
+        cwd: repoRoot
+    )
+}
+
+private func readMappingCount(
+    repoRoot: String,
+    dbPath: String,
+    emacsBin: String
+) throws -> Int {
+    let escapedDB = elispStringLiteral(dbPath)
+    let form = """
+    (progn
+      (require 'sync-db)
+      (let ((db (org-rem-db-open "\(escapedDB)")))
+        (unwind-protect
+            (progn
+              (org-rem-db-init db)
+              (princ (length (org-rem-db-list-mappings db))))
+          (org-rem-db-close db))))
+    """
+    let out = try runProcess(
+        executable: "/usr/bin/env",
+        args: [
+            emacsBin,
+            "--batch",
+            "-Q",
+            "-L", "\(repoRoot)/sync/elisp",
+            "--eval", form,
+        ],
+        cwd: repoRoot
+    ).stdout.trimmingCharacters(in: .whitespacesAndNewlines)
+    guard let count = Int(out) else {
+        throw IntegrationError.parseFailure("Unable to parse mapping count from: \(out)")
+    }
+    return count
+}
+
+private func writeSyncConfig(
+    path: String,
+    orgRoot: String,
+    inboxFile: String,
+    dbPath: String,
+    listID: String,
+    orgremBin: String
+) throws {
+    let content = """
+    (:org-root "\(elispStringLiteral(orgRoot))"
+     :inbox-file "\(elispStringLiteral(inboxFile))"
+     :inbox-heading "* Reminders"
+     :db-path "\(elispStringLiteral(dbPath))"
+     :reminders-list-id "\(elispStringLiteral(listID))"
+     :orgrem-bin "\(elispStringLiteral(orgremBin))")
+    """
+    try content.write(to: URL(fileURLWithPath: path), atomically: true, encoding: .utf8)
 }
 
 private func ensureRemindersAccess(_ store: EKEventStore) async throws {
@@ -229,6 +333,60 @@ private func createReminder(
 
     let listedAfterDelete = try runList(bin: orgremBin, listID: list.calendarIdentifier)
     #expect(!listedAfterDelete.items.contains(where: { $0.externalID == createdID }))
+}
+
+@Test func liveEndToEndSyncOrgReminderAndDB() async throws {
+    guard integrationEnabled() else { return }
+
+    let orgremBin = try requiredEnv("ORGREM_INTEGRATION_BIN")
+    let repoRoot = try requiredEnv("ORGREM_REPO_ROOT")
+    let emacsBin = ProcessInfo.processInfo.environment["ORGREM_INTEGRATION_EMACS"] ?? "emacs"
+    let store = EKEventStore()
+    try await ensureRemindersAccess(store)
+
+    let list = try createTemporaryList(store)
+    defer { try? store.removeCalendar(list, commit: true) }
+
+    let tmp = URL(fileURLWithPath: NSTemporaryDirectory())
+        .appendingPathComponent("orgrem-e2e-\(UUID().uuidString)", isDirectory: true)
+    try FileManager.default.createDirectory(at: tmp, withIntermediateDirectories: true)
+    defer { try? FileManager.default.removeItem(at: tmp) }
+
+    let orgRoot = tmp.appendingPathComponent("org", isDirectory: true)
+    try FileManager.default.createDirectory(at: orgRoot, withIntermediateDirectories: true)
+    let inboxFile = orgRoot.appendingPathComponent("inbox.org")
+    let tasksFile = orgRoot.appendingPathComponent("tasks.org")
+    let dbPath = tmp.appendingPathComponent("sync.sqlite").path
+    let configPath = tmp.appendingPathComponent("sync-config.el").path
+    try writeSyncConfig(
+        path: configPath,
+        orgRoot: orgRoot.path,
+        inboxFile: inboxFile.path,
+        dbPath: dbPath,
+        listID: list.calendarIdentifier,
+        orgremBin: orgremBin
+    )
+
+    let reminderTitle = "phone-task-\(UUID().uuidString) #home"
+    try createReminder(store, calendar: list, title: reminderTitle, notes: "from-reminders")
+    try runEmacsSync(repoRoot: repoRoot, configPath: configPath, emacsBin: emacsBin)
+
+    let inboxText = try String(contentsOf: inboxFile, encoding: .utf8)
+    #expect(inboxText.contains("phone-task-"))
+    #expect(inboxText.contains("from-reminders"))
+
+    let orgTitle = "org-task-\(UUID().uuidString)"
+    let orgBody = "from-org-body"
+    let orgFixture = "* TODO \(orgTitle) :work:\n\(orgBody)\n"
+    try orgFixture.write(to: tasksFile, atomically: true, encoding: .utf8)
+    try runEmacsSync(repoRoot: repoRoot, configPath: configPath, emacsBin: emacsBin)
+
+    let listed = try runList(bin: orgremBin, listID: list.calendarIdentifier)
+    #expect(listed.items.contains(where: { $0.title.contains(orgTitle) }))
+    #expect(listed.items.contains(where: { $0.notes == orgBody }))
+
+    let mappingCount = try readMappingCount(repoRoot: repoRoot, dbPath: dbPath, emacsBin: emacsBin)
+    #expect(mappingCount >= 2)
 }
 
 #else

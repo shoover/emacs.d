@@ -38,8 +38,9 @@ two-way synchronization between Org files and a macOS Reminders list.
 - `sync/scripts/test-elisp.sh`
 - `sync/scripts/test-all.sh`
 - `sync/scripts/test-integration.sh` (opt-in live Reminders integration;
-  requires macOS Reminders access; uses Swift Testing output, where the
-  XCTest compatibility summary may still show `Executed 0 tests`)
+  requires macOS Reminders access and `emacs` in PATH; uses Swift
+  Testing output, where the XCTest compatibility summary may still show
+  `Executed 0 tests`)
 
 ## Known Gaps
 

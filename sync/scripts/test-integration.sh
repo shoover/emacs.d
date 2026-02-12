@@ -11,6 +11,10 @@ if [[ -z "${ORGREM_BIN}" ]]; then
   exit 1
 fi
 
+REPO_ROOT="$(cd ../../.. && pwd)"
+
 ORGREM_RUN_INTEGRATION=1 \
 ORGREM_INTEGRATION_BIN="$(pwd)/${ORGREM_BIN}" \
-swift test --filter liveListAndApplyRoundTrip
+ORGREM_REPO_ROOT="${REPO_ROOT}" \
+ORGREM_INTEGRATION_EMACS="${ORGREM_INTEGRATION_EMACS:-emacs}" \
+swift test --filter live
