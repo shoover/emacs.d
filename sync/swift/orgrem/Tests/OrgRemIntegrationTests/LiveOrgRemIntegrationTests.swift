@@ -463,6 +463,56 @@ private func createReminder(
     #expect(!listedAfterOrgDelete.items.contains(where: { $0.title.contains(orgTitle) }))
 }
 
+@Test func liveApplyConflictAndNotFoundStatuses() async throws {
+    guard integrationEnabled() else { return }
+
+    let orgremBin = try requiredEnv("ORGREM_INTEGRATION_BIN")
+    let store = EKEventStore()
+    try await ensureRemindersAccess(store)
+
+    let list = try createTemporaryList(store)
+    defer { try? store.removeCalendar(list, commit: true) }
+
+    let seedTitle = "conflict-seed-\(UUID().uuidString)"
+    try createReminder(store, calendar: list, title: seedTitle, notes: "seed")
+
+    let listed = try runList(bin: orgremBin, listID: list.calendarIdentifier)
+    guard let seed = listed.items.first(where: { $0.title == seedTitle }) else {
+        throw IntegrationError.missingItem("seed reminder for conflict test")
+    }
+
+    let conflictOp = ApplyOp(
+        op: .update,
+        clientRef: nil,
+        externalID: seed.externalID,
+        ifLastModified: "1900-01-01T00:00:00Z",
+        fields: ApplyOpFields(
+            title: "should-conflict",
+            notes: nil,
+            completed: nil,
+            start: nil,
+            due: nil,
+            url: nil
+        )
+    )
+    let notFoundOp = ApplyOp(
+        op: .delete,
+        clientRef: nil,
+        externalID: "x-apple-reminder://\(UUID().uuidString)",
+        ifLastModified: nil,
+        fields: nil
+    )
+
+    let response = try runApply(
+        bin: orgremBin,
+        listID: list.calendarIdentifier,
+        ops: [conflictOp, notFoundOp]
+    )
+    #expect(response.results.count == 2)
+    #expect(response.results[0].status == .conflict)
+    #expect(response.results[1].status == .notFound)
+}
+
 #else
 
 @Test func liveListAndApplyRoundTripUnavailablePlatform() {
