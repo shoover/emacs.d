@@ -7,6 +7,15 @@
 (require 'sync-engine)
 (require 'sync-reminders-json)
 
+(defun org-rem--sync-trace-enabled-p ()
+  "Return non-nil when sync tracing is enabled via environment."
+  (equal (getenv "ORGREM_SYNC_TRACE") "1"))
+
+(defun org-rem--sync-trace (format-string &rest args)
+  "Emit trace message when sync tracing is enabled."
+  (when (org-rem--sync-trace-enabled-p)
+    (apply #'message (concat "[org-rem-sync] " format-string) args)))
+
 (defun org-rem--config-get (config key)
   "Get KEY from CONFIG plist or error."
   (or (plist-get config key)
@@ -83,17 +92,28 @@ arguments for runtime behavior."
          (list-id (org-rem--config-get config :reminders-list-id))
          (orgrem-bin (org-rem--config-get config :orgrem-bin))
          (db (org-rem-db-open db-path)))
+    (org-rem--sync-trace "start dry-run=%s config=%s" dry-run config-path)
     (unwind-protect
         (let* ((_ (org-rem-db-init db))
+               (_ (org-rem--sync-trace "db initialized: %s" db-path))
                (reminders-json (org-rem--run-orgrem-list orgrem-bin list-id))
+               (_ (org-rem--sync-trace "list fetched"))
                (sync-state (org-rem-build-sync-state org-root db reminders-json))
                (plan (plist-get sync-state :plan)))
+          (org-rem--sync-trace "plan built create-org=%s update-org=%s delete-org=%s create-rem=%s update-rem=%s delete-rem=%s"
+                               (length (plist-get plan :create-org))
+                               (length (plist-get plan :update-org))
+                               (length (plist-get plan :delete-org))
+                               (length (plist-get plan :create-reminders))
+                               (length (plist-get plan :update-reminders))
+                               (length (plist-get plan :delete-reminders)))
           (if dry-run
               plan
             (progn
               (let* ((request (org-rem-build-reminder-apply-request sync-state))
                      (ops (plist-get request :ops)))
                 (when ops
+                  (org-rem--sync-trace "apply begin ops=%s" (length ops))
                   (let* ((apply-request-json
                           (org-rem-encode-apply-request-json ops))
                          (apply-response-json
@@ -107,16 +127,21 @@ arguments for runtime behavior."
                     (org-rem-apply-reminder-results-to-db
                      db
                      request
-                     apply-response))))
+                     apply-response)
+                    (org-rem--sync-trace "apply complete"))))
               (when (org-rem-pending-org-mutations-p plan)
+                (org-rem--sync-trace "org writeback begin")
                 (org-rem-apply-org-writeback
                  org-root
                  db
                  sync-state
                  (plist-get config :inbox-file)
-                 (plist-get config :inbox-heading)))
+                 (plist-get config :inbox-heading))
+                (org-rem--sync-trace "org writeback complete"))
+              (org-rem--sync-trace "sync complete")
               plan)))
-      (org-rem-db-close db))))
+      (org-rem-db-close db)
+      (org-rem--sync-trace "db closed"))))
 
 (provide 'sync-cli)
 

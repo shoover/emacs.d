@@ -64,6 +64,31 @@
             (should (re-search-forward "^\\* Reminders$" nil t))))
       (delete-directory root t))))
 
+(ert-deftest org-rem-create-entry-from-reminder-creates-missing-file ()
+  (let* ((root (make-temp-file "org-rem-org" t))
+         (dir (expand-file-name "newdir" root))
+         (file (expand-file-name "inbox.org" dir))
+         (reminder '((external_id . "RID-2")
+                     (title . "New reminder")
+                     (notes . "Body")
+                     (completed . nil)
+                     (due . nil)
+                     (url . nil))))
+    (unwind-protect
+        (progn
+          (should-not (file-exists-p file))
+          (let ((org-id (org-rem-create-entry-from-reminder
+                         file
+                         "* Reminders"
+                         reminder)))
+            (should org-id)
+            (should (file-exists-p file))
+            (with-temp-buffer
+              (insert-file-contents file)
+              (should (re-search-forward "^\\* Reminders$" nil t))
+              (should (re-search-forward "^\\*\\* TODO New reminder$" nil t)))))
+      (delete-directory root t))))
+
 (ert-deftest org-rem-update-entry-by-id-applies-reminder-fields ()
   (let* ((root (make-temp-file "org-rem-org" t))
          (file (expand-file-name "tasks.org" root))

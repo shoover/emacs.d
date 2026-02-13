@@ -3,6 +3,7 @@ import OrgRemCore
 import Testing
 
 #if canImport(EventKit)
+import Darwin
 import EventKit
 
 private enum IntegrationError: Error, CustomStringConvertible {
@@ -10,6 +11,7 @@ private enum IntegrationError: Error, CustomStringConvertible {
     case remindersAccessDenied
     case noReminderSource
     case cliFailed(Int32, String)
+    case timedOut(String)
     case missingItem(String)
     case parseFailure(String)
 
@@ -23,6 +25,8 @@ private enum IntegrationError: Error, CustomStringConvertible {
             return "Unable to resolve a reminders source for temporary list creation."
         case .cliFailed(let code, let stderr):
             return "orgrem failed (\(code)): \(stderr)"
+        case .timedOut(let message):
+            return "Process timed out: \(message)"
         case .missingItem(let message):
             return "Missing expected item: \(message)"
         case .parseFailure(let message):
@@ -31,8 +35,36 @@ private enum IntegrationError: Error, CustomStringConvertible {
     }
 }
 
+private func integrationProcessTimeoutSeconds() -> TimeInterval {
+    guard
+        let raw = ProcessInfo.processInfo.environment["ORGREM_INTEGRATION_PROCESS_TIMEOUT_SECS"],
+        let parsed = TimeInterval(raw),
+        parsed > 0
+    else {
+        return 10
+    }
+    return parsed
+}
+
 private func integrationEnabled() -> Bool {
     ProcessInfo.processInfo.environment["ORGREM_RUN_INTEGRATION"] == "1"
+}
+
+private final class LockedDataBuffer: @unchecked Sendable {
+    private let lock = NSLock()
+    private var data = Data()
+
+    func append(_ chunk: Data) {
+        lock.lock()
+        data.append(chunk)
+        lock.unlock()
+    }
+
+    func snapshot() -> Data {
+        lock.lock()
+        defer { lock.unlock() }
+        return data
+    }
 }
 
 private func requiredEnv(_ key: String) throws -> String {
@@ -48,7 +80,8 @@ private func runProcess(
     executable: String,
     args: [String],
     env: [String: String] = [:],
-    cwd: String? = nil
+    cwd: String? = nil,
+    timeoutSeconds: TimeInterval = integrationProcessTimeoutSeconds()
 ) throws -> (stdout: String, stderr: String) {
     let process = Process()
     process.executableURL = URL(fileURLWithPath: executable)
@@ -67,11 +100,65 @@ private func runProcess(
     process.standardOutput = stdout
     process.standardError = stderr
 
-    try process.run()
-    process.waitUntilExit()
+    let stdoutData = LockedDataBuffer()
+    let stderrData = LockedDataBuffer()
+    let readGroup = DispatchGroup()
 
-    let stdoutText = String(decoding: stdout.fileHandleForReading.readDataToEndOfFile(), as: UTF8.self)
-    let stderrText = String(decoding: stderr.fileHandleForReading.readDataToEndOfFile(), as: UTF8.self)
+    readGroup.enter()
+    stdout.fileHandleForReading.readabilityHandler = { handle in
+        let chunk = handle.availableData
+        if chunk.isEmpty {
+            handle.readabilityHandler = nil
+            readGroup.leave()
+            return
+        }
+        stdoutData.append(chunk)
+    }
+
+    readGroup.enter()
+    stderr.fileHandleForReading.readabilityHandler = { handle in
+        let chunk = handle.availableData
+        if chunk.isEmpty {
+            handle.readabilityHandler = nil
+            readGroup.leave()
+            return
+        }
+        stderrData.append(chunk)
+    }
+
+    try process.run()
+    let deadline = Date().addingTimeInterval(timeoutSeconds)
+    while process.isRunning && Date() < deadline {
+        Thread.sleep(forTimeInterval: 0.1)
+    }
+
+    var timedOut = false
+    if process.isRunning {
+        timedOut = true
+        process.interrupt()
+        Thread.sleep(forTimeInterval: 0.2)
+        if process.isRunning {
+            process.terminate()
+        }
+        Thread.sleep(forTimeInterval: 0.3)
+        if process.isRunning {
+            _ = kill(process.processIdentifier, SIGKILL)
+        }
+    }
+
+    process.waitUntilExit()
+    stdout.fileHandleForReading.readabilityHandler = nil
+    stderr.fileHandleForReading.readabilityHandler = nil
+    _ = readGroup.wait(timeout: .now() + 1)
+
+    let stdoutText = String(decoding: stdoutData.snapshot(), as: UTF8.self)
+    let stderrText = String(decoding: stderrData.snapshot(), as: UTF8.self)
+    if timedOut {
+        let cmd = ([executable] + args).joined(separator: " ")
+        let stderrTail = String(stderrText.suffix(800)).trimmingCharacters(in: .whitespacesAndNewlines)
+        let detail = stderrTail.isEmpty ? "" : " stderr tail: \(stderrTail)"
+        throw IntegrationError.timedOut("\(cmd) exceeded \(Int(timeoutSeconds))s.\(detail)")
+    }
     guard process.terminationStatus == 0 else {
         throw IntegrationError.cliFailed(process.terminationStatus, stderrText)
     }
@@ -251,6 +338,9 @@ private func createReminder(
     reminder.isCompleted = false
     try store.save(reminder, commit: true)
 }
+
+@Suite(.serialized)
+struct LiveOrgRemIntegrationTests {
 
 @Test func liveListAndApplyRoundTrip() async throws {
     guard integrationEnabled() else { return }
@@ -743,6 +833,8 @@ private func createReminder(
     let inboxText = try String(contentsOf: inboxFile, encoding: .utf8)
     #expect(inboxText.contains("rem-date-"))
     #expect(inboxText.contains("SCHEDULED: <2026-04-05"))
+}
+
 }
 
 #else

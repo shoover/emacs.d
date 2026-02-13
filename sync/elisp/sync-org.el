@@ -155,6 +155,15 @@ When FORCE-OPEN is non-nil, set TODO state to file default open state."
         (org-back-to-heading t)
         (point))))
 
+(defun org-rem--ensure-org-file-exists (org-file)
+  "Ensure ORG-FILE exists on disk."
+  (let ((dir (file-name-directory org-file)))
+    (when dir
+      (make-directory dir t))
+    (unless (file-exists-p org-file)
+      (with-temp-buffer
+        (write-region (point-min) (point-max) org-file nil 'silent)))))
+
 (defun org-rem-delete-entry-by-id (org-root org-id)
   "Delete subtree with ORG-ID under ORG-ROOT."
   (catch 'done
@@ -193,6 +202,7 @@ When FORCE-OPEN is non-nil, set TODO state to file default open state."
   "Create a new Org entry in ORG-FILE under INBOX-HEADING from REMINDER-ITEM.
 
 Return created Org ID."
+  (org-rem--ensure-org-file-exists org-file)
   (with-current-buffer (find-file-noselect org-file)
     (org-with-wide-buffer
      (org-mode)
