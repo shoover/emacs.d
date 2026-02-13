@@ -12,13 +12,24 @@
     last_synced_at)
   "Columns stored in the mapping table.")
 
+(defun org-rem--sqlite-db-valid-p (db)
+  "Return non-nil when DB is a valid sqlite handle."
+  (and db (sqlitep db)))
+
 (defun org-rem-db-open (path)
   "Open sqlite DB at PATH."
-  (sqlite-open path))
+  (let ((dir (file-name-directory path)))
+    (when dir
+      (make-directory dir t)))
+  (let ((db (sqlite-open path)))
+    (unless (org-rem--sqlite-db-valid-p db)
+      (error "Failed to open sqlite database at %s" path))
+    db))
 
 (defun org-rem-db-close (db)
   "Close sqlite DB connection DB."
-  (sqlite-close db))
+  (when (org-rem--sqlite-db-valid-p db)
+    (sqlite-close db)))
 
 (defun org-rem-db-init (db)
   "Ensure schema exists in DB."

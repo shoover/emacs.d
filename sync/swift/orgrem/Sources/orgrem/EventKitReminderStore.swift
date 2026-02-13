@@ -117,21 +117,53 @@ final class EventKitReminderStore: ReminderStore {
     func ensureList(title: String) throws -> ReminderListRecord {
         try ensureAccess()
         if let existing = eventStore.calendars(for: .reminder)
-            .first(where: { $0.title == title }) {
+            .first(where: { $0.title.localizedCaseInsensitiveCompare(title) == .orderedSame }) {
             return ReminderListRecord(id: existing.calendarIdentifier, title: existing.title)
         }
 
-        let calendar = EKCalendar(for: .reminder, eventStore: eventStore)
-        let source = eventStore.defaultCalendarForNewReminders()?.source
-            ?? eventStore.sources.first(where: { $0.sourceType == .local })
-            ?? eventStore.sources.first
-        guard let source else {
+        let candidateSources = reminderSourceCandidates()
+        guard !candidateSources.isEmpty else {
             throw EventKitStoreError.noReminderSource
         }
-        calendar.source = source
-        calendar.title = title
-        try eventStore.saveCalendar(calendar, commit: true)
-        return ReminderListRecord(id: calendar.calendarIdentifier, title: calendar.title)
+
+        var lastError: Error?
+        for source in candidateSources {
+            do {
+                let calendar = EKCalendar(for: .reminder, eventStore: eventStore)
+                calendar.source = source
+                calendar.title = title
+                try eventStore.saveCalendar(calendar, commit: true)
+                return ReminderListRecord(id: calendar.calendarIdentifier, title: calendar.title)
+            } catch {
+                lastError = error
+            }
+        }
+
+        if let existing = eventStore.calendars(for: .reminder)
+            .first(where: { $0.title.localizedCaseInsensitiveCompare(title) == .orderedSame }) {
+            return ReminderListRecord(id: existing.calendarIdentifier, title: existing.title)
+        }
+        if let lastError {
+            throw lastError
+        }
+        throw EventKitStoreError.noReminderSource
+    }
+
+    private func reminderSourceCandidates() -> [EKSource] {
+        var candidates: [EKSource] = []
+        if let source = eventStore.defaultCalendarForNewReminders()?.source {
+            candidates.append(source)
+        }
+        candidates.append(contentsOf: eventStore.sources.filter { $0.sourceType == .local })
+        candidates.append(contentsOf: eventStore.sources)
+
+        var seen = Set<String>()
+        return candidates.filter { source in
+            let key = source.sourceIdentifier
+            if seen.contains(key) { return false }
+            seen.insert(key)
+            return true
+        }
     }
 
     private func ensureAccess() throws {

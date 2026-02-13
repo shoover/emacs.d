@@ -114,6 +114,18 @@
       (should (equal (mapcar (lambda (row) (alist-get 'org_id row)) rows)
                      '("ORG-A" "ORG-B"))))))
 
+(ert-deftest org-rem-db-open-creates-parent-directories ()
+  (let* ((root (make-temp-file "org-rem-sync-db-root" t))
+         (db-path (expand-file-name "nested/state/sync.sqlite" root))
+         (db nil))
+    (unwind-protect
+        (progn
+          (setq db (org-rem-db-open db-path))
+          (org-rem-db-init db)
+          (should (file-exists-p db-path)))
+      (org-rem-db-close db)
+      (delete-directory root t))))
+
 (provide 'sync-db-test)
 
 ;;; sync-db-test.el ends here
