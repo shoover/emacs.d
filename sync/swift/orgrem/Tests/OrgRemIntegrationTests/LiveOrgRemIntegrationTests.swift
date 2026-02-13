@@ -192,6 +192,35 @@ private func runApply(bin: String, listID: String, ops: [ApplyOp]) throws -> App
     return try JSONDecoder().decode(ApplyResponse.self, from: Data(json.utf8))
 }
 
+private func waitForReminder(
+    bin: String,
+    listID: String,
+    externalID: String,
+    timeoutSeconds: TimeInterval = 5.0,
+    pollIntervalSeconds: TimeInterval = 0.25,
+    condition: (ReminderRecord) -> Bool
+) throws -> ReminderRecord {
+    let deadline = Date().addingTimeInterval(timeoutSeconds)
+    var lastSeen: ReminderRecord?
+    while Date() < deadline {
+        let listed = try runList(bin: bin, listID: listID)
+        if let item = listed.items.first(where: { $0.externalID == externalID }) {
+            lastSeen = item
+            if condition(item) {
+                return item
+            }
+        }
+        Thread.sleep(forTimeInterval: pollIntervalSeconds)
+    }
+
+    if let item = lastSeen {
+        throw IntegrationError.parseFailure(
+            "Reminder \(externalID) did not reach expected state; last seen title=\(item.title) notes=\(item.notes ?? "nil") completed=\(item.completed)"
+        )
+    }
+    throw IntegrationError.missingItem("reminder \(externalID) during waitForReminder")
+}
+
 private func elispStringLiteral(_ raw: String) -> String {
     raw.replacingOccurrences(of: "\\", with: "\\\\")
         .replacingOccurrences(of: "\"", with: "\\\"")
@@ -694,26 +723,56 @@ struct LiveOrgRemIntegrationTests {
     guard let seededReminder = listAfterInitial.items.first(where: { $0.title.contains(remBase) }) else {
         throw IntegrationError.missingItem("seed reminder for reminder->org update")
     }
-    _ = try runApply(
+    let updatedTitle = "\(remBase)-v2 #home #sync"
+    let updatedNotes = "rem-notes-2"
+    let updateFields = ApplyOpFields(
+        title: updatedTitle,
+        notes: updatedNotes,
+        completed: true,
+        start: nil,
+        due: nil,
+        url: nil
+    )
+    let updateOpForTimestamp: (String) -> ApplyOp = { timestamp in
+        ApplyOp(
+            op: .update,
+            clientRef: nil,
+            externalID: seededReminder.externalID,
+            ifLastModified: timestamp,
+            fields: updateFields
+        )
+    }
+
+    let firstUpdateResponse = try runApply(
         bin: orgremBin,
         listID: list.calendarIdentifier,
-        ops: [
-            ApplyOp(
-                op: .update,
-                clientRef: nil,
-                externalID: seededReminder.externalID,
-                ifLastModified: seededReminder.lastModified,
-                fields: ApplyOpFields(
-                    title: "\(remBase)-v2 #home #sync",
-                    notes: "rem-notes-2",
-                    completed: true,
-                    start: nil,
-                    due: nil,
-                    url: nil
-                )
-            )
-        ]
+        ops: [updateOpForTimestamp(seededReminder.lastModified)]
     )
+    #expect(firstUpdateResponse.results.count == 1)
+    let firstUpdateResult = firstUpdateResponse.results[0]
+    if firstUpdateResult.status == .conflict {
+        let refreshed = try runList(bin: orgremBin, listID: list.calendarIdentifier)
+        guard let latest = refreshed.items.first(where: { $0.externalID == seededReminder.externalID }) else {
+            throw IntegrationError.missingItem("seed reminder for conflict retry")
+        }
+        let retryResponse = try runApply(
+            bin: orgremBin,
+            listID: list.calendarIdentifier,
+            ops: [updateOpForTimestamp(latest.lastModified)]
+        )
+        #expect(retryResponse.results.count == 1)
+        #expect(retryResponse.results[0].status == .ok)
+    } else {
+        #expect(firstUpdateResult.status == .ok)
+    }
+
+    _ = try waitForReminder(
+        bin: orgremBin,
+        listID: list.calendarIdentifier,
+        externalID: seededReminder.externalID
+    ) { item in
+        item.title == updatedTitle && item.notes == updatedNotes && item.completed
+    }
     try runEmacsSync(repoRoot: repoRoot, configPath: configPath, emacsBin: emacsBin)
 
     let inboxAfterUpdate = try String(contentsOf: inboxFile, encoding: .utf8)
