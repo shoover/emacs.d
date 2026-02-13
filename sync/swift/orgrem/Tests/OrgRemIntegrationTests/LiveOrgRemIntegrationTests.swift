@@ -368,7 +368,7 @@ private func createReminder(
     try store.save(reminder, commit: true)
 }
 
-@Suite(.serialized)
+@Suite
 struct LiveOrgRemIntegrationTests {
 
 @Test func liveListAndApplyRoundTrip() async throws {
