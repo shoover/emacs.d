@@ -3,6 +3,7 @@ import Foundation
 public protocol ReminderStore {
     func list(listID: String) throws -> (ReminderListRecord, [ReminderRecord])
     func apply(listID: String, request: ApplyRequest) throws -> ApplyResponse
+    func ensureList(title: String) throws -> ReminderListRecord
 }
 
 public enum Runner {
@@ -30,6 +31,9 @@ public enum Runner {
             let request = try JSONDecoder().decode(ApplyRequest.self, from: data)
             let response = try store.apply(listID: listID, request: request)
             return String(decoding: try encoder.encode(response), as: UTF8.self)
+        case .ensureList(let title):
+            let list = try store.ensureList(title: title)
+            return String(decoding: try encoder.encode(list), as: UTF8.self)
         }
     }
 }

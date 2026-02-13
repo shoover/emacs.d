@@ -6,9 +6,11 @@ private final class MockStore: ReminderStore {
     var listedListID: String?
     var appliedListID: String?
     var appliedRequest: ApplyRequest?
+    var ensuredListTitle: String?
 
     var listItems: [ReminderRecord] = []
     var listRecord = ReminderListRecord(id: "LIST1", title: "Personal")
+    var ensuredListRecord = ReminderListRecord(id: "LIST2", title: "Inbox")
     var applyResponse = ApplyResponse(schemaVersion: 1, appliedAt: "2026-02-12T21:40:30Z", results: [])
 
     func list(listID: String) throws -> (ReminderListRecord, [ReminderRecord]) {
@@ -20,6 +22,11 @@ private final class MockStore: ReminderStore {
         appliedListID = listID
         appliedRequest = request
         return applyResponse
+    }
+
+    func ensureList(title: String) throws -> ReminderListRecord {
+        ensuredListTitle = title
+        return ensuredListRecord
     }
 }
 
@@ -79,4 +86,19 @@ private final class MockStore: ReminderStore {
     #expect(store.appliedListID == "LIST1")
     #expect(store.appliedRequest?.ops.count == 1)
     #expect(store.appliedRequest?.ops.first?.op == .delete)
+}
+
+@Test func runnerExecutesEnsureListAndReturnsJSON() throws {
+    let store = MockStore()
+    store.ensuredListRecord = ReminderListRecord(id: "LIST3", title: "Work")
+
+    let output = try Runner.run(
+        args: ["ensure-list", "--title", "Work"],
+        store: store,
+        nowISO8601: { "2026-02-12T21:40:00Z" }
+    )
+
+    #expect(store.ensuredListTitle == "Work")
+    #expect(output.contains("\"id\":\"LIST3\""))
+    #expect(output.contains("\"title\":\"Work\""))
 }

@@ -17,6 +17,15 @@ import Testing
     #expect(command == .apply(listID: "LIST1", opsFile: "/tmp/ops.json"))
 }
 
+@Test func parsesEnsureListCommand() throws {
+    let command = try CommandParser.parse([
+        "ensure-list",
+        "--title",
+        "Personal",
+    ])
+    #expect(command == .ensureList(title: "Personal"))
+}
+
 @Test func parseRejectsMissingFlagValue() {
     #expect(throws: CommandParseError.self) {
         _ = try CommandParser.parse(["list", "--list-id"])

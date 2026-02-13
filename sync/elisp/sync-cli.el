@@ -3,6 +3,7 @@
 ;;; Code:
 
 (require 'cl-lib)
+(require 'subr-x)
 (require 'sync-db)
 (require 'sync-engine)
 (require 'sync-reminders-json)
@@ -56,6 +57,32 @@
       (when (file-exists-p ops-file)
         (delete-file ops-file)))))
 
+(defun org-rem--run-orgrem-ensure-list (orgrem-bin list-title)
+  "Run ORGREM-BIN ensure-list command for LIST-TITLE and return stdout."
+  (with-temp-buffer
+    (let ((exit-code (call-process orgrem-bin nil (current-buffer) nil
+                                   "ensure-list"
+                                   "--title"
+                                   list-title)))
+      (unless (eq exit-code 0)
+        (error "orgrem ensure-list failed with exit code %s: %s"
+               exit-code
+               (buffer-string)))
+      (buffer-string))))
+
+(defun org-rem--resolve-list-id (config orgrem-bin)
+  "Resolve reminders list ID from CONFIG using ORGREM-BIN."
+  (or (plist-get config :reminders-list-id)
+      (let ((list-name (plist-get config :reminders-list-name)))
+        (unless list-name
+          (error "Missing config key: :reminders-list-id or :reminders-list-name"))
+        (let* ((list-json (org-rem--run-orgrem-ensure-list orgrem-bin list-name))
+               (list-record (org-rem-decode-reminder-list-json list-json))
+               (list-id (alist-get 'id list-record)))
+          (unless (and list-id (not (string-empty-p list-id)))
+            (error "orgrem ensure-list returned invalid response: %s" list-json))
+          list-id))))
+
 (defun org-rem-parse-cli-args (args)
   "Parse command line ARGS into a plist."
   (let ((result (list :dry-run nil :verbose nil :config nil))
@@ -89,8 +116,8 @@ arguments for runtime behavior."
          (dry-run (plist-get options :dry-run))
          (org-root (org-rem--config-get config :org-root))
          (db-path (org-rem--config-get config :db-path))
-         (list-id (org-rem--config-get config :reminders-list-id))
          (orgrem-bin (org-rem--config-get config :orgrem-bin))
+         (list-id (org-rem--resolve-list-id config orgrem-bin))
          (db (org-rem-db-open db-path)))
     (org-rem--sync-trace "start dry-run=%s config=%s" dry-run config-path)
     (unwind-protect

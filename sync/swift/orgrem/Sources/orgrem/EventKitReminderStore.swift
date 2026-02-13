@@ -6,6 +6,7 @@ enum EventKitStoreError: Error, CustomStringConvertible {
     case accessDenied
     case listNotFound(String)
     case reminderNotFound(String)
+    case noReminderSource
 
     var description: String {
         switch self {
@@ -15,6 +16,8 @@ enum EventKitStoreError: Error, CustomStringConvertible {
             return "Reminders list not found: \(id)"
         case .reminderNotFound(let externalID):
             return "Reminder not found for external_id: \(externalID)"
+        case .noReminderSource:
+            return "Unable to resolve a reminders source for list creation."
         }
     }
 }
@@ -109,6 +112,26 @@ final class EventKitReminderStore: ReminderStore {
         }
 
         return ApplyResponse(schemaVersion: 1, appliedAt: dateFormatter.string(from: Date()), results: results)
+    }
+
+    func ensureList(title: String) throws -> ReminderListRecord {
+        try ensureAccess()
+        if let existing = eventStore.calendars(for: .reminder)
+            .first(where: { $0.title == title }) {
+            return ReminderListRecord(id: existing.calendarIdentifier, title: existing.title)
+        }
+
+        let calendar = EKCalendar(for: .reminder, eventStore: eventStore)
+        let source = eventStore.defaultCalendarForNewReminders()?.source
+            ?? eventStore.sources.first(where: { $0.sourceType == .local })
+            ?? eventStore.sources.first
+        guard let source else {
+            throw EventKitStoreError.noReminderSource
+        }
+        calendar.source = source
+        calendar.title = title
+        try eventStore.saveCalendar(calendar, commit: true)
+        return ReminderListRecord(id: calendar.calendarIdentifier, title: calendar.title)
     }
 
     private func ensureAccess() throws {

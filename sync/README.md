@@ -65,7 +65,9 @@ Direct script equivalents:
 - macOS with Reminders access granted to `orgrem`/Terminal.
 - Emacs with Org mode and sqlite support.
 - `just` installed.
-- A Reminders list ID (`calendarIdentifier`) for the target list.
+- A Reminders list target, by either:
+  - ID (`calendarIdentifier`) via `:reminders-list-id`, or
+  - name via `:reminders-list-name` (auto-created if missing).
 
 ### 1. Build the `orgrem` binary
 
@@ -94,18 +96,26 @@ Create a file such as `~/.config/orgrem-sync.el`:
  :inbox-file "/Users/you/iCloud/notes/inbox.org"
  :inbox-heading "* Reminders"
  :db-path "/Users/you/.local/state/orgrem/sync.sqlite"
- :reminders-list-id "YOUR-REMINDERS-LIST-ID"
+ :reminders-list-name "Personal"
  :orgrem-bin "/Users/you/emacs/sync/swift/orgrem/.build/release/orgrem")
 ```
 
 Notes:
 
-- `:org-root`, `:db-path`, `:reminders-list-id`, and `:orgrem-bin` are
-  required.
+- `:org-root`, `:db-path`, and `:orgrem-bin` are required.
+- Set exactly one of:
+  - `:reminders-list-id` (existing list ID), or
+  - `:reminders-list-name` (resolved by name and auto-created if missing).
 - `:inbox-file` and `:inbox-heading` are required when reminders need to
   be created in Org.
 - Only TODO entries under `:org-root` are synced.
 - Missing `:ID:` properties are created automatically during sync.
+
+Optional helper command (returns `{"id":"...","title":"..."}`):
+
+```bash
+sync/swift/orgrem/.build/release/orgrem ensure-list --title "Personal"
+```
 
 ### 3. Run a dry run (preview plan only)
 

@@ -3,6 +3,7 @@ import Foundation
 public enum CLICommand: Equatable, Sendable {
     case list(listID: String)
     case apply(listID: String, opsFile: String)
+    case ensureList(title: String)
 }
 
 public enum CommandParseError: Error, Equatable, CustomStringConvertible {
@@ -15,7 +16,7 @@ public enum CommandParseError: Error, Equatable, CustomStringConvertible {
     public var description: String {
         switch self {
         case .missingCommand:
-            return "Missing command. Expected `list` or `apply`."
+            return "Missing command. Expected `list`, `apply`, or `ensure-list`."
         case .unknownCommand(let value):
             return "Unknown command: \(value)"
         case .unknownOption(let value):
@@ -36,13 +37,13 @@ public enum CommandParser {
 
         switch command {
         case "list":
-            let parsed = try parseOptions(Array(args.dropFirst()))
+            let parsed = try parseOptions(Array(args.dropFirst()), allowedOptions: ["--list-id"])
             guard let listID = parsed["--list-id"] else {
                 throw CommandParseError.missingRequiredOption("--list-id")
             }
             return .list(listID: listID)
         case "apply":
-            let parsed = try parseOptions(Array(args.dropFirst()))
+            let parsed = try parseOptions(Array(args.dropFirst()), allowedOptions: ["--list-id", "--ops-file"])
             guard let listID = parsed["--list-id"] else {
                 throw CommandParseError.missingRequiredOption("--list-id")
             }
@@ -50,17 +51,26 @@ public enum CommandParser {
                 throw CommandParseError.missingRequiredOption("--ops-file")
             }
             return .apply(listID: listID, opsFile: opsFile)
+        case "ensure-list":
+            let parsed = try parseOptions(Array(args.dropFirst()), allowedOptions: ["--title"])
+            guard let title = parsed["--title"] else {
+                throw CommandParseError.missingRequiredOption("--title")
+            }
+            return .ensureList(title: title)
         default:
             throw CommandParseError.unknownCommand(command)
         }
     }
 
-    private static func parseOptions(_ args: [String]) throws -> [String: String] {
+    private static func parseOptions(
+        _ args: [String],
+        allowedOptions: Set<String>
+    ) throws -> [String: String] {
         var values: [String: String] = [:]
         var index = 0
         while index < args.count {
             let key = args[index]
-            guard key == "--list-id" || key == "--ops-file" else {
+            guard allowedOptions.contains(key) else {
                 throw CommandParseError.unknownOption(key)
             }
             let valueIndex = index + 1

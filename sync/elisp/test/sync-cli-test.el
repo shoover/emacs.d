@@ -161,6 +161,60 @@
         (delete-file config-path))
       (delete-directory root t))))
 
+(ert-deftest org-rem-sync-run-resolves-list-id-from-list-name ()
+  (let* ((root (make-temp-file "org-rem-cli-root" t))
+         (db-path (make-temp-file "org-rem-cli-db" nil ".sqlite"))
+         (orgrem-path (make-temp-file "orgrem-fake"))
+         (config-path (make-temp-file "org-rem-config" nil ".el"))
+         (ensure-marker (make-temp-file "org-rem-ensure-marker"))
+         (list-marker (make-temp-file "org-rem-list-marker")))
+    (delete-file ensure-marker)
+    (delete-file list-marker)
+    (unwind-protect
+        (progn
+          (with-temp-file (expand-file-name "tasks.org" root)
+            (insert "* TODO Name based list\nBody\n"))
+          (with-temp-file orgrem-path
+            (insert "#!/usr/bin/env zsh\n"
+                    "set -euo pipefail\n"
+                    "if [[ \"$1\" == \"ensure-list\" ]]; then\n"
+                    "  touch " ensure-marker "\n"
+                    "  echo '{\"id\":\"LIST-BY-NAME\",\"title\":\"Personal\"}'\n"
+                    "elif [[ \"$1\" == \"list\" ]]; then\n"
+                    "  touch " list-marker "\n"
+                    "  if [[ \"$3\" != \"LIST-BY-NAME\" ]]; then\n"
+                    "    echo \"unexpected list id: $3\" >&2\n"
+                    "    exit 3\n"
+                    "  fi\n"
+                    "  echo '{\"schema_version\":1,\"generated_at\":\"2026-02-12T21:40:00Z\",\"list\":{\"id\":\"LIST-BY-NAME\",\"title\":\"Personal\"},\"items\":[]}'\n"
+                    "else\n"
+                    "  exit 2\n"
+                    "fi\n"))
+          (set-file-modes orgrem-path #o755)
+          (with-temp-file config-path
+            (prin1 `(:org-root ,root
+                     :db-path ,db-path
+                     :reminders-list-name "Personal"
+                     :orgrem-bin ,orgrem-path)
+                   (current-buffer)))
+          (let ((org-agenda-files nil)
+                (org-agenda-skip-unavailable-files t))
+            (let ((plan (org-rem-sync-run config-path :dry-run t)))
+              (should (= (length (plist-get plan :create-reminders)) 1))))
+          (should (file-exists-p ensure-marker))
+          (should (file-exists-p list-marker)))
+      (when (file-exists-p db-path)
+        (delete-file db-path))
+      (when (file-exists-p orgrem-path)
+        (delete-file orgrem-path))
+      (when (file-exists-p config-path)
+        (delete-file config-path))
+      (when (file-exists-p ensure-marker)
+        (delete-file ensure-marker))
+      (when (file-exists-p list-marker)
+        (delete-file list-marker))
+      (delete-directory root t))))
+
 (provide 'sync-cli-test)
 
 ;;; sync-cli-test.el ends here
