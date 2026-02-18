@@ -255,17 +255,30 @@ behavior opposite of documentation."
                   ((org-agenda-overriding-header "Overdue")
                    (org-agenda-skip-function
                     '(org-agenda-skip-entry-if 'todo 'done))))
+            (agenda ""
+                    ((org-agenda-span 1)
+                     (org-agenda-start-day "0d")
+                     (org-agenda-start-on-weekday nil)
+                     (org-agenda-overriding-header "Today")))
             (alltodo ""
-                     ((org-agenda-overriding-header "Unscheduled")
+                     ((org-agenda-overriding-header "")
                       (org-agenda-skip-function
                        '(org-agenda-skip-entry-if 'scheduled 'deadline))))
             (agenda ""
                     ((org-agenda-span 7)
-                     (org-agenda-start-day "0d")
+                     (org-agenda-start-day "+1d")
                      (org-agenda-start-on-weekday nil)
-                     (org-agenda-overriding-header "Upcoming")
-                     (org-scheduled-past-days 0)
-                     (org-deadline-past-days 0)))))
+                     (org-agenda-overriding-header "Upcoming")))))
+          ("I" "Inbox 0-2"
+           ((alltodo ""
+                     ((org-agenda-overriding-header "Unscheduled")
+                      (org-agenda-skip-function
+                       '(org-agenda-skip-entry-if 'scheduled 'deadline))))
+            (agenda ""
+                    ((org-agenda-overriding-header "Scheduled")
+                     (org-agenda-span 7)
+                     (org-agenda-start-day "0d")
+                     (org-agenda-start-on-weekday nil)))))
           ("A" "Multi-occur, agenda files and archives"
            search ""
            ((org-agenda-files (find-org-files-x "\\.org$\\|org_archive$"))))
