@@ -290,8 +290,9 @@ directory using the org HTML publisher."
         (save-restriction
           (org-narrow-to-subtree)
           (unless (setq standup-pos (org-find-exact-headline-in-buffer week-heading))
-            (goto-char (point-max))
-            (org-back-over-empty-lines)
+            (goto-char (point-min))
+            (org-end-of-meta-data t)
+            (unless (bolp) (insert "\n"))
             (setq standup-pos (point))
             (insert (make-string week-level ?*) " " week-heading "\n"
                     ":PROPERTIES:\n:VISIBILITY: children\n:END:\n"))
