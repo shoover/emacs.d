@@ -276,6 +276,8 @@ behavior opposite of documentation."
                        '(org-agenda-skip-entry-if 'scheduled 'deadline))))
             (agenda ""
                     ((org-agenda-overriding-header "Scheduled")
+                     (org-agenda-skip-scheduled-if-done t)
+                     (org-agenda-skip-deadline-if-done t)
                      (org-agenda-span 7)
                      (org-agenda-start-day "0d")
                      (org-agenda-start-on-weekday nil)))))
