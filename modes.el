@@ -251,25 +251,6 @@ behavior opposite of documentation."
   (setq org-agenda-files (find-org-files-x))
   (setq org-agenda-custom-commands
         '(("i" "Inbox 0"
-           ((tags "SCHEDULED<\"<today>\"|DEADLINE<\"<today>\""
-                  ((org-agenda-overriding-header "Overdue")
-                   (org-agenda-skip-function
-                    '(org-agenda-skip-entry-if 'todo 'done))))
-            (agenda ""
-                    ((org-agenda-span 1)
-                     (org-agenda-start-day "0d")
-                     (org-agenda-start-on-weekday nil)
-                     (org-agenda-overriding-header "Today")))
-            (alltodo ""
-                     ((org-agenda-overriding-header "")
-                      (org-agenda-skip-function
-                       '(org-agenda-skip-entry-if 'scheduled 'deadline))))
-            (agenda ""
-                    ((org-agenda-span 7)
-                     (org-agenda-start-day "+1d")
-                     (org-agenda-start-on-weekday nil)
-                     (org-agenda-overriding-header "Upcoming")))))
-          ("I" "Inbox 0-2"
            ((alltodo ""
                      ((org-agenda-overriding-header "Unscheduled")
                       (org-agenda-skip-function
