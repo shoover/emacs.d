@@ -115,12 +115,20 @@
       `(("." . ,(expand-file-name "~/.emacs.d/auto-save"))))
 (setq delete-by-moving-to-trash t)
 
+;; Auto-save on focus change
+(super-save-mode +1)
+;; I don't think I should need to save all buffers, but this works around
+;; super-save not saving the *current* buffer when switching buffers or losing
+;; focus (version 20260318.1214, MacOS).
+(setq super-save-all-buffers t)
+(setq super-save-silent t)
+
 ;; Fancy buffer and everything else switching
 (setq ido-enable-flex-matching t
       ido-everywhere t
       ido-create-new-buffer 'always
       ido-file-extensions-order '(".org" t)
-      ido-max-directory-size 100000 ; avoid "too big" errors on some dirs
+      ido-max-directory-size 100000     ; avoid "too big" errors on some dirs
       )
 (ido-mode 1)
 

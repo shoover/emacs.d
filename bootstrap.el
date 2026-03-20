@@ -27,6 +27,7 @@
                   powershell
                   protobuf-mode
                   ruby-mode inf-ruby ; extra extensions
+                  super-save
                   transpose-frame
                   yaml-mode
                   yasnippet
