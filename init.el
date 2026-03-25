@@ -291,12 +291,7 @@
  '(custom-safe-themes
    '("73f7374c18e446d7e2e135c580247e0a696ec373d2f446cc617ea6beb1c47788" default))
  '(package-selected-packages
-   '(caddyfile-mode cider csv-mode dockerfile-mode edit-server editorconfig
-                    exec-path-from-shell expand-region
-                    go-mode gptel htmlize imenu-anywhere inf-ruby magit
-                    markdown-mode multiple-cursors nginx-mode org-contrib
-                    paredit powershell simple-httpd sql-indent swift-mode
-                    transient websocket yaml-mode yasnippet)))
+   '(yasnippet yaml-mode swift-mode super-save sql-indent powershell paredit org-contrib nginx-mode multiple-cursors markdown-mode magit kotlin-mode just-mode inf-ruby htmlize groovy-mode go-mode find-file-in-project expand-region editorconfig dockerfile-mode csv-mode cider)))
 
 ;; Pull these customized variables out of the generated custom block that gets overwritten on OS X for some reason.
 (setq
@@ -340,12 +335,12 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(org-document-title ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :family "Helvetica" :height 1.5 :underline nil))))
- '(org-level-1 ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :family "Helvetica" :height 1.4))))
- '(org-level-2 ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :family "Helvetica" :height 1.3 :slant italic))))
- '(org-level-3 ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :family "Helvetica" :height 1.3))))
- '(org-level-4 ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :family "Helvetica" :height 1.3 :slant italic))))
- '(org-level-5 ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :family "Helvetica" :height 1.3))))
- '(org-level-6 ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :family "Helvetica" :height 1.3))))
- '(org-level-7 ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :family "Helvetica" :height 1.3))))
- '(org-level-8 ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :family "Helvetica" :height 1.3)))))
+ '(org-document-title ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :family "IBM Plex Sans" :height 1.5 :underline nil))))
+ '(org-level-1 ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :family "IBM Plex Sans" :height 1.4))))
+ '(org-level-2 ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :family "IBM Plex Sans" :height 1.3 :slant italic))))
+ '(org-level-3 ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :family "IBM Plex Sans" :height 1.3))))
+ '(org-level-4 ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :family "IBM Plex Sans" :height 1.3 :slant italic))))
+ '(org-level-5 ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :family "IBM Plex Sans" :height 1.3))))
+ '(org-level-6 ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :family "IBM Plex Sans" :height 1.3))))
+ '(org-level-7 ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :family "IBM Plex Sans" :height 1.3))))
+ '(org-level-8 ((t (:inherit default :weight bold :foreground "#bdbc91" :underline nil :family "IBM Plex Sans" :height 1.3)))))
