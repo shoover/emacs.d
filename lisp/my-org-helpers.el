@@ -285,7 +285,7 @@ directory using the org HTML publisher."
            (days-since-monday (if (zerop dow) 6 (1- dow)))
            (week-start (time-subtract now (days-to-time days-since-monday)))
            (week-heading (format-time-string "%Y-%m-%d" week-start))
-           (day-heading (format "%d/%d" (nth 4 decoded-now) (nth 3 decoded-now)))
+           (day-heading (format-time-string "%m/%d" now))
            (snippet (yas-lookup-snippet "standup"))
            (standup-pos (org-find-exact-headline-in-buffer "STANDUP")))
       (unless standup-pos (error "STANDUP heading not found in %s" my-work-org))
