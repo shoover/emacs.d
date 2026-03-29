@@ -79,7 +79,6 @@
 (blink-cursor-mode 1)
 (setq ring-bell-function 'ignore)
 (setq inhibit-splash-screen t)
-(fset 'yes-or-no-p 'y-or-n-p) ; "y or n" instead of "yes or no"
 
 (savehist-mode t) ; save minibuffer history
 
@@ -301,9 +300,13 @@
  column-number-mode t
  completion-ignored-extensions
  '(".obj" ".pdb" ".svn/" "CVS/" ".o" "~" ".bin" ".bak" ".obj" ".map" ".ico" ".pif" ".lnk" ".a" ".ln" ".blg" ".bbl" ".dll" ".drv" ".vxd" ".386" ".elc" ".lof" ".glo" ".idx" ".lot" ".fmt" ".tfm" ".class" ".fas" ".lib" ".mem" ".x86f" ".sparcf" ".fasl" ".ufsl" ".fsl" ".dxl" ".pfsl" ".dfsl" ".p64fsl" ".d64fsl" ".dx64fsl" ".lo" ".la" ".gmo" ".mo" ".toc" ".aux" ".cp" ".fn" ".ky" ".pg" ".tp" ".vr" ".cps" ".fns" ".kys" ".pgs" ".tps" ".vrs" ".pyc" ".pyo")
+
  select-enable-clipboard t
  visual-line-mode t
  visual-scroll-margin 0)
+
+(setopt isearch-lazy-count t
+        use-short-answers t)
 
 (tool-bar-mode 0)
 
