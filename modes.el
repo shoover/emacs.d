@@ -256,7 +256,7 @@ behavior opposite of documentation."
                       (org-agenda-skip-function
                        '(org-agenda-skip-entry-if 'scheduled 'deadline))))
             (agenda ""
-                    ((org-agenda-overriding-header "Scheduled")
+                    ((org-agenda-overriding-header "")
                      (org-agenda-skip-scheduled-if-done t)
                      (org-agenda-skip-deadline-if-done t)
                      (org-agenda-span 7)
