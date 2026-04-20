@@ -466,7 +466,7 @@ A blank caption is also inserted."
 
         ("vs" "Notes, paste clipboard, standalone heading"
          entry (file+datetree my-notes-org)
-         "%x"
+         "* %?%x"
          :empty-lines 1)
 
         ;; org-protocol capture: the handler puts the link/title in the kill ring %c
