@@ -464,6 +464,11 @@ A blank caption is also inserted."
          "* %?\n%x"
          :empty-lines 1)
 
+        ("vs" "Notes, paste clipboard, standalone heading"
+         entry (file+datetree my-notes-org)
+         "%x"
+         :empty-lines 1)
+
         ;; org-protocol capture: the handler puts the link/title in the kill ring %c
         ;; and selected text in the region %i
         ;; Alt: "* %?[[%:link][%:description]]\n%:initial\n%U"
