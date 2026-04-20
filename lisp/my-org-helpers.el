@@ -367,9 +367,9 @@ and finalized."
        ;; using a separate window to pick the template. That looks
        ;; weird when we already are making a dedicated frame, so hack
        ;; it to use one window.
-       (letf (((symbol-function 'org-switch-to-buffer-other-window)
-               (symbol-function 'switch-to-buffer)))
-             ,@body))))
+       (cl-letf (((symbol-function 'org-switch-to-buffer-other-window)
+                  (symbol-function 'switch-to-buffer)))
+                ,@body))))
 
 (defun my-org-capture-new-frame ()
   "Create a new frame and run org capture, good for slickrun
