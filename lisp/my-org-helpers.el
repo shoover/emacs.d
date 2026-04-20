@@ -1,3 +1,24 @@
+(require 'cl-lib)
+
+(defun my-org-get-x-clipboard (value)
+  "Like `org-get-x-clipboard' but also works on macOS (ns).
+On ns, PRIMARY has no real meaning so always use CLIPBOARD."
+  (cond ((and (eq window-system 'ns)
+              (fboundp 'gui-get-selection))
+         (org-no-properties
+          (ignore-errors (gui-get-selection 'CLIPBOARD))))
+        ((and (eq window-system 'x)
+              (fboundp 'gui-get-selection))
+         (org-no-properties
+          (ignore-errors
+           (or (gui-get-selection value 'UTF8_STRING)
+               (gui-get-selection value 'COMPOUND_TEXT)
+               (gui-get-selection value 'STRING)
+               (gui-get-selection value 'TEXT)))))
+        ((and (eq window-system 'w32) (fboundp 'w32-get-clipboard-data))
+         (w32-get-clipboard-data))))
+
+(advice-add 'org-get-x-clipboard :override #'my-org-get-x-clipboard)
 
 (defun find-org-files-x (&optional regexp)
   "Returns a list of files in `org-directories' whose names match REGEXP.
@@ -351,6 +372,7 @@ directory using the org HTML publisher."
     (frame-bottom-right f)
     (select-frame f)
     (raise-frame f)
+    (x-focus-frame f)
     f))
 
 (defmacro with-capture-frame (&rest body)
@@ -363,12 +385,12 @@ Returns with the capture frame ready for entry, i.e. not entered
 and finalized."
   `(progn
      (let ((capture-frame (make-capture-frame)))
-       ;; Capture template selection uses org-mks, which insists on
-       ;; using a separate window to pick the template. That looks
-       ;; weird when we already are making a dedicated frame, so hack
-       ;; it to use one window.
+       ;; Prevent window splits in the dedicated capture frame.
        (cl-letf (((symbol-function 'org-switch-to-buffer-other-window)
-                  (symbol-function 'switch-to-buffer)))
+                  (symbol-function 'switch-to-buffer))
+                 ((symbol-function 'pop-to-buffer)
+                  (lambda (buf &optional action norecord)
+                    (switch-to-buffer buf norecord))))
                 ,@body))))
 
 (defun my-org-capture-new-frame ()
