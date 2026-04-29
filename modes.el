@@ -254,14 +254,19 @@ behavior opposite of documentation."
            ((alltodo ""
                      ((org-agenda-overriding-header "Unscheduled")
                       (org-agenda-skip-function
-                       '(org-agenda-skip-entry-if 'scheduled 'deadline))))
+                       '(or (org-agenda-skip-entry-if 'scheduled 'deadline)
+                            (org-agenda-skip-entry-if 'todo '("someday"))))))
             (agenda ""
                     ((org-agenda-overriding-header "")
+                     (org-agenda-skip-function
+                      '(org-agenda-skip-entry-if 'todo '("someday")))
                      (org-agenda-skip-scheduled-if-done t)
                      (org-agenda-skip-deadline-if-done t)
                      (org-agenda-span 7)
                      (org-agenda-start-day "0d")
-                     (org-agenda-start-on-weekday nil)))))
+                     (org-agenda-start-on-weekday nil)))
+            (todo "someday"
+                  ((org-agenda-overriding-header "Later")))))
           ("A" "Multi-occur, agenda files and archives"
            search ""
            ((org-agenda-files (find-org-files-x "\\.org$\\|org_archive$"))))
