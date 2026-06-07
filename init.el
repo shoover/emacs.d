@@ -136,7 +136,7 @@
 (setq uniquify-buffer-name-style 'post-forward
       uniquify-separator ":")
 
-(setq tramp-default-method "plinkx")
+(setq tramp-default-method "sshx")
 (setq tramp-verbose 2)
 
 ;; Speed up tramp: https://www.gnu.org/software/emacs/manual/html_node/tramp/Frequently-Asked-Questions.html
