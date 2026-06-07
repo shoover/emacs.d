@@ -270,12 +270,6 @@
 (yas-global-mode 1)
 (setq yas-expand-only-for-last-commands '(self-insert-command org-self-insert-command))
 
-;; scpaste; this is available on ELPA, but I have patched it to work with pscp/plink
-(require 'scpaste) ; LISP
-(when (eq system-type 'windows-nt)
-  (setq scpaste-scp "pscp"
-        scpaste-ssh "plink"))
-
 ;;; Server setup
 
 ;; Make sure there's a server. Some OS-specific builds start it automatically,
