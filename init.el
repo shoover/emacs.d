@@ -146,6 +146,10 @@
                     vc-ignore-dir-regexp
                     tramp-file-name-regexp))
 
+;; M-x completion: exclude unrelated mode candidates
+(setq read-extended-command-predicate
+      #'command-completion-default-include-p)
+
 (setq eshell-prompt-function (lambda nil (concat "\n" (eshell/pwd) "\n$ "))
       eshell-prompt-regexp "^\$ ")
 
