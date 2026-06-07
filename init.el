@@ -150,6 +150,9 @@
 (setq read-extended-command-predicate
       #'command-completion-default-include-p)
 
+;; Enable paren matching when entering regexps
+(minibuffer-regexp-mode 1)
+
 (setq eshell-prompt-function (lambda nil (concat "\n" (eshell/pwd) "\n$ "))
       eshell-prompt-regexp "^\$ ")
 
