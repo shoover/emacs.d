@@ -168,6 +168,11 @@ With argument, positions cursor at end of buffer."
 (autoload 'log-mode "log-mode" "View log files" t)
 (add-to-list 'auto-mode-alist '("\\.log$" . log-mode))
 
+;; magit
+(magit-add-section-hook 'magit-status-sections-hook
+                        #'magit-insert-worktrees
+                        nil t)
+
 ;; Make
 (setq compile-command "make ")
 
