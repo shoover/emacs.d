@@ -1,3 +1,4 @@
+;; -*- lexical-binding: nil; -*-
 ;;; Modes setup and mode-specific functions
 
 (defmacro define-keys (map &rest pairs)

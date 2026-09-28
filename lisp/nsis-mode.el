@@ -1,3 +1,4 @@
+;; -*- lexical-binding: nil; -*-
 (defvar nsis-mode-hook nil)
 (defvar nsis-mode-map nil "Keymap for NSIS major mode")
 

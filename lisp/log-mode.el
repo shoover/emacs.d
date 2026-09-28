@@ -1,3 +1,4 @@
+;; -*- lexical-binding: nil; -*-
 ;; Generic major mode for viewing log files.
 ;;
 ;; Features:

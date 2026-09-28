@@ -1,3 +1,4 @@
+;; -*- lexical-binding: nil; -*-
 ;;; tech49-theme.el --- an Emacs 24 theme based on Tech49 (tmTheme)
 ;;
 ;;; Author: Auto Converted to Emacs 24 by tmtheme-to-deftheme (tm2deftheme)

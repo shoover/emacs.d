@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t; -*-
 ;; http://www.uncommon-sense.net/interests/programming/parenface.el
 ;; Add a paren-face to emacs and add support for it to the various lisp modes.
 ;;

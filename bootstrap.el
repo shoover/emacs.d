@@ -1,3 +1,4 @@
+;; -*- lexical-binding: nil; -*-
 ;; emacs --load emacs/bootstrap.el --batch --funcall my-bootstrap-packages
 ;; Use the above for moving into a new machine.
 ;; From Augie Fackler https://bitbucket.org/durin42/dotfiles and hacked.

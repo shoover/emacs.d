@@ -1,3 +1,4 @@
+;; -*- lexical-binding: nil; -*-
 ;; Usage: emacs --script publish-org-dir.el DIR+
 ;; Assumes my-org-helpers.el is on the load-path (in site-lisp or via EMACSLOADPATH)
 

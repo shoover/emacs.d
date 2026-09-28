@@ -1,3 +1,4 @@
+;; -*- lexical-binding: nil; -*-
 ;;; visual-basic-mode.el --- A mode for editing Visual Basic programs.
 
 ;; This is free software.

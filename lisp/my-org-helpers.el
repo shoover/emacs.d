@@ -1,3 +1,4 @@
+;; -*- lexical-binding: nil; -*-
 (require 'cl-lib)
 
 (defun my-org-get-x-clipboard (value)

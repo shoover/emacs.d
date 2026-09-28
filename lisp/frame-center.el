@@ -1,3 +1,4 @@
+;; -*- lexical-binding: nil; -*-
 ;; This started at https://gist.github.com/ieure/80638
 
 (defun screen-unusable-height (&optional display)

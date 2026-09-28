@@ -1,3 +1,4 @@
+;; -*- lexical-binding: nil; -*-
 (defun writeroom ()
   "Switches to a WriteRoom-like fullscreen style"
   (interactive)	

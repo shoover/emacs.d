@@ -1,3 +1,4 @@
+;; -*- lexical-binding: nil; -*-
 ;;; ample-theme.el --- Calm Dark Theme for Emacs
 ;;
 ;; Filename: ample-theme.el

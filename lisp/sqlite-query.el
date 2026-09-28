@@ -1,3 +1,4 @@
+;; -*- lexical-binding: nil; -*-
 ;; An interactive query extension for Emacs 29's built-in sqlite-mode.
 ;;
 ;; sqlite-mode provides an elisp interface to the sqlite3 API and buffer-local

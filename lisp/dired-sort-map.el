@@ -1,3 +1,4 @@
+;; -*- lexical-binding: nil; -*-
 ;;; dired-sort-map.el --- in Dired: press s then s, x, t or n to sort by Size, eXtension, Time or Name
 
 ;; Copyright (C) 2002 by Free Software Foundation, Inc.

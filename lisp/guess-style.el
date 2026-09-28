@@ -1,3 +1,4 @@
+;; -*- lexical-binding: nil; -*-
 ;;; guess-style.el --- automatic setting of code style variables
 ;;
 ;; Copyright (C) 2009-2010, 2014 Nikolaj Schumacher

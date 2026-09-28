@@ -1,3 +1,4 @@
+;; -*- lexical-binding: nil; -*-
 ;; fancy org faces
 ;; tweaked from http://www.howardism.org/Technical/Emacs/orgmode-wordprocessor.html
 

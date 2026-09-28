@@ -1,3 +1,4 @@
+;; -*- lexical-binding: nil; -*-
 ;; Generic major mode for editing AutoHotkey scripts.
 ;;
 ;; Features:

@@ -1,3 +1,4 @@
+;; -*- lexical-binding: nil; -*-
 ;; Text editing functions
 
 ;; from https://github.com/bbatsov/crux/blob/master/crux.el

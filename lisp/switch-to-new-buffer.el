@@ -1,3 +1,4 @@
+;; -*- lexical-binding: nil; -*-
 ;;; switch-to-new-buffer.el --- Switch to a new buffer with default name
 
 ;; Copyright © 2008,2010 Kevin Rodgers

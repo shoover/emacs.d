@@ -1,3 +1,4 @@
+;; -*- lexical-binding: nil; -*-
 (deftheme Shawn
   "Created 2013-08-21.")
 

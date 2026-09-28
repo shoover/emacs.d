@@ -1,3 +1,4 @@
+;; -*- lexical-binding: nil; -*-
 ;;; mercurial.el --- Emacs support for the Mercurial distributed SCM
 
 ;; Copyright (C) 2005, 2006 Bryan O'Sullivan

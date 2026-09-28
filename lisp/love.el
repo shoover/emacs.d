@@ -1,3 +1,4 @@
+;; -*- lexical-binding: nil; -*-
 (defvar love-exe "C:/Program Files/LOVE/love.exe")
 
 (defun love-run ()
