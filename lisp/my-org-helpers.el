@@ -414,22 +414,36 @@ This is useful when you don't want a heading level for the day,
 only for the year and month, as in a workout log that has a table
 for the whole month. DATE defaults to today."
   (require 'org-datetree)
-  (let* ((date (or date (calendar-gregorian-from-absolute (org-today))))
-         (year (nth 2 date))
-         (month (car date))
-         (day (nth 1 date)))
-    (setq-local org-datetree-base-level 1) ; needed to get the buffer to widen right
+  (let ((date (or date (calendar-gregorian-from-absolute (org-today)))))
     (widen)
-    (save-restriction
-      (goto-char (point-min))
-      (org-datetree--find-create
-       "^\\*+[ \t]+\\([12][0-9]\\{3\\}\\)\\(\\s-*?\
-\\([ \t]:[[:alnum:]:_@#%%]+:\\)?\\s-*$\\)"
-       year)
-      (org-datetree--find-create
-       "^\\*+[ \t]+%d-\\([01][0-9]\\) \\w+$"
-       year month)
-      (goto-char (prog1 (point) (widen))))))
+    ;; Top-level tree; no DATE_TREE property lookup
+    (org-datetree-find-create-hierarchy
+     (org-datetree-hier-pairs-x date '(year month))
+     t)))
+
+(defun org-datetree-hier-pairs-x (date levels)
+  "Return `org-datetree-find-create-hierarchy' pairs for DATE.
+LEVELS is a list of `year', `month', and `day' symbols, outermost
+first. Titles and sibling regexes match those built by
+`org-datetree-find-create-entry'."
+  (let ((year (calendar-extract-year date))
+        (month (calendar-extract-month date))
+        (day (calendar-extract-day date)))
+    (mapcar
+     (lambda (level)
+       (pcase-exhaustive level
+         ('year (list (number-to-string year)
+                      (org-datetree-comparefun-from-regex
+                       "\\([12][0-9]\\{3\\}\\)")))
+         ('month (list (format-time-string
+                        "%Y-%m %B" (org-encode-time 0 0 0 1 month year))
+                       (org-datetree-comparefun-from-regex
+                        "\\([12][0-9]\\{3\\}-[01][0-9]\\) \\w+")))
+         ('day (list (format-time-string
+                      "%Y-%m-%d %A" (org-encode-time 0 0 0 day month year))
+                     (org-datetree-comparefun-from-regex
+                      "\\([12][0-9]\\{3\\}-[01][0-9]-[0123][0-9]\\) \\w+")))))
+     levels)))
 
 (defun org-datetree-find-create-here-skip-month-x (&optional date keep-restriction)
   "Calls `org-datetree-find-create-here-x', set to skip the month level."
@@ -453,7 +467,6 @@ the year and date."
   (interactive)
   (require 'org-datetree)
   (setq date (or date (calendar-gregorian-from-absolute (org-today))))
-  (setq-local org-datetree-base-level 1)
   (or keep-restriction (widen))
   (save-restriction
     (let* ((year-re "^\\*+[ \t]+\\([12][0-9]\\{3\\}\\)\\(\\s-*?\\([ \t]:[[:alnum:]:_@#%]+:\\)?\\s-*$\\)")
@@ -492,33 +505,38 @@ the year and date."
                   ;;             (when found
                   ;;               (throw 'exit found))))))))
                   )))
-      (when prop
-        (goto-char prop)
-        (setq-local org-datetree-base-level
-                    (org-get-valid-level (org-current-level) 1))
-        (org-narrow-to-subtree)))
-    (goto-char (point-min))
-                                        ;(message "searching from %s" (point))
-    (let ((year (nth 2 date))
-          (month (car date))
-          (day (nth 1 date)))
-      (org-datetree--find-create
-       "^\\*+[ \t]+\\([12][0-9]\\{3\\}\\)\\(\\s-*?\
-\\([ \t]:[[:alnum:]:_@#%%]+:\\)?\\s-*$\\)"
-       year)
-      (if skip-month
-          ;; Add a tree for the date under the year, no month level
-          (let ((txt (format-time-string "* %Y-%m-%d " (encode-time 0 0 0 day month year)))
-                (level (org-get-valid-level (funcall outline-level) 1)))
-            (org-end-of-subtree t t)
-            (org-back-over-empty-lines)
-            (org-paste-subtree level txt))
-        (org-datetree--find-create
-         "^\\*+[ \t]+%d-\\([01][0-9]\\) \\w+$"
-         year month)
-        (org-datetree--find-create
-         "^\\*+[ \t]+%d-%02d-\\([0123][0-9]\\) \\w+$"
-         year month day)))
+      ;; With a base heading, build the tree under it. Otherwise build
+      ;; a top-level tree in the current restriction. Never pass a
+      ;; legacy property: DATE_TREE was already checked, scoped to the
+      ;; current subtree.
+      (let ((base (cond
+                   ((null prop) t)
+                   ;; A top-level year heading has no parent to build
+                   ;; under, so the tree is top-level
+                   ((save-excursion
+                      (goto-char prop)
+                      (beginning-of-line)
+                      (looking-at-p year-re))
+                    t)
+                   (t (goto-char prop)
+                      (org-back-to-heading t)
+                      'subtree-at-point))))
+        (if skip-month
+            ;; Add a tree for the date under the year, no month level
+            (progn
+              (org-datetree-find-create-hierarchy
+               (org-datetree-hier-pairs-x date '(year)) base)
+              (let ((txt (format-time-string
+                          "* %Y-%m-%d "
+                          (org-encode-time 0 0 0 (calendar-extract-day date)
+                                           (calendar-extract-month date)
+                                           (calendar-extract-year date))))
+                    (level (org-get-valid-level (funcall outline-level) 1)))
+                (org-end-of-subtree t t)
+                (org-back-over-empty-lines)
+                (org-paste-subtree level txt)))
+          (org-datetree-find-create-hierarchy
+           (org-datetree-hier-pairs-x date '(year month day)) base))))
     (end-of-line))
   (or keep-restriction (save-excursion
                          (org-show-entry)
