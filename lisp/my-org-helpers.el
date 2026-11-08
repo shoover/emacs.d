@@ -1,6 +1,16 @@
 ;; -*- lexical-binding: nil; -*-
 (require 'cl-lib)
 
+;; Defined in modes.el and init.el
+(defvar org-directories)
+(defvar my-work-org)
+
+(declare-function org-publish-find-title "ox-publish")
+(declare-function yas-lookup-snippet "yasnippet")
+(declare-function yas-expand-snippet "yasnippet")
+(declare-function org-agenda-switch-to "org-agenda")
+(declare-function frame-bottom-right "frame-center")
+
 (defun my-org-get-x-clipboard (value)
   "Like `org-get-x-clipboard' but also works on macOS (ns).
 On ns, PRIMARY has no real meaning so always use CLIPBOARD."
@@ -67,7 +77,7 @@ doesn't unindent multiline item text."
               (save-excursion
                 (catch 'exit
                   (while (< (point) end)
-                    (let ((i (org-get-indentation)))
+                    (let ((i (current-indentation)))
                       (cond
                        ;; Skip blank lines and inline tasks.
                        ((looking-at "^[ \t]*$"))
@@ -83,7 +93,7 @@ doesn't unindent multiline item text."
                 (while (< (point) end)
                   (unless (or (looking-at "^[ \t]*$")
                               (looking-at org-outline-regexp-bol))
-                    (org-indent-line-to (+ (org-get-indentation) delta)))
+                    (indent-line-to (+ (current-indentation) delta)))
                   (forward-line)))))))
         (skip-blanks
          (function
@@ -93,22 +103,22 @@ doesn't unindent multiline item text."
             (save-excursion
               (goto-char pos)
               (skip-chars-forward " \r\t\n")
-              (point-at-bol)))))
+              (pos-bol)))))
         beg end)
 
     ;; Determine boundaries of changes.
     (if (org-region-active-p)
         (setq beg (funcall skip-blanks (region-beginning))
               end (copy-marker (region-end)))
-      (setq beg (funcall skip-blanks (point-at-bol))
-            end (copy-marker (point-at-eol))))
+      (setq beg (funcall skip-blanks (pos-bol))
+            end (copy-marker (pos-eol))))
 
     ;; Depending on the starting line, choose an action on the text
     ;; between BEG and END.
     (org-with-limited-levels
      (save-excursion
        (goto-char beg)
-       (let ((ref-ind (org-get-indentation))
+       (let ((ref-ind (current-indentation))
              (first-item t))
          (while (< (point) end)
            (cond
@@ -219,7 +229,8 @@ Set org-html-postamble or #+options: html-postamble."
           (format-time-string "%d %b %Y")))
 
 (defun sitemap-file-title (entry style project)
-  ":sitemap-format-entry implemention to link the filename and title, and add a date."
+  "`:sitemap-format-entry' implementation.
+Links the filename and title, and adds a date."
   (format "[[file:%s][%s]] %s"
           entry
           (file-name-base entry)
@@ -279,17 +290,16 @@ directory using the org HTML publisher."
 
 (defun copy-org-link-at-point ()
   (interactive)
-  (when (org-in-regexp org-bracket-link-regexp 1)
-    (let ((link (org-link-unescape (org-match-string-no-properties 1))))
+  (when (org-in-regexp org-link-bracket-re 1)
+    (let ((link (org-link-unescape (match-string-no-properties 1))))
       (kill-new link)
       (message "Copied link '%s' to the clipboard." link))))
 
 (defun read-org-agenda-file ()
   "Completing-read for an org agenda file."
-  (let ((org-completion-use-ido t))
-    (org-icompleting-read "Org buffer: "
-                          (mapcar 'list (mapcar 'buffer-name (org-buffer-list 'agenda)))
-                          nil t)))
+  (completing-read "Org buffer: "
+                   (mapcar 'buffer-name (org-buffer-list 'agenda))
+                   nil t))
 
 (defun standup-today ()
   "Insert today's standup entry template at top of current week in work *STANDUP."
@@ -325,7 +335,7 @@ directory using the org HTML publisher."
                     ":PROPERTIES:\n:VISIBILITY: children\n:END:\n"))
           (goto-char standup-pos)
           (org-narrow-to-subtree)
-          (if-let ((day-pos (org-find-exact-headline-in-buffer day-heading)))
+          (if-let* ((day-pos (org-find-exact-headline-in-buffer day-heading)))
               (progn (goto-char day-pos) (forward-line 1))
             (goto-char (point-min))
             (org-end-of-meta-data t)
@@ -407,6 +417,9 @@ and finalized."
   (interactive)
   (with-capture-frame
    (org-capture)))
+
+(declare-function org-datetree-find-create-hierarchy "org-datetree")
+(declare-function org-datetree-comparefun-from-regex "org-datetree")
 
 (defun org-datetree-find-date-create-month-x (&optional date)
   "Find or create a datetree entry for DATE's year and month.
@@ -539,8 +552,8 @@ the year and date."
            (org-datetree-hier-pairs-x date '(year month day)) base))))
     (end-of-line))
   (or keep-restriction (save-excursion
-                         (org-show-entry)
-                         (org-show-subtree))))
+                         (org-fold-show-entry)
+                         (org-fold-show-subtree))))
 
 ;; minutes parsing for workout duration math formulas. Stock table T/t
 ;; formatting defaults to HH:MM but we need MM:SS.
@@ -576,7 +589,10 @@ http://www.pizzamaking.com/preferment-calculator.html"
     ;; Single Ball:	256.25 g | 9.04 oz | 0.56 lbs
 
     ;; HEADER: SPC MEASURES SPC EOL
-    (replace-regexp "^\\([[:alnum:]()% .]+\\):[[:space:]]+\\([[:alnum:] =/.|]+\\) $" "|\\1|\\2|")
+    (while (re-search-forward
+            "^\\([[:alnum:]()% .]+\\):[[:space:]]+\\([[:alnum:] =/.|]+\\) $"
+            nil t)
+      (replace-match "|\\1|\\2|"))
 
     ;; Go back and cycle each table so the columns are aligned.
     ;; org-export won't work on an unaligned table.
